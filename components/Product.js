@@ -5,7 +5,7 @@ export default function Product({ product }) {
 
   return (
     <div
-      className="max-w-[250px] rounded overflow-hidden shadow-lg"
+      className="max-w-[250px] rounded overflow-hidden shadow-lg bg-grey-med"
       key={product.id}
     >
       <Image
@@ -17,12 +17,12 @@ export default function Product({ product }) {
         alt={name}
       />
       <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">{name}</div>
-        <p className="text-gray-700 text-base">{description}</p>
-        <p className="text-gray-900 text-xl">${price}</p>
+        <div className="font-bold text-xl mb-2 text-grey-light">{name}</div>
+        <p className="text-grey-light-2 text-base">{description}</p>
+        <p className="text-grey-light-2 text-xl">${price}</p>
       </div>
       <div className="px-6 pt-4 pb-2">
-        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-grey-light-2 mr-2 mb-2">
           {category.name}
         </span>
       </div>

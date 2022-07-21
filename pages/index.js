@@ -4,7 +4,7 @@ import prisma from '../lib/prisma'
 
 export default function Home({ products }) {
   return (
-    <div>
+    <div className="bg-grey-dark">
       <Head>
         <title>PlanetScale Next.js Quickstart</title>
         <meta name="description" content="PlanetScale Quickstart for Next.js" />
