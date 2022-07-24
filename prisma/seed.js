@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client')
-const { categories, products } = require('./data.js')
+const { categories, users, items } = require('./data.js')
 const prisma = new PrismaClient()
 
 const load = async () => {
@@ -7,10 +7,13 @@ const load = async () => {
     await prisma.category.deleteMany()
     console.log('Deleted records in category table')
 
-    await prisma.product.deleteMany()
+    await prisma.item.deleteMany()
     console.log('Deleted records in product table')
 
-    await prisma.$queryRaw`ALTER TABLE Product AUTO_INCREMENT = 1`
+    await prisma.user.deleteMany()
+    console.log('Deleted records in user table')
+
+    await prisma.$queryRaw`ALTER TABLE Item AUTO_INCREMENT = 1`
     console.log('reset product auto increment to 1')
 
     await prisma.$queryRaw`ALTER TABLE Category AUTO_INCREMENT = 1`
@@ -21,10 +24,15 @@ const load = async () => {
     })
     console.log('Added category data')
 
-    await prisma.product.createMany({
-      data: products,
+    await prisma.item.createMany({
+      data: items,
     })
     console.log('Added product data')
+
+    await prisma.user.createMany({
+      data: users,
+    })
+    console.log('Added user data')
   } catch (e) {
     console.error(e)
     process.exit(1)

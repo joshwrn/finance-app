@@ -1,52 +1,50 @@
 const { Prisma } = require('@prisma/client')
 
-const categories = [
+const users = [
   {
-    name: 'Hats',
-    description: 'Things you can wear on your head',
-  },
-  {
-    name: 'Socks',
-    description: 'Things you can wear on your feet',
-  },
-  {
-    name: 'Shirts',
-    description: 'Things you wear on the top half of your body',
+    id: '1',
+    username: 'test',
+    email: 'test@fake.com',
+    password: 'test',
+    salary: 50000,
   },
 ]
 
-const products = [
+const categories = [
   {
-    name: 'Cool helmet.',
-    description: 'A nice helmet to wear on your head',
-    price: new Prisma.Decimal(19.95),
-    image: '/images/helmet.jpg',
-    category_id: 1,
+    id: '1',
+    name: 'Tech',
+    categoryType: 'WISHLIST',
+    userId: '1',
   },
   {
-    name: 'Grey T-Shirt',
-    description: 'A nice shirt that you can wear on your body',
-    price: new Prisma.Decimal(22.95),
-    image: '/images/shirt.jpg',
-    category_id: 3,
+    id: '2',
+    name: 'Life',
+    categoryType: 'WISHLIST',
+    userId: '1',
   },
   {
-    name: 'Socks',
-    description: 'Cool socks that you can wear on your feet',
-    price: new Prisma.Decimal(12.95),
-    image: '/images/socks.jpg',
-    category_id: 2,
+    id: '3',
+    name: 'Clothes',
+    categoryType: 'WISHLIST',
+    userId: '1',
   },
+]
+
+const items = [
   {
-    name: 'Sweatshirt',
-    description: 'Cool sweatshirt that you can wear on your body',
-    price: new Prisma.Decimal(12.95),
-    image: '/images/sweatshirt.jpg',
-    category_id: 3,
+    name: 'Macbook Pro',
+    id: '1',
+    link: 'https://www.apple.com/macbook-pro/',
+    dateAdded: new Date(),
+    userId: '1',
+    categoryId: '1',
+    price: new Prisma.Decimal(2499.99),
   },
 ]
 
 module.exports = {
-  products,
+  items,
   categories,
+  users,
 }
