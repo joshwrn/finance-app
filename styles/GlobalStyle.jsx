@@ -60,4 +60,13 @@ html {
   font-size: 16px;
   background-color: black;
 }
+
+ul {
+    list-style: none;
+    width: 100%;
+  }
+  li {
+    list-style: none;
+    width: 100%;
+  }
 `

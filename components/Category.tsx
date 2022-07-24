@@ -1,7 +1,8 @@
 import { CategoryType, ItemType } from '@customTypes/prismaData'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Item from '@components/Item'
 import styled from 'styled-components'
+import { Reorder } from 'framer-motion'
 import Header from '@components/Header'
 import { numberToCurrency } from '~/logic/utils'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
@@ -18,6 +19,11 @@ const Container = styled.div`
   position: relative;
   padding-bottom: 50px;
   border-bottom: 1px solid var(--bg-item);
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 `
 
 const HeadingContainer = styled.div`
@@ -74,10 +80,14 @@ const NewItemButton = styled.button`
 
 const Category = ({ category }: { category: CategoryType }) => {
   const items: ItemType[] = category.items
+  const [itemsArr, setItemsArr] = useState(items)
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
     [items]
   )
+  const handleReorder = (e: ItemType[]) => {
+    setItemsArr(e)
+  }
   return (
     <Container>
       <HeadingContainer>
@@ -95,9 +105,11 @@ const Category = ({ category }: { category: CategoryType }) => {
       {items.length > 0 ? (
         <>
           <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
-          {items.map((item) => (
-            <Item key={item.name} item={item} />
-          ))}
+          <Reorder.Group values={items} onReorder={handleReorder}>
+            {itemsArr.map((item) => (
+              <Item item={item} key={item.name} />
+            ))}
+          </Reorder.Group>
         </>
       ) : (
         <p>No items yet</p>

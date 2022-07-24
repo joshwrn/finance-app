@@ -7,17 +7,6 @@ import { ThemeProvider } from 'styled-components'
 import { darkTheme } from '@styles/theme'
 import { GlobalStyle } from '@styles/GlobalStyle'
 
-const BlurOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.73);
-  backdrop-filter: blur(40px);
-  z-index: 1;
-`
-
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -26,9 +15,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <Sidebar />
         <ComponentWrapper>
           <Component {...pageProps} />
-          <BlurOverlay />
-          <Image src={Background} layout="fill" />
         </ComponentWrapper>
+        <BlurOverlay />
+        <Image src={Background} layout="fill" />
       </PageWrapper>
     </ThemeProvider>
   )
@@ -40,6 +29,17 @@ const PageWrapper = styled.main`
   height: 100vh;
   position: relative;
   overflow: hidden;
+`
+
+const BlurOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.73);
+  backdrop-filter: blur(40px);
+  z-index: 1;
 `
 
 const ComponentWrapper = styled.div`

@@ -41,6 +41,24 @@ const items = [
     categoryId: '1',
     price: new Prisma.Decimal(2499.99),
   },
+  {
+    name: 'PS5',
+    id: '2',
+    link: 'https://www.sony.com/',
+    dateAdded: new Date(),
+    userId: '1',
+    categoryId: '1',
+    price: new Prisma.Decimal(699.99),
+  },
+  {
+    name: 'iPad',
+    id: '3',
+    link: 'https://www.apple.com/macbook-pro/',
+    dateAdded: new Date(),
+    userId: '1',
+    categoryId: '1',
+    price: new Prisma.Decimal(999.99),
+  },
 ]
 
 module.exports = {

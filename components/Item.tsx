@@ -4,8 +4,9 @@ import { ItemType } from '@customTypes/prismaData'
 import styled from 'styled-components'
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
 import { tableLayout } from './TableLabels'
+import { Reorder, motion } from 'framer-motion'
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,6 +16,7 @@ const Container = styled.div`
   padding: 10px 50px;
   background-color: var(--bg-item);
   border-radius: 16px;
+  backdrop-filter: blur(10px);
 
   a,
   p {
@@ -28,14 +30,16 @@ const Item = ({ item }: { item: ItemType }) => {
   const { name, price, dateAdded, datePurchased, link } = item
   const url = filterHost(link)
   return (
-    <Container>
-      <p>{name}</p>
-      <a href={link} target="_blank" rel="noopener noreferrer">
-        {url} {'->'}
-      </a>
-      <p>{numberToCurrency(price)}</p>
-      <p>{convertDate(datePurchased ?? dateAdded)}</p>
-    </Container>
+    <Reorder.Item value={item}>
+      <Container>
+        <p>{name}</p>
+        <a href={link} target="_blank" rel="noopener noreferrer">
+          {url} {'->'}
+        </a>
+        <p>{numberToCurrency(price)}</p>
+        <p>{convertDate(datePurchased ?? dateAdded)}</p>
+      </Container>
+    </Reorder.Item>
   )
 }
 
