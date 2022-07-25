@@ -1,9 +1,10 @@
 import prisma from '@lib/prisma'
 import styled from 'styled-components'
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
-import { CategoryType } from '@customTypes/prismaData'
+import { UserWithItems } from '~/prisma/types/prismaData'
 import Header from '@components/Header'
 import Category from '@components/Category'
+import { CategoryWithItems } from '~/prisma/types/prismaData'
 
 const Container = styled.div`
   display: flex;
@@ -18,15 +19,15 @@ const Container = styled.div`
   padding: 100px;
 `
 
-export default function Home({ user }) {
-  const userObj = JSON.parse(user)
-  const categories: CategoryType[] = userObj[0].categories
+export default function Home({ user }: { user: string }) {
+  const userObj: UserWithItems = JSON.parse(user)
+  const categories: CategoryWithItems[] = userObj.categories
   return (
     <Container>
       <Header>
         <h1>Wishlists</h1>
       </Header>
-      {categories.map((category) => (
+      {categories.map((category: CategoryWithItems) => (
         <Category key={category.id + 'wishlist'} category={category} />
       ))}
     </Container>
@@ -34,7 +35,7 @@ export default function Home({ user }) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const [data] = [
+  const [user] = [
     await prisma.user.findMany({
       include: {
         categories: {
@@ -46,6 +47,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   ]
 
   return {
-    props: { user: JSON.stringify(data) },
+    props: { user: JSON.stringify(user[0]) },
   }
 }

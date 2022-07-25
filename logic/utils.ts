@@ -1,4 +1,8 @@
-export const numberToCurrency = (num: number | string | undefined): string => {
+import { Decimal } from '@prisma/client/runtime'
+
+export const numberToCurrency = (
+  num: number | Decimal | string | undefined
+): string => {
   if (num === undefined) {
     return `$-`
   }
@@ -8,14 +12,15 @@ export const numberToCurrency = (num: number | string | undefined): string => {
   }).format(Number(num))
 }
 
-export const filterHost = (url: string) => {
+export const filterHost = (url: string | undefined | null) => {
+  if (!url) return `-`
   const host = new URL(url).host
   const remove = host.replace(/^www\./, '')
   const index = remove.indexOf('.')
   return remove.substring(0, index)
 }
 
-export const convertDate = (date: string) => {
+export const convertDate = (date: string | Date) => {
   const dateObj = new Date(date)
   return dateObj.toLocaleDateString('en-US', {
     month: 'short',

@@ -1,4 +1,4 @@
-import { CategoryType, ItemType } from '@customTypes/prismaData'
+import { CategoryWithItems } from '~/prisma/types/prismaData'
 import React, { useMemo, useState } from 'react'
 import Item from '@components/Item'
 import styled from 'styled-components'
@@ -7,6 +7,9 @@ import Header from '@components/Header'
 import { numberToCurrency } from '~/logic/utils'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import TableLabels from './TableLabels'
+import { Item as ItemType } from '@prisma/client'
+import useSWR from 'swr'
+import { fetcher } from '@lib/fetcher'
 
 const Container = styled.div`
   display: flex;
@@ -35,9 +38,9 @@ const HeadingContainer = styled.div`
   position: relative;
   margin: 30px 0;
   h3 {
-    margin-right: 30px;
   }
   > p {
+    margin-left: 30px;
     font-size: 17px;
     span {
       margin-left: 3px;
@@ -68,6 +71,7 @@ const NewItemButton = styled.button`
   margin-right: 7px;
   cursor: pointer;
   transition: box-shadow 0.5s;
+
   p {
     color: var(--fc-alternate);
     font-weight: 550;
@@ -78,9 +82,33 @@ const NewItemButton = styled.button`
   }
 `
 
-const Category = ({ category }: { category: CategoryType }) => {
+const Badge = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  background: var(--badge-primary);
+  top: -5px;
+  right: -19px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  p {
+    font-size: 12px;
+    color: var(--fc-primary);
+  }
+`
+
+const useItemCount = (id: string) => {
+  const { data, error } = useSWR(`/api/item/count?id=${id}`, fetcher)
+  return { count: data, isError: error, isLoading: !data && !error }
+}
+
+const Category = ({ category }: { category: CategoryWithItems }) => {
   const items: ItemType[] = category.items
   const [itemsArr, setItemsArr] = useState(items)
+  const { count, isError, isLoading } = useItemCount(category.id)
+
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
     [items]
@@ -93,6 +121,11 @@ const Category = ({ category }: { category: CategoryType }) => {
       <HeadingContainer>
         <Header>
           <h3>{category.name}</h3>
+          {!isLoading && !isError && count?.data > 0 && (
+            <Badge>
+              <p>{count.data}</p>
+            </Badge>
+          )}
         </Header>
         <p>
           Total <span>{numberToCurrency(total)}</span>

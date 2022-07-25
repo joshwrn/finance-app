@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { ItemType } from '@customTypes/prismaData'
 import styled from 'styled-components'
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
 import { tableLayout } from './TableLabels'
 import { Reorder, motion } from 'framer-motion'
+import { Item as ItemType } from '@prisma/client'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -33,9 +33,11 @@ const Item = ({ item }: { item: ItemType }) => {
     <Reorder.Item value={item}>
       <Container>
         <p>{name}</p>
-        <a href={link} target="_blank" rel="noopener noreferrer">
-          {url} {'->'}
-        </a>
+        {link && (
+          <a href={link} target="_blank" rel="noopener noreferrer">
+            {url} {'->'}
+          </a>
+        )}
         <p>{numberToCurrency(price)}</p>
         <p>{convertDate(datePurchased ?? dateAdded)}</p>
       </Container>

@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
+  position: relative;
   h1 {
     font-size: 50px;
   }
@@ -13,7 +14,7 @@ const Container = styled.div`
   }
 `
 
-const Header = ({ children }) => {
+const Header = ({ children }: { children: React.ReactNode }) => {
   return <Container>{children}</Container>
 }
 

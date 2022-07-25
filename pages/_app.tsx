@@ -29,6 +29,15 @@ const PageWrapper = styled.main`
   height: 100vh;
   position: relative;
   overflow: hidden;
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+  }
 `
 
 const BlurOverlay = styled.div`
@@ -48,7 +57,4 @@ const ComponentWrapper = styled.div`
   height: 100%;
   position: relative;
   overflow-y: auto;
-  img {
-    object-fit: cover;
-  }
 `
