@@ -4,6 +4,7 @@ import { IoWallet } from 'react-icons/io5'
 import Avatar from '@assets/image/avatar.jpg'
 import { FaClipboardList } from 'react-icons/fa'
 import Image from 'next/image'
+import { Divider } from './Divider'
 
 const Container = styled.div`
   display: flex;
@@ -29,12 +30,6 @@ const Container = styled.div`
       object-fit: cover;
     }
   }
-`
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: var(--bg-item);
 `
 
 const Sidebar = () => {

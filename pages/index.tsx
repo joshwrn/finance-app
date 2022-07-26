@@ -1,10 +1,10 @@
 import prisma from '@lib/prisma'
 import styled from 'styled-components'
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
-import { UserWithItems } from '~/prisma/types/prismaData'
+import { UserWithItems } from '@prisma/prismaTypes'
 import Header from '@components/Header'
 import Category from '@components/Category'
-import { CategoryWithItems } from '~/prisma/types/prismaData'
+import { CategoryWithItems } from '@prisma/prismaTypes'
 
 const Container = styled.div`
   display: flex;

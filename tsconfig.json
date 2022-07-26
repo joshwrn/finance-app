@@ -35,8 +35,8 @@
     "**/*.ts",
     "**/*.tsx",
     "styles/GlobalStyle.jsx",
-    "lib/fetcher.js",
-    "lib/prisma.js"
+    "lib/fetcher.ts",
+    "lib/prisma.ts"
   ],
   "exclude": ["node_modules"]
 }

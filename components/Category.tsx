@@ -1,4 +1,4 @@
-import { CategoryWithItems } from '~/prisma/types/prismaData'
+import { CategoryWithItems } from '@prisma/prismaTypes'
 import React, { useMemo, useState } from 'react'
 import Item from '@components/Item'
 import styled from 'styled-components'
@@ -10,6 +10,9 @@ import TableLabels from './TableLabels'
 import { Item as ItemType } from '@prisma/client'
 import useSWR from 'swr'
 import { fetcher } from '@lib/fetcher'
+import useModal from '@hooks/useModal'
+import CreateNewItemModal from './CreateNewItemModal'
+import NewItemButton from './Button'
 
 const Container = styled.div`
   display: flex;
@@ -56,32 +59,6 @@ const HeadingContainer = styled.div`
   }
 `
 
-const NewItemButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: fit-content;
-  height: fit-content;
-  padding: 10px 20px;
-  background-color: var(--btn-primary);
-  border-radius: 10px;
-  border: none;
-  margin-left: auto;
-  margin-right: 7px;
-  cursor: pointer;
-  transition: box-shadow 0.5s;
-
-  p {
-    color: var(--fc-alternate);
-    font-weight: 550;
-    font-size: 14px;
-  }
-  &:hover {
-    box-shadow: 0 0 15px rgb(77, 236, 185, 0.3);
-  }
-`
-
 const Badge = styled.div`
   display: flex;
   justify-content: center;
@@ -108,6 +85,7 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
   const items: ItemType[] = category.items
   const [itemsArr, setItemsArr] = useState(items)
   const { count, isError, isLoading } = useItemCount(category.id)
+  const { setIsOpen, isOpen, Modal } = useModal()
 
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
@@ -117,37 +95,42 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
     setItemsArr(e)
   }
   return (
-    <Container>
-      <HeadingContainer>
-        <Header>
-          <h3>{category.name}</h3>
-          {!isLoading && !isError && count?.data > 0 && (
-            <Badge>
-              <p>{count.data}</p>
-            </Badge>
-          )}
-        </Header>
-        <p>
-          Total <span>{numberToCurrency(total)}</span>
-        </p>
-        <NewItemButton>
-          <p>+ New Item</p>
-        </NewItemButton>
-        <HiOutlineDotsVertical size={30} />
-      </HeadingContainer>
-      {items.length > 0 ? (
-        <>
-          <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
-          <Reorder.Group values={items} onReorder={handleReorder}>
-            {itemsArr.map((item) => (
-              <Item item={item} key={item.name} />
-            ))}
-          </Reorder.Group>
-        </>
-      ) : (
-        <p>No items yet</p>
-      )}
-    </Container>
+    <>
+      <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+        <CreateNewItemModal />
+      </Modal>
+      <Container>
+        <HeadingContainer>
+          <Header>
+            <h3>{category.name}</h3>
+            {!isLoading && !isError && count?.data > 0 && (
+              <Badge>
+                <p>{count.data}</p>
+              </Badge>
+            )}
+          </Header>
+          <p>
+            Total <span>{numberToCurrency(total)}</span>
+          </p>
+          <NewItemButton onClick={() => setIsOpen(true)}>
+            <p>+ New Item</p>
+          </NewItemButton>
+          <HiOutlineDotsVertical size={30} />
+        </HeadingContainer>
+        {items.length > 0 ? (
+          <>
+            <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
+            <Reorder.Group values={items} onReorder={handleReorder}>
+              {itemsArr.map((item) => (
+                <Item item={item} key={item.name} />
+              ))}
+            </Reorder.Group>
+          </>
+        ) : (
+          <p>No items yet</p>
+        )}
+      </Container>
+    </>
   )
 }
 

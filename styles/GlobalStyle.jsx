@@ -34,7 +34,7 @@ export const GlobalStyle = createGlobalStyle`
   a {
     text-decoration: none;
   }
-  p {
+  p, label, a {
     color: var(--fc-tertiary);
   }
 
@@ -42,8 +42,22 @@ export const GlobalStyle = createGlobalStyle`
     color: var(--fc-primary);
   }
 
-  h3, h4, h5, h6 {
+  h3, h4, h5, h6, label {
     color: var(--fc-secondary);
+  }
+
+  input {
+    border: 1px solid var(--bg-item);
+    outline: none;
+    border-radius: 6px;
+    background: none;
+    height: 40px;
+    width: 100%;
+    padding-left: 12px;
+    transition: border-color .2s ease-in-out;
+    :focus {
+      border-color: var(--btn-primary);
+    }
   }
 
 textarea:focus,

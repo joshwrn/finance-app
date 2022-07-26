@@ -6,13 +6,14 @@ export const themeColors = {
   'white-50': 'rgba(255, 255, 255, .50)',
   'white-05': 'rgba(255, 255, 255, 0.05)',
   'black-35': 'rgba(0, 0, 0, 0.35)',
+  'black-75': 'rgba(0, 0, 0, 0.75)',
   'black-100': 'rgba(0, 0, 0, 1)',
 }
 
 export const darkTheme = {
   type: 'dark',
   background: {
-    primary: themeColors['black-100'],
+    primary: themeColors['black-75'],
     sidebar: themeColors['black-35'],
     item: themeColors['white-05'],
   },
