@@ -22,6 +22,7 @@ export const darkTheme = {
     secondary: themeColors['white-75'],
     tertiary: themeColors['white-50'],
     alternate: themeColors['black-100'],
+    error: themeColors['coral'],
   },
   button: {
     primary: themeColors['eucalyptus'],

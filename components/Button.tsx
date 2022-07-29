@@ -4,6 +4,7 @@ const MainButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   position: relative;
   width: fit-content;
   height: fit-content;
@@ -15,7 +16,6 @@ const MainButton = styled.button`
   margin-right: 7px;
   cursor: pointer;
   transition: box-shadow 0.5s;
-
   p {
     color: var(--fc-alternate);
     font-weight: 550;

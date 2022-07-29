@@ -14,7 +14,12 @@ export const numberToCurrency = (
 
 export const filterHost = (url: string | undefined | null) => {
   if (!url) return `-`
-  const host = new URL(url).host
+  let host
+  try {
+    host = new URL(url).hostname
+  } catch (err) {
+    return url
+  }
   const remove = host.replace(/^www\./, '')
   const index = remove.indexOf('.')
   return remove.substring(0, index)

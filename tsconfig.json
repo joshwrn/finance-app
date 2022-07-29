@@ -9,6 +9,7 @@
       "@lib/*": ["lib/*"],
       "@prisma/*": ["prisma/*"],
       "@logic/*": ["logic/*"],
+      "@axios/*": ["axios/*"],
       "@assets/*": ["assets/*"],
       "@hooks/*": ["hooks/*"],
       "@styles/*": ["styles/*"],

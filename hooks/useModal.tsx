@@ -36,6 +36,9 @@ const Backdrop = styled.div`
   backdrop-filter: blur(30px);
 `
 
+/* defining the modal component inside the hook causes 
+the exit animation to NOT be triggered */
+
 const ModalComp = ({
   children,
   isOpen,
@@ -43,7 +46,7 @@ const ModalComp = ({
 }: {
   children?: React.ReactNode
   isOpen: boolean
-  setIsOpen: any
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   return (
     <AnimatePresence>

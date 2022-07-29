@@ -8,18 +8,18 @@ import { numberToCurrency } from '~/logic/utils'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import TableLabels from './TableLabels'
 import { Item as ItemType } from '@prisma/client'
-import useSWR from 'swr'
-import { fetcher } from '@lib/fetcher'
 import useModal from '@hooks/useModal'
 import CreateNewItemModal from './CreateNewItemModal'
 import NewItemButton from './Button'
+import { useQuery } from '@tanstack/react-query'
+import { getItemCount } from '@axios/items'
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  height: 100%;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -76,28 +76,29 @@ const Badge = styled.div`
   }
 `
 
-const useItemCount = (id: string) => {
-  const { data, error } = useSWR(`/api/item/count?id=${id}`, fetcher)
-  return { count: data, isError: error, isLoading: !data && !error }
-}
-
 const Category = ({ category }: { category: CategoryWithItems }) => {
   const items: ItemType[] = category.items
   const [itemsArr, setItemsArr] = useState(items)
-  const { count, isError, isLoading } = useItemCount(category.id)
+  const {
+    isLoading,
+    isError,
+    data: count,
+  } = useQuery([`itemCountFor${category.id}`], () => getItemCount(category.id))
+
   const { setIsOpen, isOpen, Modal } = useModal()
 
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
     [items]
   )
+
   const handleReorder = (e: ItemType[]) => {
     setItemsArr(e)
   }
   return (
     <>
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <CreateNewItemModal />
+        <CreateNewItemModal setIsOpen={setIsOpen} categoryId={category.id} />
       </Modal>
       <Container>
         <HeadingContainer>
@@ -122,7 +123,7 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
             <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
             <Reorder.Group values={items} onReorder={handleReorder}>
               {itemsArr.map((item) => (
-                <Item item={item} key={item.name} />
+                <Item item={item} key={item.name + item.id} />
               ))}
             </Reorder.Group>
           </>

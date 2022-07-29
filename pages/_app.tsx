@@ -6,19 +6,24 @@ import Background from '@assets/image/bg.png'
 import { ThemeProvider } from 'styled-components'
 import { darkTheme } from '@styles/theme'
 import { GlobalStyle } from '@styles/GlobalStyle'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={darkTheme}>
-      <GlobalStyle />
-      <PageWrapper>
-        <Sidebar />
-        <ComponentWrapper>
-          <Component {...pageProps} />
-        </ComponentWrapper>
-        <BlurOverlay />
-        <Image src={Background} layout="fill" />
-      </PageWrapper>
+      <QueryClientProvider client={queryClient}>
+        <GlobalStyle />
+        <PageWrapper>
+          <Sidebar />
+          <ComponentWrapper>
+            <Component {...pageProps} />
+          </ComponentWrapper>
+          <BlurOverlay />
+          <Image src={Background} layout="fill" />
+        </PageWrapper>
+      </QueryClientProvider>
     </ThemeProvider>
   )
 }

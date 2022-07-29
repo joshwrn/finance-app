@@ -11,6 +11,7 @@ export const GlobalStyle = createGlobalStyle`
     --fc-secondary: ${({ theme }) => theme.fontColor.secondary};
     --fc-tertiary: ${({ theme }) => theme.fontColor.tertiary};
     --fc-alternate: ${({ theme }) => theme.fontColor.alternate};
+    --fc-error: ${({ theme }) => theme.fontColor.error};
 
     --btn-primary: ${({ theme }) => theme.button.primary};
 
@@ -34,7 +35,7 @@ export const GlobalStyle = createGlobalStyle`
   a {
     text-decoration: none;
   }
-  p, label, a {
+  p, a, input {
     color: var(--fc-tertiary);
   }
 
@@ -66,6 +67,14 @@ input:focus {
 }
 button:focus {
   outline: 0;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
 }
 html {
   -webkit-font-smoothing: antialiased;
