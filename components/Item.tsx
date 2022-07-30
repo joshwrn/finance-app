@@ -5,6 +5,10 @@ import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
 import { tableLayout } from './TableLabels'
 import { Reorder, motion } from 'framer-motion'
 import { Item as ItemType } from '@prisma/client'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtomDevtools } from 'jotai/devtools'
+import { currentItemState } from '@state/item'
+import { trashHoverState } from './Sidebar'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -27,10 +31,21 @@ const Container = styled(motion.div)`
 `
 
 const Item = ({ item }: { item: ItemType }) => {
-  const { name, price, dateAdded, datePurchased, link } = item
+  const { name, price, dateAdded, datePurchased, link, id } = item
   const url = filterHost(link)
+  const setCurrentItem = useSetAtom(currentItemState)
+  const trashHover = useAtomValue(trashHoverState)
+  const handleDragEnd = () => {
+    if (trashHover) console.log('delete item')
+    setCurrentItem('')
+  }
   return (
-    <Reorder.Item value={item}>
+    <Reorder.Item
+      drag
+      onDragStart={() => setCurrentItem(id)}
+      onDragEnd={handleDragEnd}
+      value={item}
+    >
       <Container>
         <p>{name}</p>
         {link && (

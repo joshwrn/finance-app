@@ -1,10 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { IoWallet } from 'react-icons/io5'
+import { IoWallet, IoTrash } from 'react-icons/io5'
 import Avatar from '@assets/image/avatar.jpg'
 import { FaClipboardList } from 'react-icons/fa'
 import Image from 'next/image'
 import { Divider } from './Divider'
+import { motion } from 'framer-motion'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { currentItemState } from '@state/item'
 
 const Container = styled.div`
   display: flex;
@@ -13,7 +16,7 @@ const Container = styled.div`
   height: 100vh;
   background-color: var(--bg-sidebar);
   position: relative;
-  z-index: 5;
+  z-index: 2;
   padding: 50px 10px;
   align-items: center;
   gap: 30px;
@@ -32,7 +35,14 @@ const Container = styled.div`
   }
 `
 
+const DragContainer = styled(motion.div)``
+
+export const trashHoverState = atom(false)
+
 const Sidebar = () => {
+  const currentItem = useAtomValue(currentItemState)
+  const setTrashHover = useSetAtom(trashHoverState)
+
   return (
     <Container>
       <div className="sb-img-container">
@@ -41,6 +51,14 @@ const Sidebar = () => {
       <Divider />
       <FaClipboardList size={26} color={'var(--fc-secondary)'} />
       <IoWallet size={26} color={'var(--fc-secondary)'} />
+      {currentItem !== '' && (
+        <DragContainer
+          onMouseOver={() => setTrashHover(true)}
+          onMouseUp={() => setTrashHover(false)}
+        >
+          <IoTrash size={26} color={'var(--fc-secondary)'} />
+        </DragContainer>
+      )}
     </Container>
   )
 }

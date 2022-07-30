@@ -7,22 +7,25 @@ import { ThemeProvider } from 'styled-components'
 import { darkTheme } from '@styles/theme'
 import { GlobalStyle } from '@styles/GlobalStyle'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Provider } from 'jotai'
 
 const queryClient = new QueryClient()
 
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const { initialState } = pageProps
   return (
     <ThemeProvider theme={darkTheme}>
       <QueryClientProvider client={queryClient}>
-        <GlobalStyle />
-        <PageWrapper>
-          <Sidebar />
-          <ComponentWrapper>
-            <Component {...pageProps} />
-          </ComponentWrapper>
-          <BlurOverlay />
-          <Image src={Background} layout="fill" />
-        </PageWrapper>
+        <Provider initialValues={initialState}>
+          <GlobalStyle />
+          <PageWrapper>
+            <ComponentWrapper>
+              <Component {...pageProps} />
+            </ComponentWrapper>
+            <BlurOverlay />
+            <Image src={Background} layout="fill" />
+          </PageWrapper>
+        </Provider>
       </QueryClientProvider>
     </ThemeProvider>
   )
@@ -62,4 +65,5 @@ const ComponentWrapper = styled.div`
   height: 100%;
   position: relative;
   overflow-y: auto;
+  z-index: 6;
 `

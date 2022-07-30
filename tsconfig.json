@@ -12,6 +12,7 @@
       "@axios/*": ["axios/*"],
       "@assets/*": ["assets/*"],
       "@hooks/*": ["hooks/*"],
+      "@state/*": ["state/*"],
       "@styles/*": ["styles/*"],
       "@contexts/*": ["contexts/*"],
       "~/*": ["*"]
