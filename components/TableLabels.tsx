@@ -27,7 +27,7 @@ const TableLabels = ({ labels }: { labels: string[] }) => {
   return (
     <Container>
       {labels.map((label) => {
-        return <p key={label + 'table-label'}>{label}</p>
+        return <p key={label + `table-label`}>{label}</p>
       })}
     </Container>
   )

@@ -1,20 +1,23 @@
-import { CategoryWithItems } from '@prisma/prismaTypes'
-import React, { useMemo, useState } from 'react'
-import Item from '~/components/Item'
-import styled from 'styled-components'
+import { getItemCount } from '@axios/items'
+import useModal from '@hooks/useModal'
+import type { Item as ItemType } from '@prisma/client'
+import type { CategoryWithItems } from '@prisma/prismaTypes'
+import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
-import Header from '~/components/Header'
-import { numberToCurrency } from '~/logic/utils'
+import React, { useMemo, useState } from 'react'
+import type { FC } from 'react'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import { MdOutlineDragIndicator } from 'react-icons/md'
-import TableLabels from './TableLabels'
-import ItemGroup from './ItemGroup'
-import type { Item as ItemType } from '@prisma/client'
-import useModal from '@hooks/useModal'
-import CreateNewItemModal from './CreateNewItemModal'
+import styled from 'styled-components'
+
+import Header from '~/components/Header'
+import Item from '~/components/Item'
+import { numberToCurrency } from '~/logic/utils'
+
 import NewItemButton from './Button'
-import { useQuery } from '@tanstack/react-query'
-import { getItemCount } from '@axios/items'
+import CreateNewItemModal from './CreateNewItemModal'
+import ItemGroup from './ItemGroup'
+import TableLabels from './TableLabels'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -77,7 +80,7 @@ interface ItemWithGroup extends ItemType {
 }
 
 const Category = ({ category }: { category: CategoryWithItems }) => {
-  const items: ItemType[] = category.items
+  const { items } = category
   const [itemsArr, setItemsArr] = useState<ItemWithGroup[]>(items)
   const {
     isLoading,
@@ -87,7 +90,7 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
   const { setIsOpen, isOpen, Modal } = useModal()
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
-    [itemsArr]
+    [itemsArr],
   )
 
   const controls = useDragControls()
@@ -146,7 +149,7 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
       </HeadingContainer>
       {items.length > 0 ? (
         <>
-          <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
+          <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence>
             {itemsArr.map((item: ItemWithGroup) => {
               if (!item.isGroup) {
@@ -160,7 +163,7 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
               } else if (item.isGroup && item.items) {
                 return (
                   <ItemGroup
-                    key={item.name + 'group'}
+                    key={item.name + `group`}
                     items={item.items}
                     setItemsArr={setItemsArr}
                   />

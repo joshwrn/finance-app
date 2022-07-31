@@ -1,14 +1,15 @@
-import React from 'react'
-
-import styled from 'styled-components'
-import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
-import { tableLayout } from './TableLabels'
+import type { SetState } from '@customTypes'
+import type { Item as ItemType } from '@prisma/client'
 import { motion } from 'framer-motion'
-import { Item as ItemType } from '@prisma/client'
 import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
+import React from 'react'
+import styled from 'styled-components'
+
+import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
 import { currentItemState, currentHoverState } from '~/state/drag'
-import { SetState } from '@customTypes'
+
+import { tableLayout } from './TableLabels'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -40,7 +41,7 @@ const itemVariants = {
     opacity: isOverTrash ? 0.5 : 1,
     scale: isOverTrash ? 0.7 : 1,
     transition: {
-      type: 'spring',
+      type: `spring`,
       duration: 0.5,
     },
   }),
@@ -64,10 +65,10 @@ const Item = ({
   const [currentItem, setCurrentItem] = useAtom(currentItemState)
   const [currentHover, setCurrentHover] = useAtom(currentHoverState)
   const isCurrentItem = currentItem === id
-  const isOverTrash = currentHover === 'trash' && isCurrentItem
+  const isOverTrash = currentHover === `trash` && isCurrentItem
 
   const handleDragEnd = () => {
-    if (currentHover === 'trash') {
+    if (currentHover === `trash`) {
       setItemsArr((itemsArr) => itemsArr.filter((item) => item.id !== id))
     }
     setCurrentItem(null)
@@ -77,9 +78,9 @@ const Item = ({
   return (
     <Container
       variants={itemVariants}
-      initial={'initial'}
-      animate={'animate'}
-      exit={'exit'}
+      initial={`initial`}
+      animate={`animate`}
+      exit={`exit`}
       custom={isOverTrash}
       layout={true}
       drag
@@ -87,7 +88,7 @@ const Item = ({
       onDragStart={() => setCurrentItem(id)}
       onDragEnd={handleDragEnd}
       whileDrag={{
-        pointerEvents: 'none',
+        pointerEvents: `none`,
         zIndex: 5,
       }}
     >
@@ -99,7 +100,7 @@ const Item = ({
           target="_blank"
           rel="noopener noreferrer"
         >
-          {url} {'->'}
+          {url} {`->`}
         </a>
       )}
       <p>{numberToCurrency(price)}</p>

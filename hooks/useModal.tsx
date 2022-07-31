@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
-import { Portal } from 'react-portal'
 import { motion, AnimatePresence } from 'framer-motion'
+import type React from 'react'
+import { useState } from 'react'
+import { Portal } from 'react-portal'
+import styled from 'styled-components'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -56,7 +57,7 @@ const ModalComp = ({
             animate={{ opacity: 1 }}
             initial={{ opacity: 0 }}
             exit={{ opacity: 0 }}
-            key={'modal'}
+            key={`modal`}
           >
             <ModalContainer>{children}</ModalContainer>
             <Backdrop onClick={() => setIsOpen(false)} />

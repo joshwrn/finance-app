@@ -1,8 +1,9 @@
-import React from 'react'
-import styled from 'styled-components'
-import { IoTrash } from 'react-icons/io5'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAtom, useAtomValue } from 'jotai'
+import React from 'react'
+import { IoTrash } from 'react-icons/io5'
+import styled from 'styled-components'
+
 import { currentHoverState, currentItemState } from '~/state/drag'
 
 const DragContainer = styled(motion.div)`
@@ -28,7 +29,7 @@ const trashVariants = {
     y: currentHover ? [0, -20, 150] : 150,
     scale: currentHover ? [0.5, 1.3, 0] : 0,
     transition: {
-      type: 'spring',
+      type: `spring`,
       stiffness: currentHover ? 20 : 100,
     },
   }),
@@ -41,13 +42,13 @@ const TrashIcon = () => {
     <AnimatePresence>
       {currentItem && (
         <DragContainer
-          onMouseOver={() => setCurrentHover('trash')}
+          onMouseOver={() => setCurrentHover(`trash`)}
           onMouseLeave={() => setCurrentHover(null)}
           variants={trashVariants}
-          initial={'initial'}
-          animate={'animate'}
-          exit={'exit'}
-          custom={currentHover === 'trash'}
+          initial={`initial`}
+          animate={`animate`}
+          exit={`exit`}
+          custom={currentHover === `trash`}
         >
           <IoTrash size={26} />
         </DragContainer>

@@ -1,13 +1,12 @@
-import type { AppProps } from 'next/app'
-import Sidebar from '~/components/Sidebar/Sidebar'
-import styled from 'styled-components'
-import Image from 'next/image'
 import Background from '@assets/image/bg.png'
-import { ThemeProvider } from 'styled-components'
-import { darkTheme } from '@styles/theme'
 import { GlobalStyle } from '@styles/GlobalStyle'
+import { darkTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Provider } from 'jotai'
+import type { AppProps } from 'next/app'
+import Image from 'next/image'
+import { ThemeProvider } from 'styled-components'
+import styled from 'styled-components'
 
 const queryClient = new QueryClient()
 

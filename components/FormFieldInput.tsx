@@ -1,5 +1,5 @@
-import styled, { css } from 'styled-components'
 import { Field } from 'formik'
+import styled, { css } from 'styled-components'
 
 const FieldContainer = styled.div<{ error?: boolean }>`
   display: flex;
@@ -43,7 +43,7 @@ const Input = ({
   title,
   field,
   placeholder,
-  fieldType = 'text',
+  fieldType = `text`,
 }: {
   errors?: string
   touched?: boolean

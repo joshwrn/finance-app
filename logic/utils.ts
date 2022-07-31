@@ -1,7 +1,7 @@
-import { Decimal } from '@prisma/client/runtime'
+import type { Decimal } from '@prisma/client/runtime'
 
 export const numberToCurrency = (
-  num: number | Decimal | string | undefined
+  num: Decimal | number | string | undefined,
 ): string => {
   if (num === undefined) {
     return `$-`
@@ -12,7 +12,7 @@ export const numberToCurrency = (
   }).format(Number(num))
 }
 
-export const filterHost = (url: string | undefined | null) => {
+export const filterHost = (url: string | null | undefined) => {
   if (!url) return `-`
   let host
   try {
@@ -20,16 +20,16 @@ export const filterHost = (url: string | undefined | null) => {
   } catch (err) {
     return url
   }
-  const remove = host.replace(/^www\./, '')
-  const index = remove.indexOf('.')
+  const remove = host.replace(/^www\./, ``)
+  const index = remove.indexOf(`.`)
   return remove.substring(0, index)
 }
 
-export const convertDate = (date: string | Date) => {
+export const convertDate = (date: Date | string) => {
   const dateObj = new Date(date)
-  return dateObj.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+  return dateObj.toLocaleDateString(`en-US`, {
+    month: `short`,
+    day: `numeric`,
+    year: `numeric`,
   })
 }

@@ -1,11 +1,12 @@
-import { Divider } from './Divider'
-import styled from 'styled-components'
-import { Formik, Form } from 'formik'
-import MainButton from './Button'
 import { useMutation } from '@tanstack/react-query'
 import axios from 'axios'
-import * as Yup from 'yup'
+import { Formik, Form } from 'formik'
 import { useEffect } from 'react'
+import styled from 'styled-components'
+import * as Yup from 'yup'
+
+import MainButton from './Button'
+import { Divider } from './Divider'
 import Input from './FormFieldInput'
 
 const Container = styled.div`
@@ -51,11 +52,11 @@ interface MutationArgs extends InputValues {
 
 const ItemInputSchema = Yup.object().shape({
   name: Yup.string()
-    .min(2, 'Too Short!')
-    .max(50, 'Too Long!')
-    .required('Required'),
-  link: Yup.string().url('Invalid URL'),
-  price: Yup.number().required('Required'),
+    .min(2, `Too Short!`)
+    .max(50, `Too Long!`)
+    .required(`Required`),
+  link: Yup.string().url(`Invalid URL`),
+  price: Yup.number().required(`Required`),
 })
 
 const CreateNewItemModal = ({
@@ -80,12 +81,12 @@ const CreateNewItemModal = ({
       <Divider />
       <Formik
         initialValues={{
-          name: '',
-          link: '',
-          price: '',
+          name: ``,
+          link: ``,
+          price: ``,
         }}
         onSubmit={(values: InputValues) => {
-          mutation.mutate({ ...values, categoryId, userId: '1' })
+          mutation.mutate({ ...values, categoryId, userId: `1` })
         }}
         validationSchema={ItemInputSchema}
       >

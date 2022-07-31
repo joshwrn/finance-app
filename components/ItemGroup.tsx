@@ -1,9 +1,10 @@
-import React from 'react'
-import { Item as ItemType } from '@prisma/client'
-import styled from 'styled-components'
+import type { SetState } from '@customTypes'
+import type { Item as ItemType } from '@prisma/client'
 import { AnimatePresence } from 'framer-motion'
+import React from 'react'
+import styled from 'styled-components'
+
 import Item from './Item'
-import { SetState } from '@customTypes'
 
 const Container = styled.div`
   display: flex;

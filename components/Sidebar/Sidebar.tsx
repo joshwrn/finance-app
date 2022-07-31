@@ -1,9 +1,10 @@
-import React from 'react'
-import styled from 'styled-components'
-import { IoWallet } from 'react-icons/io5'
 import Avatar from '@assets/image/avatar.jpg'
-import { FaClipboardList } from 'react-icons/fa'
 import Image from 'next/image'
+import React from 'react'
+import { FaClipboardList } from 'react-icons/fa'
+import { IoWallet } from 'react-icons/io5'
+import styled from 'styled-components'
+
 import { Divider } from '../Divider'
 import TrashIcon from './TrashIcon'
 
@@ -50,7 +51,7 @@ const Sidebar = () => {
     <Container>
       <Top>
         <div className="sb-img-container">
-          <Image src={Avatar} layout={'fixed'} width={40} height={40} />
+          <Image src={Avatar} layout={`fixed`} width={40} height={40} />
         </div>
         <Divider />
         <FaClipboardList size={26} />
