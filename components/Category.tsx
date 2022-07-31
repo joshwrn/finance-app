@@ -1,20 +1,22 @@
 import { CategoryWithItems } from '@prisma/prismaTypes'
 import React, { useMemo, useState } from 'react'
-import Item from '@components/Item'
+import Item from '~/components/Item'
 import styled from 'styled-components'
-import { Reorder } from 'framer-motion'
-import Header from '@components/Header'
+import { AnimatePresence, motion, useDragControls } from 'framer-motion'
+import Header from '~/components/Header'
 import { numberToCurrency } from '~/logic/utils'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
+import { MdOutlineDragIndicator } from 'react-icons/md'
 import TableLabels from './TableLabels'
-import { Item as ItemType } from '@prisma/client'
+import ItemGroup from './ItemGroup'
+import type { Item as ItemType } from '@prisma/client'
 import useModal from '@hooks/useModal'
 import CreateNewItemModal from './CreateNewItemModal'
 import NewItemButton from './Button'
 import { useQuery } from '@tanstack/react-query'
 import { getItemCount } from '@axios/items'
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -25,13 +27,7 @@ const Container = styled.div`
   position: relative;
   padding-bottom: 50px;
   border-bottom: 1px solid var(--bg-item);
-  ul {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
 `
-
 const HeadingContainer = styled.div`
   display: flex;
   align-items: center;
@@ -58,7 +54,6 @@ const HeadingContainer = styled.div`
     }
   }
 `
-
 const Badge = styled.div`
   display: flex;
   justify-content: center;
@@ -76,62 +71,108 @@ const Badge = styled.div`
   }
 `
 
+interface ItemWithGroup extends ItemType {
+  isGroup?: boolean
+  items?: ItemType[]
+}
+
 const Category = ({ category }: { category: CategoryWithItems }) => {
   const items: ItemType[] = category.items
-  const [itemsArr, setItemsArr] = useState(items)
+  const [itemsArr, setItemsArr] = useState<ItemWithGroup[]>(items)
   const {
     isLoading,
     isError,
     data: count,
   } = useQuery([`itemCountFor${category.id}`], () => getItemCount(category.id))
-
   const { setIsOpen, isOpen, Modal } = useModal()
-
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
-    [items]
+    [itemsArr]
   )
 
-  const handleReorder = (e: ItemType[]) => {
-    setItemsArr(e)
-  }
+  const controls = useDragControls()
+
+  // const itemsWithGroup: ItemWithGroup[] = useMemo(() => {
+  //   const groups: any[] = []
+  //   itemsArr.forEach((item) => {
+  //     if (item.group) {
+  //       const group = groups.findIndex((group) => group.name === item.group)
+  //       if (group === -1) {
+  //         groups.push({
+  //           name: item.group,
+  //           items: [item],
+  //           isGroup: true,
+  //         })
+  //       } else {
+  //         groups[group].items.push(item)
+  //       }
+  //     } else {
+  //       groups.push(item)
+  //     }
+  //   })
+  //   return groups
+  // }, [itemsArr])
+
   return (
-    <>
+    <Container
+      dragListener={false}
+      dragControls={controls}
+      drag
+      dragSnapToOrigin
+      whileDrag={{ scale: 0.5, opacity: 0.5 }}
+    >
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <CreateNewItemModal setIsOpen={setIsOpen} categoryId={category.id} />
       </Modal>
-      <Container>
-        <HeadingContainer>
-          <Header>
-            <h3>{category.name}</h3>
-            {!isLoading && !isError && count?.data > 0 && (
-              <Badge>
-                <p>{count.data}</p>
-              </Badge>
-            )}
-          </Header>
-          <p>
-            Total <span>{numberToCurrency(total)}</span>
-          </p>
-          <NewItemButton onClick={() => setIsOpen(true)}>
-            <p>+ New Item</p>
-          </NewItemButton>
-          <HiOutlineDotsVertical size={30} />
-        </HeadingContainer>
-        {items.length > 0 ? (
-          <>
-            <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
-            <Reorder.Group values={items} onReorder={handleReorder}>
-              {itemsArr.map((item) => (
-                <Item item={item} key={item.name + item.id} />
-              ))}
-            </Reorder.Group>
-          </>
-        ) : (
-          <p>No items yet</p>
-        )}
-      </Container>
-    </>
+      <HeadingContainer>
+        <Header>
+          <h3>{category.name}</h3>
+          {!isLoading && !isError && count?.data > 0 && (
+            <Badge>
+              <p>{count.data}</p>
+            </Badge>
+          )}
+        </Header>
+        <p>
+          Total <span>{numberToCurrency(total)}</span>
+        </p>
+        <NewItemButton onClick={() => setIsOpen(true)}>
+          <p>+ New Item</p>
+        </NewItemButton>
+        <MdOutlineDragIndicator
+          size={30}
+          onPointerDown={(e) => controls.start(e)}
+        />
+      </HeadingContainer>
+      {items.length > 0 ? (
+        <>
+          <TableLabels labels={['Item', 'Link', 'Price', 'Date Added']} />
+          <AnimatePresence>
+            {itemsArr.map((item: ItemWithGroup) => {
+              if (!item.isGroup) {
+                return (
+                  <Item
+                    item={item}
+                    key={item.name + item.id}
+                    setItemsArr={setItemsArr}
+                  />
+                )
+              } else if (item.isGroup && item.items) {
+                return (
+                  <ItemGroup
+                    key={item.name + 'group'}
+                    items={item.items}
+                    setItemsArr={setItemsArr}
+                  />
+                )
+              }
+            })}
+          </AnimatePresence>
+        </>
+      ) : (
+        <p>No items yet</p>
+      )}
+    </Container>
   )
 }
 

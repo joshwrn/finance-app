@@ -15,6 +15,7 @@
       "@state/*": ["state/*"],
       "@styles/*": ["styles/*"],
       "@contexts/*": ["contexts/*"],
+      "@customTypes": ["customTypes"],
       "~/*": ["*"]
     },
     "allowJs": true,

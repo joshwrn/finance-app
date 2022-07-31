@@ -1,5 +1,5 @@
 import type { AppProps } from 'next/app'
-import Sidebar from '@components/Sidebar'
+import Sidebar from '~/components/Sidebar/Sidebar'
 import styled from 'styled-components'
 import Image from 'next/image'
 import Background from '@assets/image/bg.png'

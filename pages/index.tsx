@@ -2,10 +2,10 @@ import prisma from '@lib/prisma'
 import styled from 'styled-components'
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
 import { UserWithItems } from '@prisma/prismaTypes'
-import Header from '@components/Header'
-import Category from '@components/Category'
+import Header from '~/components/Header'
+import Category from '~/components/Category'
 import { CategoryWithItems } from '@prisma/prismaTypes'
-import Sidebar from '@components/Sidebar'
+import Sidebar from '~/components/Sidebar/Sidebar'
 
 const Container = styled.div`
   display: flex;
@@ -16,9 +16,10 @@ const Container = styled.div`
   align-items: flex-start;
   position: relative;
   overflow: visible;
-  z-index: 0;
+  z-index: 1;
   color: rgba(255, 255, 255, 0.7);
   padding: 100px;
+  padding-left: 180px;
 `
 
 export default function Home({ user }: { user: string }) {

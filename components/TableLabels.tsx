@@ -6,14 +6,20 @@ export const tableLayout = css`
   justify-content: space-between;
   p,
   a {
-    width: 100px;
+    width: 100%;
+  }
+  > p {
+    :last-of-type {
+      width: fit-content;
+      white-space: nowrap;
+    }
   }
 `
-
 const Container = styled.div`
   width: 100%;
   height: fit-content;
   padding: 0 50px;
+  user-select: none;
   ${tableLayout}
 `
 

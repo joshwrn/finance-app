@@ -3,12 +3,12 @@ import React from 'react'
 import styled from 'styled-components'
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
 import { tableLayout } from './TableLabels'
-import { Reorder, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Item as ItemType } from '@prisma/client'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
-import { currentItemState } from '@state/item'
-import { trashHoverState } from './Sidebar'
+import { currentItemState, currentHoverState } from '~/state/drag'
+import { SetState } from '@customTypes'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -21,42 +21,90 @@ const Container = styled(motion.div)`
   background-color: var(--bg-item);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-
+  a {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
   a,
   p {
     color: var(--fc-secondary);
   }
-
   ${tableLayout}
 `
 
-const Item = ({ item }: { item: ItemType }) => {
+const itemVariants = {
+  initial: {
+    opacity: 0,
+  },
+  animate: (isOverTrash: boolean) => ({
+    opacity: isOverTrash ? 0.5 : 1,
+    scale: isOverTrash ? 0.7 : 1,
+    transition: {
+      type: 'spring',
+      duration: 0.5,
+    },
+  }),
+  exit: (isOverTrash: boolean) => ({
+    opacity: 0,
+    transition: {
+      duration: 0.2,
+    },
+  }),
+}
+
+const Item = ({
+  item,
+  setItemsArr,
+}: {
+  item: ItemType
+  setItemsArr: SetState<ItemType[]>
+}) => {
   const { name, price, dateAdded, datePurchased, link, id } = item
   const url = filterHost(link)
-  const setCurrentItem = useSetAtom(currentItemState)
-  const trashHover = useAtomValue(trashHoverState)
+  const [currentItem, setCurrentItem] = useAtom(currentItemState)
+  const [currentHover, setCurrentHover] = useAtom(currentHoverState)
+  const isCurrentItem = currentItem === id
+  const isOverTrash = currentHover === 'trash' && isCurrentItem
+
   const handleDragEnd = () => {
-    if (trashHover) console.log('delete item')
-    setCurrentItem('')
+    if (currentHover === 'trash') {
+      setItemsArr((itemsArr) => itemsArr.filter((item) => item.id !== id))
+    }
+    setCurrentItem(null)
+    setCurrentHover(null)
   }
+
   return (
-    <Reorder.Item
+    <Container
+      variants={itemVariants}
+      initial={'initial'}
+      animate={'animate'}
+      exit={'exit'}
+      custom={isOverTrash}
+      layout={true}
       drag
+      dragSnapToOrigin={isOverTrash ? false : true}
       onDragStart={() => setCurrentItem(id)}
       onDragEnd={handleDragEnd}
-      value={item}
+      whileDrag={{
+        pointerEvents: 'none',
+        zIndex: 5,
+      }}
     >
-      <Container>
-        <p>{name}</p>
-        {link && (
-          <a href={link} target="_blank" rel="noopener noreferrer">
-            {url} {'->'}
-          </a>
-        )}
-        <p>{numberToCurrency(price)}</p>
-        <p>{convertDate(datePurchased ?? dateAdded)}</p>
-      </Container>
-    </Reorder.Item>
+      <p>{name}</p>
+      {link && (
+        <a
+          href={link}
+          onClick={(e) => isCurrentItem && e.preventDefault()}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {url} {'->'}
+        </a>
+      )}
+      <p>{numberToCurrency(price)}</p>
+      <p>{convertDate(datePurchased ?? dateAdded)}</p>
+    </Container>
   )
 }
 

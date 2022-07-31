@@ -30,6 +30,9 @@ export const darkTheme = {
   badge: {
     primary: themeColors['coral'],
   },
+  color: {
+    ...themeColors,
+  },
 }
 
 export const lightTheme = {

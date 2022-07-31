@@ -16,6 +16,9 @@ export const GlobalStyle = createGlobalStyle`
     --btn-primary: ${({ theme }) => theme.button.primary};
 
     --badge-primary: ${({ theme }) => theme.badge.primary};
+
+    --color-coral: ${({ theme }) => theme.color.coral};
+    --color-eucalyptus: ${({ theme }) => theme.color.eucalyptus};
 }
 
 * {
@@ -41,10 +44,12 @@ export const GlobalStyle = createGlobalStyle`
 
   h1, h2 {
     color: var(--fc-primary);
+    user-select: none;
   }
 
   h3, h4, h5, h6, label {
     color: var(--fc-secondary);
+    user-select: none;
   }
 
   input {
@@ -61,6 +66,9 @@ export const GlobalStyle = createGlobalStyle`
     }
   }
 
+  button {
+    user-select: none;
+  }
 textarea:focus,
 input:focus {
   outline: none;
