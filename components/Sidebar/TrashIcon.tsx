@@ -7,11 +7,23 @@ import styled from 'styled-components'
 import { currentHoverState, currentItemState } from '~/state/drag'
 
 const DragContainer = styled(motion.div)`
-  svg {
-    transition: fill 0.2s ease-in-out;
-    :hover {
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  width: 90px;
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  :hover {
+    svg {
       fill: var(--color-coral);
     }
+  }
+  svg {
+    transition: fill 0.2s ease-in-out;
   }
 `
 
@@ -50,7 +62,7 @@ const TrashIcon = () => {
           exit={`exit`}
           custom={currentHover === `trash`}
         >
-          <IoTrash size={26} />
+          <IoTrash size={36} />
         </DragContainer>
       )}
     </AnimatePresence>

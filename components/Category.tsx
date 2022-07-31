@@ -5,8 +5,6 @@ import type { CategoryWithItems } from '@prisma/prismaTypes'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import React, { useMemo, useState } from 'react'
-import type { FC } from 'react'
-import { HiOutlineDotsVertical } from 'react-icons/hi'
 import { MdOutlineDragIndicator } from 'react-icons/md'
 import styled from 'styled-components'
 
@@ -122,7 +120,12 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
       dragControls={controls}
       drag
       dragSnapToOrigin
-      whileDrag={{ scale: 0.5, opacity: 0.5 }}
+      whileDrag={{
+        scale: 0.5,
+        opacity: 0.5,
+        translateX: `25%`,
+        translateY: `-20%`,
+      }}
     >
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <CreateNewItemModal setIsOpen={setIsOpen} categoryId={category.id} />

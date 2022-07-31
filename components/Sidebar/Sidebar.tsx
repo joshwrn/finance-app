@@ -57,9 +57,7 @@ const Sidebar = () => {
         <FaClipboardList size={26} />
         <IoWallet size={26} />
       </Top>
-      <Bottom>
-        <TrashIcon />
-      </Bottom>
+      <Bottom></Bottom>
     </Container>
   )
 }

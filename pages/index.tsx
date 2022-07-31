@@ -3,6 +3,7 @@ import type { UserWithItems, CategoryWithItems } from '@prisma/prismaTypes'
 import type { GetServerSideProps } from 'next'
 import styled from 'styled-components'
 
+import ActionBar from '~/components/ActionBar'
 import Category from '~/components/Category'
 import Header from '~/components/Header'
 import Sidebar from '~/components/Sidebar/Sidebar'
@@ -28,6 +29,7 @@ export default function Home({ user }: { user: string }) {
   return (
     <>
       <Sidebar />
+      <ActionBar />
       <Container>
         <Header>
           <h1>Wishlists</h1>
