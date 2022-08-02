@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
 import React from 'react'
+import { BiCategory } from 'react-icons/bi'
 import styled from 'styled-components'
 
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
@@ -31,6 +32,16 @@ const Container = styled(motion.div)`
     color: var(--fc-secondary);
   }
   ${tableLayout}
+`
+const NameContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  svg {
+    fill: var(--fc-tertiary);
+  }
 `
 
 const itemVariants = {
@@ -68,7 +79,7 @@ const Item = ({
   const isOverTrash = currentHover === `trash` && isCurrentItem
 
   const handleDragEnd = () => {
-    if (currentHover === `trash`) {
+    if (isOverTrash) {
       setItemsArr((itemsArr) => itemsArr.filter((item) => item.id !== id))
     }
     setCurrentItem(null)
@@ -92,18 +103,23 @@ const Item = ({
         zIndex: 5,
       }}
     >
-      <p>{name}</p>
-      {link && (
-        <a
-          href={link}
-          onClick={(e) => isCurrentItem && e.preventDefault()}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {url} {`->`}
-        </a>
-      )}
-      <p>{numberToCurrency(price)}</p>
+      <NameContainer>
+        {item.group && <BiCategory size={16} />}
+        <p>{name}</p>
+      </NameContainer>
+      <div>
+        {link && (
+          <a
+            href={link}
+            onClick={(e) => isCurrentItem && e.preventDefault()}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {url} {`->`}
+          </a>
+        )}
+      </div>
+      {!item.group && <p>{numberToCurrency(price)}</p>}
       <p>{convertDate(datePurchased ?? dateAdded)}</p>
     </Container>
   )

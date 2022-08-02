@@ -22,17 +22,32 @@ model User {
     salary     Int?
     categories Category[]
     items      Item[]
+    SubItem    SubItem[]
+}
+
+model SubItem {
+    id         String   @id @default(cuid())
+    name       String
+    price      Decimal?
+    dateAdded  DateTime @default(now())
+    link       String?
+    Item       Item?    @relation(fields: [itemId], references: [id])
+    itemId     String?
+    categoryId String
+    user       User     @relation(fields: [userId], references: [id])
+    userId     String
 }
 
 model Item {
     id            String    @id @default(cuid())
     name          String
-    price         Decimal
+    price         Decimal?
     dateAdded     DateTime  @default(now())
     datePurchased DateTime?
     link          String?
     category      Category  @relation(fields: [categoryId], references: [id])
-    group         String?
+    group         Boolean?
+    subItems      SubItem[]
     categoryId    String
     user          User      @relation(fields: [userId], references: [id])
     userId        String

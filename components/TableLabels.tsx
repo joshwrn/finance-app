@@ -4,8 +4,9 @@ import styled, { css } from 'styled-components'
 export const tableLayout = css`
   display: flex;
   justify-content: space-between;
-  p,
-  a {
+  > p,
+  > a,
+  > div {
     width: 100%;
   }
   > p {

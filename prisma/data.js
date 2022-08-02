@@ -31,16 +31,17 @@ const categories = [
   },
 ]
 
-const items = [
-  {
+const subItems = [
+   {
     name: 'Macbook Pro',
-    id: '1',
+    id: '786789978',
     link: 'https://www.apple.com/macbook-pro/',
     dateAdded: new Date(),
     userId: '1',
     categoryId: '1',
     price: new Prisma.Decimal(2499.99),
     group: 'laptop',
+    itemId: '1',
   },
   {
     name: 'Macbook Air',
@@ -51,8 +52,8 @@ const items = [
     categoryId: '1',
     price: new Prisma.Decimal(1999.99),
     group: 'laptop',
-  },
-  {
+    itemId: '1',
+  }, {
     name: 'HP Spectre x360',
     id: '29840fdaskj',
     link: 'https://www.hp.com/us/en/laptops/spectre-x360/',
@@ -61,6 +62,18 @@ const items = [
     categoryId: '1',
     price: new Prisma.Decimal(1999.99),
     group: 'laptop',
+    itemId: '1',
+  },
+]
+
+const items = [
+  {
+    name: 'Laptop',
+    id: '1',
+    dateAdded: new Date(),
+    userId: '1',
+    categoryId: '1',
+    group: true
   },
   {
     name: 'PS5',

@@ -1,5 +1,6 @@
 import { getItemCount } from '@axios/items'
 import useModal from '@hooks/useModal'
+import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems } from '@prisma/prismaTypes'
 import { useQuery } from '@tanstack/react-query'
@@ -29,16 +30,26 @@ const Container = styled(motion.div)`
   padding-bottom: 50px;
   border-bottom: 1px solid var(--bg-item);
 `
-const HeadingContainer = styled.div`
+const HeadingContainer = styled.div<{ isStuck: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   width: 100%;
   height: fit-content;
-  position: relative;
-  margin: 30px 0;
-  h3 {
-  }
+  position: sticky;
+  z-index: 1;
+  top: -1px;
+  padding: 30px 0px;
+  border-radius: 0 0 20px 20px;
+  border: 1px solid transparent;
+  transition: padding 0.5s ease-in-out;
+  ${({ isStuck }) =>
+    isStuck &&
+    `
+      padding: 30px 30px;
+      backdrop-filter: blur(50px);
+      border: 1px solid var(--bg-item);
+    `}
   > p {
     margin-left: 30px;
     font-size: 17px;
@@ -90,29 +101,8 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
     [itemsArr],
   )
-
+  const [isStuck, ref] = useSticky()
   const controls = useDragControls()
-
-  // const itemsWithGroup: ItemWithGroup[] = useMemo(() => {
-  //   const groups: any[] = []
-  //   itemsArr.forEach((item) => {
-  //     if (item.group) {
-  //       const group = groups.findIndex((group) => group.name === item.group)
-  //       if (group === -1) {
-  //         groups.push({
-  //           name: item.group,
-  //           items: [item],
-  //           isGroup: true,
-  //         })
-  //       } else {
-  //         groups[group].items.push(item)
-  //       }
-  //     } else {
-  //       groups.push(item)
-  //     }
-  //   })
-  //   return groups
-  // }, [itemsArr])
 
   return (
     <Container
@@ -130,7 +120,7 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <CreateNewItemModal setIsOpen={setIsOpen} categoryId={category.id} />
       </Modal>
-      <HeadingContainer>
+      <HeadingContainer ref={ref} isStuck={isStuck}>
         <Header>
           <h3>{category.name}</h3>
           {!isLoading && !isError && count?.data > 0 && (

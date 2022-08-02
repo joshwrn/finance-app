@@ -6,7 +6,6 @@ import { IoWallet } from 'react-icons/io5'
 import styled from 'styled-components'
 
 import { Divider } from '../Divider'
-import TrashIcon from './TrashIcon'
 
 const Container = styled.div`
   display: flex;

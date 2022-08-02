@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import TrashIcon from './Sidebar/TrashIcon'
+import TrashIcon from './TrashIcon'
 
 const Container = styled.div`
   display: flex;

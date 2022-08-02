@@ -1,9 +1,9 @@
 import type { Decimal } from '@prisma/client/runtime'
 
 export const numberToCurrency = (
-  num: Decimal | number | string | undefined,
+  num: Decimal | number | string | null | undefined,
 ): string => {
-  if (num === undefined) {
+  if (!num) {
     return `$-`
   }
   return Intl.NumberFormat(`en-US`, {

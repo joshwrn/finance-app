@@ -37,8 +37,7 @@ const trashVariants = {
     scale: currentHover ? 1.2 : 1,
   }),
   exit: (currentHover: boolean) => ({
-    opacity: 0,
-    y: currentHover ? [0, -20, 150] : 150,
+    y: currentHover ? [0, -60, 150] : 150,
     scale: currentHover ? [0.5, 1.3, 0] : 0,
     transition: {
       type: `spring`,
