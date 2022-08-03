@@ -39,17 +39,29 @@ const HeadingContainer = styled.div<{ isStuck: boolean }>`
   position: sticky;
   z-index: 1;
   top: -1px;
-  padding: 30px 0px;
-  border-radius: 0 0 20px 20px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  padding-left: 0;
+  padding-right: 0;
   border: 1px solid transparent;
-  transition: padding 0.5s ease-in-out;
-  ${({ isStuck }) =>
-    isStuck &&
-    `
-      padding: 30px 30px;
+  ::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    left: -100px;
+    z-index: -1;
+    transition: border 0.5s ease-in-out;
+    border-bottom: 1px solid transparent;
+    ${({ isStuck }) =>
+      isStuck &&
+      `
+      padding-left: 100px;
+      padding-right: 100px;
       backdrop-filter: blur(50px);
-      border: 1px solid var(--bg-item);
+      border-bottom: 1px solid var(--bg-item);
+      width: 100%;
     `}
+  }
   > p {
     margin-left: 30px;
     font-size: 17px;
