@@ -11,20 +11,22 @@ export const themeColors = {
 }
 
 export const darkTheme = {
-  type: `dark`,
-  background: {
+  attributes: {
+    type: 'dark',
+  },
+  bg: {
     primary: themeColors[`black-75`],
     sidebar: themeColors[`black-35`],
     item: themeColors[`white-05`],
   },
-  fontColor: {
+  fc: {
     primary: themeColors[`white-90`],
     secondary: themeColors[`white-75`],
     tertiary: themeColors[`white-50`],
     alternate: themeColors[`black-100`],
     error: themeColors[`coral`],
   },
-  button: {
+  btn: {
     primary: themeColors[`eucalyptus`],
   },
   badge: {

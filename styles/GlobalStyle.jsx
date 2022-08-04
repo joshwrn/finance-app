@@ -3,22 +3,9 @@ import { createGlobalStyle } from 'styled-components'
 export const GlobalStyle = createGlobalStyle`
 
 :root {
-    --bg-primary: ${({ theme }) => theme.background.primary};
-    --bg-sidebar: ${({ theme }) => theme.background.sidebar};
-    --bg-item: ${({ theme }) => theme.background.item};
-
-    --fc-primary: ${({ theme }) => theme.fontColor.primary};
-    --fc-secondary: ${({ theme }) => theme.fontColor.secondary};
-    --fc-tertiary: ${({ theme }) => theme.fontColor.tertiary};
-    --fc-alternate: ${({ theme }) => theme.fontColor.alternate};
-    --fc-error: ${({ theme }) => theme.fontColor.error};
-
-    --btn-primary: ${({ theme }) => theme.button.primary};
-
-    --badge-primary: ${({ theme }) => theme.badge.primary};
-
-    --color-coral: ${({ theme }) => theme.color.coral};
-    --color-eucalyptus: ${({ theme }) => theme.color.eucalyptus};
+    ${({ theme }) => Object.entries(theme).map(([catKey]) => 
+      Object.entries(theme[catKey]).map(([key, value]) => `--${catKey}-${key}: ${value};\n`))
+    }
 }
 
 * {
