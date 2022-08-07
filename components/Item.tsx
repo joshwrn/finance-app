@@ -1,5 +1,8 @@
 import type { SetState } from '@customTypes'
 import type { Item as ItemType } from '@prisma/client'
+import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
@@ -64,23 +67,37 @@ const itemVariants = {
   }),
 }
 
-const Item = ({
-  item,
-  setItemsArr,
-}: {
-  item: ItemType
-  setItemsArr: SetState<ItemType[]>
-}) => {
-  const { name, price, dateAdded, datePurchased, link, id } = item
+const Item = ({ item }: { item: ItemType }) => {
+  const { name, price, dateAdded, datePurchased, link, id, categoryId } = item
   const url = filterHost(link)
   const [currentItem, setCurrentItem] = useAtom(currentItemState)
   const [currentHover, setCurrentHover] = useAtom(currentHoverState)
   const isCurrentItem = currentItem === id
   const isOverTrash = currentHover === `trash` && isCurrentItem
+  const queryClient = useQueryClient()
+
+  const deleteItem = useMutation((itemId: string) => {
+    return axios.post(`/api/item/delete`, { itemId })
+  })
 
   const handleDragEnd = () => {
     if (isOverTrash) {
-      setItemsArr((itemsArr) => itemsArr.filter((item) => item.id !== id))
+      deleteItem.mutate(id)
+      queryClient.setQueryData<UserWithItems>([`user`], (oldData) => {
+        if (!oldData) return
+        return {
+          ...oldData,
+          categories: oldData.categories.map((category: CategoryWithItems) => {
+            if (category.id === categoryId) {
+              return {
+                ...category,
+                items: category.items.filter((item: ItemType) => item.id !== id),
+              }
+            }
+            return category
+          }),
+        }
+      })
     }
     setCurrentItem(null)
     setCurrentHover(null)

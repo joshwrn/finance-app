@@ -1,40 +1,50 @@
-import { createGlobalStyle } from 'styled-components'
+import { createGlobalStyle, css } from 'styled-components'
 
-export const GlobalStyle = createGlobalStyle`
+const styles = css`
+  :root {
+    ${({ theme }) =>
+      Object.entries(theme).map(([catKey]) =>
+        Object.entries(theme[catKey]).map(
+          ([key, value]) => `--${catKey}-${key}: ${value};\n`,
+        ),
+      )}
+  }
 
-:root {
-    ${({ theme }) => Object.entries(theme).map(([catKey]) => 
-      Object.entries(theme[catKey]).map(([key, value]) => `--${catKey}-${key}: ${value};\n`))
-    }
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Inter, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  color: var(--font-color-primary);
-  transition: background 0.3s ease-in-out, color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-}
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Inter, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    color: var(--fc-primary);
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
+      background-color 0.3s ease-in-out;
+  }
   ::-webkit-scrollbar {
     display: none;
   }
   a {
     text-decoration: none;
   }
-  p, a, input {
+  p,
+  a,
+  input {
     color: var(--fc-tertiary);
   }
 
-  h1, h2 {
+  h1,
+  h2 {
     color: var(--fc-primary);
     user-select: none;
   }
 
-  h3, h4, h5, h6, label {
+  h3,
+  h4,
+  h5,
+  h6,
+  label {
     color: var(--fc-secondary);
     user-select: none;
   }
@@ -47,7 +57,7 @@ export const GlobalStyle = createGlobalStyle`
     height: 40px;
     width: 100%;
     padding-left: 12px;
-    transition: border-color .2s ease-in-out;
+    transition: border-color 0.2s ease-in-out;
     :focus {
       border-color: var(--btn-primary);
     }
@@ -56,30 +66,30 @@ export const GlobalStyle = createGlobalStyle`
   button {
     user-select: none;
   }
-textarea:focus,
-input:focus {
-  outline: none;
-}
-button:focus {
-  outline: 0;
-}
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type=number] {
-  -moz-appearance: textfield;
-}
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-size: 16px;
-  background-color: black;
-}
+  textarea:focus,
+  input:focus {
+    outline: none;
+  }
+  button:focus {
+    outline: 0;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-size: 16px;
+    background-color: black;
+  }
 
-ul {
+  ul {
     list-style: none;
     width: 100%;
   }
@@ -87,4 +97,8 @@ ul {
     list-style: none;
     width: 100%;
   }
+`
+
+export const GlobalStyle = createGlobalStyle`
+  ${styles}
 `

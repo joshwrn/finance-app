@@ -2,8 +2,8 @@ import { getItemCount } from '@axios/items'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
-import type { CategoryWithItems } from '@prisma/prismaTypes'
-import { useQuery } from '@tanstack/react-query'
+import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import React, { useMemo, useState } from 'react'
 import { MdOutlineDragIndicator } from 'react-icons/md'
@@ -100,18 +100,24 @@ interface ItemWithGroup extends ItemType {
   items?: ItemType[]
 }
 
-const Category = ({ category }: { category: CategoryWithItems }) => {
-  const { items } = category
-  const [itemsArr, setItemsArr] = useState<ItemWithGroup[]>(items)
+const Category = ({ categoryId }: { categoryId: string }) => {
+  const queryClient = useQueryClient()
   const {
     isLoading,
     isError,
     data: count,
-  } = useQuery([`itemCountFor${category.id}`], () => getItemCount(category.id))
+  } = useQuery([`itemCountFor${categoryId}`], () => getItemCount(categoryId))
+
+  const data: UserWithItems | undefined = queryClient.getQueryData([`user`])
+  const categoryData = data?.categories.find(
+    (category: CategoryWithItems) => category.id === categoryId,
+  )
+
+  const items = categoryData?.items || []
   const { setIsOpen, isOpen, Modal } = useModal()
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
-    [itemsArr],
+    [items],
   )
   const [isStuck, ref] = useSticky()
   const controls = useDragControls()
@@ -130,11 +136,14 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
       }}
     >
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <CreateNewItemModal setIsOpen={setIsOpen} categoryId={category.id} />
+        <CreateNewItemModal
+          setIsOpen={setIsOpen}
+          categoryId={categoryData?.id ?? ``}
+        />
       </Modal>
       <HeadingContainer ref={ref} isStuck={isStuck}>
         <Header>
-          <h3>{category.name}</h3>
+          <h3>{categoryData?.name ?? ``}</h3>
           {!isLoading && !isError && count?.data > 0 && (
             <Badge>
               <p>{count.data}</p>
@@ -156,23 +165,11 @@ const Category = ({ category }: { category: CategoryWithItems }) => {
         <>
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence>
-            {itemsArr.map((item: ItemWithGroup) => {
+            {items.map((item: ItemWithGroup) => {
               if (!item.isGroup) {
-                return (
-                  <Item
-                    item={item}
-                    key={item.name + item.id}
-                    setItemsArr={setItemsArr}
-                  />
-                )
+                return <Item item={item} key={item.name + item.id} />
               } else if (item.isGroup && item.items) {
-                return (
-                  <ItemGroup
-                    key={item.name + `group`}
-                    items={item.items}
-                    setItemsArr={setItemsArr}
-                  />
-                )
+                return <ItemGroup key={item.name + `group`} items={item.items} />
               }
             })}
           </AnimatePresence>

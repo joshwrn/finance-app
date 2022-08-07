@@ -1,5 +1,6 @@
 import prisma from '@lib/prisma'
 import type { UserWithItems, CategoryWithItems } from '@prisma/prismaTypes'
+import { useQuery } from '@tanstack/react-query'
 import type { GetServerSideProps } from 'next'
 import styled from 'styled-components'
 
@@ -25,7 +26,8 @@ const Container = styled.div`
 
 export default function Home({ user }: { user: string }) {
   const userObj: UserWithItems = JSON.parse(user)
-  const { categories } = userObj
+  const { data } = useQuery([`user`], { initialData: userObj })
+  const { categories } = data
   return (
     <>
       <Sidebar />
@@ -35,7 +37,7 @@ export default function Home({ user }: { user: string }) {
           <h1>Wishlists</h1>
         </Header>
         {categories.map((category: CategoryWithItems) => (
-          <Category key={category.id + `wishlist`} category={category} />
+          <Category key={category.id + `wishlist`} categoryId={category.id} />
         ))}
       </Container>
     </>

@@ -2,6 +2,7 @@ import Background from '@assets/image/bg.png'
 import { GlobalStyle } from '@styles/GlobalStyle'
 import { darkTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Provider } from 'jotai'
 import type { AppProps } from 'next/app'
 import Image from 'next/image'
@@ -24,6 +25,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <BlurOverlay />
             <Image src={Background} layout="fill" />
           </PageWrapper>
+          <ReactQueryDevtools initialIsOpen={false} />
         </Provider>
       </QueryClientProvider>
     </ThemeProvider>

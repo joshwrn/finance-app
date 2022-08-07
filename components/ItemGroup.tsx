@@ -17,23 +17,13 @@ const Container = styled.div`
   position: relative;
 `
 
-const ItemGroup = ({
-  items,
-  setItemsArr,
-}: {
-  items: ItemType[]
-  setItemsArr: SetState<ItemType[]>
-}) => {
+const ItemGroup = ({ items }: { items: ItemType[] }) => {
   return (
     <Container>
       <h3>{items[0].group}</h3>
       <AnimatePresence>
         {items.map((item) => (
-          <Item
-            item={item}
-            key={item.name + item.id + items[0].group}
-            setItemsArr={setItemsArr}
-          />
+          <Item item={item} key={item.name + item.id + items[0].group} />
         ))}
       </AnimatePresence>
     </Container>

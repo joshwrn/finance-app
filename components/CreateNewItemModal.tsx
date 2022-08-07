@@ -1,7 +1,7 @@
-import { useMutation } from '@tanstack/react-query'
+import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { Formik, Form } from 'formik'
-import { useEffect } from 'react'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 
@@ -66,14 +66,32 @@ const CreateNewItemModal = ({
   categoryId: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
-  const mutation = useMutation((newItem: MutationArgs) => {
-    return axios.post(`/api/item/create`, newItem)
-  })
-  useEffect(() => {
-    if (mutation.isSuccess) {
-      return setIsOpen(false)
-    }
-  }, [mutation.isSuccess, setIsOpen])
+  const queryClient = useQueryClient()
+  const mutation = useMutation(
+    (newItem: MutationArgs) => {
+      return axios.post(`/api/item/create`, newItem)
+    },
+    {
+      onSuccess: (newData) => {
+        queryClient.setQueryData<UserWithItems>([`user`], (oldData) => {
+          if (!oldData) return
+          return {
+            ...oldData,
+            categories: oldData.categories.map((category: CategoryWithItems) => {
+              if (category.id === categoryId) {
+                return {
+                  ...category,
+                  items: [...category.items, newData.data.data],
+                }
+              }
+              return category
+            }),
+          }
+        })
+        setIsOpen(false)
+      },
+    },
+  )
 
   return (
     <Container>
