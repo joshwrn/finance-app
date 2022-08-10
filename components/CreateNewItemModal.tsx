@@ -1,3 +1,4 @@
+import { VALID_URL } from '@lib/yup'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
@@ -55,7 +56,7 @@ const ItemInputSchema = Yup.object().shape({
     .min(2, `Too Short!`)
     .max(50, `Too Long!`)
     .required(`Required`),
-  link: Yup.string().url(`Invalid URL`),
+  link: Yup.string().matches(VALID_URL, `Invalid URL`),
   price: Yup.number().required(`Required`),
 })
 
