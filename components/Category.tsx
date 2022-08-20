@@ -91,7 +91,7 @@ const Badge = styled.div`
   border-radius: 50%;
   p {
     font-size: 12px;
-    color: var(--fc-primary);
+    color: var(--color-white-100);
   }
 `
 

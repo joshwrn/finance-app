@@ -1,6 +1,6 @@
 import Background from '@assets/image/bg.png'
 import { GlobalStyle } from '@styles/GlobalStyle'
-import { darkTheme } from '@styles/theme'
+import { darkTheme, lightTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Provider } from 'jotai'
@@ -55,7 +55,7 @@ const BlurOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.73);
+  background: var(--bg-primary);
   backdrop-filter: blur(40px);
   z-index: 1;
 `
