@@ -21,7 +21,7 @@ const Container = styled.div`
   gap: 30px;
   svg {
     cursor: pointer;
-    fill: var(--fc-secondary);
+    fill: var(--fc-tertiary);
   }
 `
 const IconsContainer = styled.div`
