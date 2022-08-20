@@ -1,26 +1,37 @@
 import { Field } from 'formik'
 import styled, { css } from 'styled-components'
 
-const FieldContainer = styled.div<{ error?: boolean }>`
+const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
   gap: 10px;
+  position: relative;
   input {
-    ${({ error }) =>
-      error
-        ? css`
+    ${({ error, isValid }) => {
+      if (error) {
+        return css`
+          border: 1px solid var(--fc-error);
+          :focus {
             border: 1px solid var(--fc-error);
-            :focus {
-              border: 1px solid var(--fc-error);
-            }
-          `
-        : css`
-            border: 1px solid var(--bg-item);
-            :focus {
-              border: 1px solid var(--btn-primary);
-            }
-          `}
+          }
+        `
+      }
+      if (isValid) {
+        return css`
+          border: 1px solid var(--btn-primary);
+          :focus {
+            border: 1px solid var(--btn-primary);
+          }
+        `
+      }
+      return css`
+        border: 1px solid var(--bg-item);
+        :focus {
+          border: 1px solid var(--btn-primary);
+        }
+      `
+    }}
   }
   label {
     width: fit-content;
@@ -37,6 +48,24 @@ const ErrorLabel = styled.div`
   opacity: 0.9;
 `
 
+const Badge = styled.div<{ isValid: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ isValid }) =>
+    isValid ? `var(--fc-alternate)` : `var(--fc-primary)`};
+  background-color: ${({ isValid }) =>
+    isValid ? `var(--btn-primary)` : `var(--fc-error)`};
+  font-size: 11px;
+  font-weight: 600;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 12px;
+  top: 41px;
+  border-radius: 50%;
+`
+
 const Input = ({
   errors,
   touched,
@@ -44,6 +73,7 @@ const Input = ({
   field,
   placeholder,
   fieldType = `text`,
+  value,
 }: {
   errors?: string
   touched?: boolean
@@ -51,9 +81,12 @@ const Input = ({
   title: string
   field: string
   placeholder: string
+  value: string
 }) => {
+  const invalid = Boolean(errors && touched)
+  const isValid = Boolean(!errors && value !== ``)
   return (
-    <FieldContainer error={Boolean(errors && touched)}>
+    <FieldContainer error={invalid} isValid={isValid}>
       <label htmlFor={field}>{title}</label>
       <Field
         type={fieldType}
@@ -62,11 +95,10 @@ const Input = ({
         placeholder={placeholder}
         autoComplete="off"
       />
-      {errors && touched ? (
-        <ErrorLabel>{errors}</ErrorLabel>
-      ) : (
-        <ErrorLabel></ErrorLabel>
+      {(invalid || isValid) && (
+        <Badge isValid={isValid}>{isValid ? `*` : `!`}</Badge>
       )}
+      <ErrorLabel>{invalid ? errors : ``}</ErrorLabel>
     </FieldContainer>
   )
 }

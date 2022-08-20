@@ -109,7 +109,7 @@ const CreateNewItemModal = ({
         }}
         validationSchema={ItemInputSchema}
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, values }) => (
           <StyledForm>
             <InputsContainer>
               <Input
@@ -118,6 +118,7 @@ const CreateNewItemModal = ({
                 title="Name"
                 field="name"
                 placeholder="Name"
+                value={values.name}
               />
               <Input
                 errors={errors.link}
@@ -125,6 +126,7 @@ const CreateNewItemModal = ({
                 title="Link"
                 field="link"
                 placeholder="Link"
+                value={values.link}
               />
               <Input
                 errors={errors.price}
@@ -133,6 +135,7 @@ const CreateNewItemModal = ({
                 field="price"
                 fieldType="number"
                 placeholder="Price"
+                value={values.price}
               />
             </InputsContainer>
             <MainButton type="submit">

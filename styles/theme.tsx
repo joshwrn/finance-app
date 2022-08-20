@@ -12,7 +12,7 @@ export const themeColors = {
 
 export const darkTheme = {
   attributes: {
-    type: 'dark',
+    type: `dark`,
   },
   bg: {
     primary: themeColors[`black-75`],
