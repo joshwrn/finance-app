@@ -1,4 +1,5 @@
 import { getItemCount } from '@axios/items'
+import useIntersection from '@hooks/useIntersection'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
@@ -6,13 +7,13 @@ import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { currentHoverState, currentItemState } from '@state/drag'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { MdOutlineDragIndicator } from 'react-icons/md'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import Header from '~/components/Header'
-import Item from '~/components/Item'
+import Item, { ItemContainer } from '~/components/Item'
 import { numberToCurrency } from '~/logic/utils'
 
 import NewItemButton from './Button'
@@ -40,7 +41,7 @@ const HeadingContainer = styled.div<{ isStuck: boolean }>`
   width: 100%;
   height: fit-content;
   position: sticky;
-  z-index: 1;
+  z-index: 999;
   top: -1px;
   padding-top: 30px;
   padding-bottom: 30px;
@@ -128,8 +129,12 @@ const Category = ({ categoryId }: { categoryId: string }) => {
   const currentItem = useRecoilValue(currentItemState)
   const currentHover = useRecoilValue(currentHoverState)
 
+  const myRef = useRef(null)
+  const inViewport = useIntersection(myRef, `0px`)
+
   return (
     <Container
+      ref={myRef}
       dragListener={false}
       dragControls={controls}
       drag
@@ -175,10 +180,17 @@ const Category = ({ categoryId }: { categoryId: string }) => {
           onPointerDown={(e) => controls.start(e)}
         />
       </HeadingContainer>
-      {items.length > 0 ? (
+      {!inViewport && (
+        <>
+          {items.map((item: ItemWithGroup) => {
+            return <ItemContainer key={item.id} />
+          })}
+        </>
+      )}
+      {items.length > 0 && inViewport ? (
         <>
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
-          <AnimatePresence>
+          <AnimatePresence initial={false}>
             {items.map((item: ItemWithGroup) => {
               if (!item.isGroup) {
                 const isCurrentItem = currentItem === item.id

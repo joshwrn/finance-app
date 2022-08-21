@@ -15,7 +15,7 @@ import { currentItemState, currentHoverState } from '~/state/drag'
 
 import { tableLayout } from './TableLabels'
 
-const Container = styled(motion.div)`
+export const ItemContainer = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,7 +47,7 @@ const NameContainer = styled.div`
   }
 `
 
-const itemVariants = {
+export const itemVariants = {
   initial: {
     opacity: 0,
   },
@@ -61,6 +61,7 @@ const itemVariants = {
   }),
   exit: (isOverTrash: boolean) => ({
     opacity: 0,
+    bottom: isOverTrash ? -500 : 0,
     transition: {
       duration: 0.2,
     },
@@ -117,7 +118,7 @@ const Item = ({
   }
 
   return (
-    <Container
+    <ItemContainer
       variants={itemVariants}
       initial={`initial`}
       animate={`animate`}
@@ -151,7 +152,7 @@ const Item = ({
       </div>
       {!item.group && <p>{numberToCurrency(price)}</p>}
       <p>{convertDate(datePurchased ?? dateAdded)}</p>
-    </Container>
+    </ItemContainer>
   )
 }
 
