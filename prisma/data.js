@@ -3,14 +3,14 @@ const { faker } = require('@faker-js/faker')
 
 const items = []
 
-const userId = faker.random.uuid()
+const userId = faker.datatype.uuid()
 
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 150; i++) {
   items.push({
     name: faker.commerce.product(),
     id: faker.datatype.uuid(),
     dateAdded: faker.date.past(),
-    userId: userId,
+    userId: '1',
     categoryId: faker.datatype.number({ min: 1, max: 3 }).toString(),
     price: faker.commerce.price(50, 1000),
     link: faker.internet.url(),
@@ -19,11 +19,11 @@ for (let i = 0; i < 50; i++) {
 
 const users = [
   {
-    id: userId,
+    id: '1',
     username: faker.internet.userName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    salary: faker.commerce.price(30000, 100000),
+    salary: faker.datatype.number({ min: 30000, max: 200000 }),
   },
 ]
 

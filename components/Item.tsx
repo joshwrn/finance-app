@@ -7,7 +7,7 @@ import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
 import React, { useState } from 'react'
 import { BiCategory } from 'react-icons/bi'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
@@ -67,15 +67,23 @@ const itemVariants = {
   }),
 }
 
-const Item = ({ item }: { item: ItemType }) => {
+const Item = ({
+  item,
+  isCurrentItem,
+  isOverTrash,
+}: {
+  item: ItemType
+  isCurrentItem?: boolean
+  isOverTrash?: boolean
+}) => {
   const { name, price, dateAdded, datePurchased, link, id, categoryId } = item
   const url = filterHost(link)
-  const [currentItem, setCurrentItem] = useRecoilState(currentItemState)
-  const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
-  const [test, setTest] = useState(`test`)
-  const isCurrentItem = currentItem === id
-  const isOverTrash = currentHover === `trash` && isCurrentItem
+  const setCurrentItem = useSetRecoilState(currentItemState)
+  const setCurrentHover = useSetRecoilState(currentHoverState)
+  // const currentItem = useRecoilValue(currentItemState)
   const queryClient = useQueryClient()
+
+  // const isCurrent = currentItem === id
 
   const deleteItem = useMutation((itemId: string) => {
     return axios.post(`/api/item/delete`, { itemId })
@@ -100,14 +108,12 @@ const Item = ({ item }: { item: ItemType }) => {
         }
       })
     }
-    setCurrentItem(null)
     setCurrentHover(null)
+    setCurrentItem(null)
   }
 
   const handleDragStart = () => {
-    console.log(`dragging`)
     setCurrentItem(id)
-    // setTest(id)
   }
 
   return (

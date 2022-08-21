@@ -3,10 +3,12 @@ import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import { currentHoverState, currentItemState } from '@state/drag'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import React, { useMemo } from 'react'
 import { MdOutlineDragIndicator } from 'react-icons/md'
+import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import Header from '~/components/Header'
@@ -123,6 +125,9 @@ const Category = ({ categoryId }: { categoryId: string }) => {
   const [isStuck, ref] = useSticky()
   const controls = useDragControls()
 
+  const currentItem = useRecoilValue(currentItemState)
+  const currentHover = useRecoilValue(currentHoverState)
+
   return (
     <Container
       dragListener={false}
@@ -176,7 +181,15 @@ const Category = ({ categoryId }: { categoryId: string }) => {
           <AnimatePresence>
             {items.map((item: ItemWithGroup) => {
               if (!item.isGroup) {
-                return <Item item={item} key={item.name + item.id} />
+                const isCurrentItem = currentItem === item.id
+                return (
+                  <Item
+                    item={item}
+                    key={item.name + item.id}
+                    isCurrentItem={isCurrentItem}
+                    isOverTrash={currentHover === `trash` && isCurrentItem}
+                  />
+                )
               } else if (item.isGroup && item.items) {
                 return <ItemGroup key={item.name + `group`} items={item.items} />
               }
