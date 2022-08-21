@@ -1,13 +1,13 @@
 import type React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useLayoutEffect } from 'react'
 
 const useIntersection = (
   element: React.RefObject<HTMLElement>,
-  rootMargin: string,
+  rootMargin = `0px`,
 ) => {
   const [isVisible, setState] = useState(false)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setState(entry.isIntersecting)

@@ -1,3 +1,4 @@
+import useIntersection from '@hooks/useIntersection'
 import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -5,15 +6,36 @@ import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
+import type { FC } from 'react'
 import React, { useState } from 'react'
 import { BiCategory } from 'react-icons/bi'
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
 import { currentItemState, currentHoverState } from '~/state/drag'
 
 import { tableLayout } from './TableLabels'
+
+const fade = keyframes`
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+`
+const Inner = styled.div`
+  width: 100%;
+  height: 100%;
+  /* opacity: 0; */
+  display: flex;
+  align-items: center;
+  /* animation: ${fade} 0.15s ease-in-out forwards; */
+  ${tableLayout}
+`
 
 export const ItemContainer = styled(motion.div)`
   display: flex;
@@ -34,7 +56,6 @@ export const ItemContainer = styled(motion.div)`
   p {
     color: var(--fc-secondary);
   }
-  ${tableLayout}
 `
 const NameContainer = styled.div`
   display: flex;
@@ -68,23 +89,53 @@ export const itemVariants = {
   }),
 }
 
-const Item = ({
+const ItemWithState = ({
   item,
   isCurrentItem,
-  isOverTrash,
 }: {
   item: ItemType
   isCurrentItem?: boolean
   isOverTrash?: boolean
 }) => {
-  const { name, price, dateAdded, datePurchased, link, id, categoryId } = item
+  const { name, price, dateAdded, datePurchased, link } = item
   const url = filterHost(link)
+  // const currentItem = useRecoilValue(currentItemState)
+
+  return (
+    <Inner>
+      <NameContainer>
+        {item.group && <BiCategory size={16} />}
+        <p>{name}</p>
+      </NameContainer>
+      <div>
+        {link && (
+          <a
+            href={link}
+            onClick={(e) => isCurrentItem && e.preventDefault()}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {url} {`->`}
+          </a>
+        )}
+      </div>
+      {!item.group && <p>{numberToCurrency(price)}</p>}
+      <p>{convertDate(datePurchased ?? dateAdded)}</p>
+    </Inner>
+  )
+}
+
+const Item: FC<{
+  item: ItemType
+  isCurrentItem?: boolean
+  isOverTrash?: boolean
+}> = ({ item, isCurrentItem = false, isOverTrash = false }) => {
+  const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentItemState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
-  // const currentItem = useRecoilValue(currentItemState)
   const queryClient = useQueryClient()
-
-  // const isCurrent = currentItem === id
+  const myRef = React.useRef<HTMLDivElement>(null)
+  const inViewport = useIntersection(myRef)
 
   const deleteItem = useMutation((itemId: string) => {
     return axios.post(`/api/item/delete`, { itemId })
@@ -116,7 +167,6 @@ const Item = ({
   const handleDragStart = () => {
     setCurrentItem(id)
   }
-
   return (
     <ItemContainer
       variants={itemVariants}
@@ -133,25 +183,9 @@ const Item = ({
         pointerEvents: `none`,
         zIndex: 150,
       }}
+      ref={myRef}
     >
-      <NameContainer>
-        {item.group && <BiCategory size={16} />}
-        <p>{name}</p>
-      </NameContainer>
-      <div>
-        {link && (
-          <a
-            href={link}
-            onClick={(e) => isCurrentItem && e.preventDefault()}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {url} {`->`}
-          </a>
-        )}
-      </div>
-      {!item.group && <p>{numberToCurrency(price)}</p>}
-      <p>{convertDate(datePurchased ?? dateAdded)}</p>
+      {inViewport && <ItemWithState item={item} isCurrentItem={isCurrentItem} />}
     </ItemContainer>
   )
 }

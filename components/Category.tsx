@@ -129,12 +129,8 @@ const Category = ({ categoryId }: { categoryId: string }) => {
   const currentItem = useRecoilValue(currentItemState)
   const currentHover = useRecoilValue(currentHoverState)
 
-  const myRef = useRef(null)
-  const inViewport = useIntersection(myRef, `0px`)
-
   return (
     <Container
-      ref={myRef}
       dragListener={false}
       dragControls={controls}
       drag
@@ -180,14 +176,7 @@ const Category = ({ categoryId }: { categoryId: string }) => {
           onPointerDown={(e) => controls.start(e)}
         />
       </HeadingContainer>
-      {!inViewport && (
-        <>
-          {items.map((item: ItemWithGroup) => {
-            return <ItemContainer key={item.id} />
-          })}
-        </>
-      )}
-      {items.length > 0 && inViewport ? (
+      {items.length > 0 ? (
         <>
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence initial={false}>
