@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Provider } from 'jotai'
 import type { AppProps } from 'next/app'
 import Image from 'next/image'
+import { RecoilRoot } from 'recoil'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 
@@ -16,7 +17,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={darkTheme}>
       <QueryClientProvider client={queryClient}>
-        <Provider initialValues={initialState}>
+        <RecoilRoot>
+          {/* <Provider initialValues={initialState}> */}
           <GlobalStyle />
           <PageWrapper>
             <ComponentWrapper>
@@ -26,7 +28,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <Image src={Background} layout="fill" />
           </PageWrapper>
           <ReactQueryDevtools initialIsOpen={false} />
-        </Provider>
+          {/* </Provider> */}
+        </RecoilRoot>
       </QueryClientProvider>
     </ThemeProvider>
   )

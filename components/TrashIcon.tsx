@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useAtom, useAtomValue } from 'jotai'
 import React from 'react'
 import { IoTrash } from 'react-icons/io5'
+import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
 
 import { currentHoverState, currentItemState } from '~/state/drag'
@@ -47,8 +48,8 @@ const trashVariants = {
 }
 
 const TrashIcon = () => {
-  const currentItem = useAtomValue(currentItemState)
-  const [currentHover, setCurrentHover] = useAtom(currentHoverState)
+  const [currentItem, setCurrentItem] = useRecoilState(currentItemState)
+  const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
   return (
     <AnimatePresence>
       {currentItem && (

@@ -5,7 +5,7 @@ import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { MdOutlineDragIndicator } from 'react-icons/md'
 import styled from 'styled-components'
 
@@ -24,6 +24,7 @@ const Container = styled(motion.div)`
   gap: 20px;
   width: 100%;
   flex-shrink: 0;
+  height: 50px;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -127,7 +128,15 @@ const Category = ({ categoryId }: { categoryId: string }) => {
       dragListener={false}
       dragControls={controls}
       drag
+      layout={true}
       dragSnapToOrigin
+      initial={{ height: `auto` }}
+      animate={{
+        height: `auto`,
+      }}
+      style={{
+        height: `auto`,
+      }}
       whileDrag={{
         scale: 0.5,
         opacity: 0.5,

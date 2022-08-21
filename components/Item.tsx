@@ -1,4 +1,3 @@
-import type { SetState } from '@customTypes'
 import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -6,8 +5,9 @@ import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
-import React from 'react'
+import React, { useState } from 'react'
 import { BiCategory } from 'react-icons/bi'
+import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
 
 import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
@@ -70,8 +70,9 @@ const itemVariants = {
 const Item = ({ item }: { item: ItemType }) => {
   const { name, price, dateAdded, datePurchased, link, id, categoryId } = item
   const url = filterHost(link)
-  const [currentItem, setCurrentItem] = useAtom(currentItemState)
-  const [currentHover, setCurrentHover] = useAtom(currentHoverState)
+  const [currentItem, setCurrentItem] = useRecoilState(currentItemState)
+  const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
+  const [test, setTest] = useState(`test`)
   const isCurrentItem = currentItem === id
   const isOverTrash = currentHover === `trash` && isCurrentItem
   const queryClient = useQueryClient()
@@ -103,6 +104,12 @@ const Item = ({ item }: { item: ItemType }) => {
     setCurrentHover(null)
   }
 
+  const handleDragStart = () => {
+    console.log(`dragging`)
+    setCurrentItem(id)
+    // setTest(id)
+  }
+
   return (
     <Container
       variants={itemVariants}
@@ -113,11 +120,11 @@ const Item = ({ item }: { item: ItemType }) => {
       layout={true}
       drag
       dragSnapToOrigin={isOverTrash ? false : true}
-      onDragStart={() => setCurrentItem(id)}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       whileDrag={{
         pointerEvents: `none`,
-        zIndex: 5,
+        zIndex: 150,
       }}
     >
       <NameContainer>

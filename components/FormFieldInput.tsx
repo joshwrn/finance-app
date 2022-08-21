@@ -1,4 +1,6 @@
 import { Field } from 'formik'
+import type { HTMLProps } from 'react'
+import { BsPatchCheckFill, BsFillPatchExclamationFill } from 'react-icons/bs'
 import styled, { css } from 'styled-components'
 
 const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
@@ -54,19 +56,24 @@ const Badge = styled.div<{ isValid: boolean }>`
   justify-content: center;
   color: ${({ isValid }) =>
     isValid ? `var(--fc-alternate)` : `var(--fc-primary)`};
-  background-color: ${({ isValid }) =>
-    isValid ? `var(--btn-primary)` : `var(--fc-error)`};
+  svg {
+    fill: ${({ isValid }) =>
+      isValid ? `var(--btn-primary)` : `var(--fc-error)`};
+    width: 17px;
+    height: 17px;
+  }
   font-size: 11px;
   font-weight: 600;
-  height: 16px;
-  width: 16px;
+  height: 20px;
+  width: 20px;
   position: absolute;
   right: 12px;
-  top: 41px;
+  top: 40px;
   border-radius: 50%;
 `
 
 const Input = ({
+  props,
   errors,
   touched,
   title,
@@ -75,12 +82,13 @@ const Input = ({
   fieldType = `text`,
   value,
 }: {
+  props?: HTMLProps<HTMLInputElement>
   errors?: string
   touched?: boolean
   fieldType?: string
-  title: string
+  title?: string
   field: string
-  placeholder: string
+  placeholder?: string
   value: string
 }) => {
   const invalid = Boolean(errors && touched)
@@ -94,9 +102,12 @@ const Input = ({
         name={field}
         placeholder={placeholder}
         autoComplete="off"
+        {...props}
       />
       {(invalid || isValid) && (
-        <Badge isValid={isValid}>{isValid ? `*` : `!`}</Badge>
+        <Badge isValid={isValid}>
+          {isValid ? <BsPatchCheckFill /> : <BsFillPatchExclamationFill />}
+        </Badge>
       )}
       <ErrorLabel>{invalid ? errors : ``}</ErrorLabel>
     </FieldContainer>

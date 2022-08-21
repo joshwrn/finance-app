@@ -1,6 +1,7 @@
 import prisma from '@lib/prisma'
 import type { UserWithItems, CategoryWithItems } from '@prisma/prismaTypes'
 import { useQuery } from '@tanstack/react-query'
+import { LayoutGroup, motion } from 'framer-motion'
 import type { GetServerSideProps } from 'next'
 import styled from 'styled-components'
 
@@ -9,11 +10,10 @@ import Category from '~/components/Category'
 import Header from '~/components/Header'
 import Sidebar from '~/components/Sidebar/Sidebar'
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
   justify-content: flex-start;
   align-items: flex-start;
   position: relative;
@@ -36,9 +36,11 @@ export default function Home({ user }: { user: string }) {
         <Header>
           <h1>Wishlists</h1>
         </Header>
-        {categories.map((category: CategoryWithItems) => (
-          <Category key={category.id + `wishlist`} categoryId={category.id} />
-        ))}
+        <LayoutGroup>
+          {categories.map((category: CategoryWithItems) => (
+            <Category key={category.id + `wishlist`} categoryId={category.id} />
+          ))}
+        </LayoutGroup>
       </Container>
     </>
   )

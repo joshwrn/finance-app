@@ -54,10 +54,10 @@ interface MutationArgs extends InputValues {
 const ItemInputSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, `Too Short!`)
-    .max(50, `Too Long!`)
+    .max(25, `Too Long!`)
     .required(`Required`),
+  price: Yup.string().required(`Required`),
   link: Yup.string().matches(VALID_URL, `Invalid URL`),
-  price: Yup.number().required(`Required`),
 })
 
 const CreateNewItemModal = ({
@@ -119,14 +119,7 @@ const CreateNewItemModal = ({
                 field="name"
                 placeholder="Name"
                 value={values.name}
-              />
-              <Input
-                errors={errors.link}
-                touched={touched.link}
-                title="Link"
-                field="link"
-                placeholder="Link"
-                value={values.link}
+                props={{ maxLength: 25, minLength: 2 }}
               />
               <Input
                 errors={errors.price}
@@ -136,6 +129,14 @@ const CreateNewItemModal = ({
                 fieldType="number"
                 placeholder="Price"
                 value={values.price}
+              />
+              <Input
+                errors={errors.link}
+                touched={touched.link}
+                title="Link"
+                field="link"
+                placeholder="Link"
+                value={values.link}
               />
             </InputsContainer>
             <MainButton type="submit">

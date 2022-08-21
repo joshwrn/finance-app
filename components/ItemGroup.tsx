@@ -1,4 +1,3 @@
-import type { SetState } from '@customTypes'
 import type { Item as ItemType } from '@prisma/client'
 import { AnimatePresence } from 'framer-motion'
 import React from 'react'

@@ -1,4 +1,10 @@
-import { atom } from 'jotai'
+import { atom } from 'recoil'
 
-export const currentHoverState = atom<string | null>('')
-export const currentItemState = atom<string | null>('')
+export const currentHoverState = atom<string | null>({
+  key: `currentHoverState`,
+  default: ``,
+})
+export const currentItemState = atom<string | null>({
+  key: `currentItemState`,
+  default: ``,
+})
