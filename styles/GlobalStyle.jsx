@@ -18,7 +18,7 @@ const styles = css`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    color: var(--fc-primary);
+    /* color: var(--fc-primary); */
     transition: background 0.3s ease-in-out, color 0.3s ease-in-out,
       background-color 0.3s ease-in-out;
   }

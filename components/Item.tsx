@@ -7,7 +7,8 @@ import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 import { useAtomDevtools } from 'jotai/devtools'
 import type { FC } from 'react'
-import React, { useState } from 'react'
+import type React from 'react'
+import { useState } from 'react'
 import { BiCategory } from 'react-icons/bi'
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
 import styled, { keyframes } from 'styled-components'
@@ -134,8 +135,7 @@ const Item: FC<{
   const setCurrentItem = useSetRecoilState(currentItemState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
   const queryClient = useQueryClient()
-  const myRef = React.useRef<HTMLDivElement>(null)
-  const inViewport = useIntersection(myRef)
+  const [myRef, inViewport] = useIntersection()
 
   const deleteItem = useMutation((itemId: string) => {
     return axios.post(`/api/item/delete`, { itemId })

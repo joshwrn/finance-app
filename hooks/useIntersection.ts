@@ -1,11 +1,11 @@
 import type React from 'react'
-import { useState, useLayoutEffect } from 'react'
+import { useState, useLayoutEffect, useRef } from 'react'
 
-const useIntersection = (
-  element: React.RefObject<HTMLElement>,
+const useIntersection = <T extends HTMLDivElement>(
   rootMargin = `0px`,
-) => {
+): [ref: React.RefObject<T>, isVisible: boolean] => {
   const [isVisible, setState] = useState(false)
+  const ref = useRef<T>(null)
 
   useLayoutEffect(() => {
     const observer = new IntersectionObserver(
@@ -15,12 +15,14 @@ const useIntersection = (
       { rootMargin },
     )
 
-    element.current && observer.observe(element.current)
+    const { current } = ref
 
-    return () => observer.unobserve(element.current as HTMLElement)
+    current && observer.observe(current)
+
+    return () => observer.unobserve(current as T)
   }, [])
 
-  return isVisible
+  return [ref, isVisible]
 }
 
 export default useIntersection
