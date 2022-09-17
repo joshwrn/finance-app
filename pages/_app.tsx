@@ -1,4 +1,5 @@
 import Background from '@assets/image/bg.png'
+import { RecoilInspector } from '@eyecuelab/recoil-devtools'
 import { GlobalStyle } from '@styles/GlobalStyle'
 import { darkTheme, lightTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -10,28 +11,31 @@ import { RecoilRoot } from 'recoil'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 
+// import RecoilInspector from '~/tools/recoilDevTools/DebugInspector'
+
 const queryClient = new QueryClient()
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { initialState } = pageProps
   return (
-    <ThemeProvider theme={darkTheme}>
-      <QueryClientProvider client={queryClient}>
-        <RecoilRoot>
+    <QueryClientProvider client={queryClient}>
+      <RecoilRoot>
+        <ThemeProvider theme={darkTheme}>
           {/* <Provider initialValues={initialState}> */}
           <GlobalStyle />
           <PageWrapper>
             <ComponentWrapper>
+              <RecoilInspector />
               <Component {...pageProps} />
             </ComponentWrapper>
             <BlurOverlay />
             <Image src={Background} layout="fill" />
           </PageWrapper>
-          <ReactQueryDevtools initialIsOpen={false} />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
           {/* </Provider> */}
-        </RecoilRoot>
-      </QueryClientProvider>
-    </ThemeProvider>
+        </ThemeProvider>
+      </RecoilRoot>
+    </QueryClientProvider>
   )
 }
 
