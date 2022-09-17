@@ -2033,11 +2033,6 @@ prettier@^2.7.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
 
-pretty-print-json@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/pretty-print-json/-/pretty-print-json-1.2.5.tgz#3193f41aa9d9dfe23ee138dfd49329cdde2bd2fa"
-  integrity sha512-x4NdVYUBUFxYUnchuKIhSD3fys8ds64gjSNtNvdW5DWaN2HmClOKvU2XPITcLgi0+cXEyy3kdzUUUGTkmE9vtQ==
-
 prisma@3.10.0:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/prisma/-/prisma-3.10.0.tgz#872d87afbeb1cbcaa77c3d6a63c125e0d704b04d"
