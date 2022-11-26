@@ -100,7 +100,6 @@ const ItemWithState = ({
 }) => {
   const { name, price, dateAdded, datePurchased, link } = item
   const url = filterHost(link)
-  // const currentItem = useRecoilValue(currentItemState)
 
   return (
     <Inner>
@@ -144,21 +143,25 @@ const Item: FC<{
   const handleDragEnd = () => {
     if (isOverTrash) {
       deleteItem.mutate(id)
-      queryClient.setQueryData<UserWithItems>([`user`], (oldData) => {
-        if (!oldData) return
-        return {
-          ...oldData,
-          categories: oldData.categories.map((category: CategoryWithItems) => {
-            if (category.id === categoryId) {
-              return {
-                ...category,
-                items: category.items.filter((item: ItemType) => item.id !== id),
+      queryClient.setQueryData<CategoryWithItems[]>(
+        [`categories`],
+        (oldData) => {
+          if (!oldData) return
+          return [
+            ...oldData.map((category: CategoryWithItems) => {
+              if (category.id === categoryId) {
+                return {
+                  ...category,
+                  items: category.items.filter(
+                    (item: ItemType) => item.id !== id,
+                  ),
+                }
               }
-            }
-            return category
-          }),
-        }
-      })
+              return category
+            }),
+          ]
+        },
+      )
     }
     setCurrentHover(null)
     setCurrentItem(null)

@@ -1,41 +1,40 @@
 import Background from '@assets/image/bg.png'
 import { RecoilInspector } from '@eyecuelab/recoil-devtools'
 import { GlobalStyle } from '@styles/GlobalStyle'
-import { darkTheme, lightTheme } from '@styles/theme'
+import { darkTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { Provider } from 'jotai'
+import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import Image from 'next/image'
 import { RecoilRoot } from 'recoil'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 
-// import RecoilInspector from '~/tools/recoilDevTools/DebugInspector'
-
 const queryClient = new QueryClient()
 
-export default function MyApp({ Component, pageProps }: AppProps) {
-  const { initialState } = pageProps
+export default function MyApp({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <RecoilRoot>
-        <ThemeProvider theme={darkTheme}>
-          {/* <Provider initialValues={initialState}> */}
-          <GlobalStyle />
-          <PageWrapper>
-            <ComponentWrapper>
-              <RecoilInspector />
-              <Component {...pageProps} />
-            </ComponentWrapper>
-            <BlurOverlay />
-            <Image src={Background} layout="fill" />
-          </PageWrapper>
-          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
-          {/* </Provider> */}
-        </ThemeProvider>
-      </RecoilRoot>
-    </QueryClientProvider>
+    <SessionProvider session={session}>
+      <QueryClientProvider client={queryClient}>
+        <RecoilRoot>
+          <ThemeProvider theme={darkTheme}>
+            <GlobalStyle />
+            <PageWrapper>
+              <ComponentWrapper>
+                <RecoilInspector />
+                <Component {...pageProps} />
+              </ComponentWrapper>
+              <BlurOverlay />
+              <Image src={Background} layout="fill" />
+            </PageWrapper>
+            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+          </ThemeProvider>
+        </RecoilRoot>
+      </QueryClientProvider>
+    </SessionProvider>
   )
 }
 

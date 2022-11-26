@@ -7,7 +7,6 @@ const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 10px;
   position: relative;
   input {
     ${({ error, isValid }) => {
@@ -46,7 +45,7 @@ const ErrorLabel = styled.div`
   color: var(--fc-error);
   font-size: 12px;
   padding-left: 7px;
-  height: 20px;
+  /* height: 20px; */
   opacity: 0.9;
 `
 
@@ -68,11 +67,11 @@ const Badge = styled.div<{ isValid: boolean }>`
   width: 20px;
   position: absolute;
   right: 12px;
-  top: 40px;
+  top: 25%;
   border-radius: 50%;
 `
 
-const Input = ({
+export const Input = ({
   props,
   errors,
   touched,
@@ -95,23 +94,27 @@ const Input = ({
   const isValid = Boolean(!errors && value !== ``)
   return (
     <FieldContainer error={invalid} isValid={isValid}>
-      <label htmlFor={field}>{title}</label>
-      <Field
-        type={fieldType}
-        id={field}
-        name={field}
-        placeholder={placeholder}
-        autoComplete="off"
-        {...props}
-      />
-      {(invalid || isValid) && (
-        <Badge isValid={isValid}>
-          {isValid ? <BsPatchCheckFill /> : <BsFillPatchExclamationFill />}
-        </Badge>
+      {title && (
+        <label style={{ marginBottom: `10px` }} htmlFor={field}>
+          {title}
+        </label>
       )}
+      <div style={{ position: `relative` }}>
+        <Field
+          type={fieldType}
+          id={field}
+          name={field}
+          placeholder={placeholder}
+          autoComplete="off"
+          {...props}
+        />
+        {(invalid || isValid) && (
+          <Badge isValid={isValid}>
+            {isValid ? <BsPatchCheckFill /> : <BsFillPatchExclamationFill />}
+          </Badge>
+        )}
+      </div>
       <ErrorLabel>{invalid ? errors : ``}</ErrorLabel>
     </FieldContainer>
   )
 }
-
-export default Input

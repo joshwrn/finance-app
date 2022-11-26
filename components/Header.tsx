@@ -1,7 +1,6 @@
-import type React from 'react'
 import styled from 'styled-components'
 
-const Container = styled.div`
+export const Header = styled.div`
   position: relative;
   h1 {
     font-size: 50px;
@@ -13,9 +12,5 @@ const Container = styled.div`
     font-size: 30px;
   }
 `
-
-const Header = ({ children }: { children: React.ReactNode }) => {
-  return <Container>{children}</Container>
-}
 
 export default Header

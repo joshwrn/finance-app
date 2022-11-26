@@ -81,6 +81,15 @@ const HeadingContainer = styled.div<{ isStuck: boolean }>`
       stroke: var(--fc-tertiary);
     }
   }
+  :hover {
+    ${NewItemButton} {
+      opacity: 1;
+    }
+  }
+  ${NewItemButton} {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
 `
 const Badge = styled.div`
   display: flex;
@@ -112,8 +121,10 @@ const Category = ({ categoryId }: { categoryId: string }) => {
     data: count,
   } = useQuery([`itemCountFor${categoryId}`], () => getItemCount(categoryId))
 
-  const data: UserWithItems | undefined = queryClient.getQueryData([`user`])
-  const categoryData = data?.categories.find(
+  const data: CategoryWithItems[] | undefined = queryClient.getQueryData([
+    `categories`,
+  ])
+  const categoryData = data?.find(
     (category: CategoryWithItems) => category.id === categoryId,
   )
 
@@ -171,10 +182,10 @@ const Category = ({ categoryId }: { categoryId: string }) => {
         <NewItemButton onClick={() => setIsOpen(true)}>
           <p>+ New Item</p>
         </NewItemButton>
-        <MdOutlineDragIndicator
+        {/* <MdOutlineDragIndicator
           size={30}
           onPointerDown={(e) => controls.start(e)}
-        />
+        /> */}
       </HeadingContainer>
       {items.length > 0 ? (
         <>

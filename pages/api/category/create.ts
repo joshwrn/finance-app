@@ -6,11 +6,12 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (req.method === `POST`) {
+    console.log(req.body)
     try {
-      const item = await prisma.item.create({
+      const category = await prisma.category.create({
         data: req.body,
       })
-      return res.status(200).json({ item })
+      return res.status(200).json({ category })
     } catch (err) {
       console.error(err)
       return res.status(500).json({ msg: `Something went wrong` })

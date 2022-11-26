@@ -1,15 +1,25 @@
+import MainButton from '@components/Button'
+import { DropdownMenu } from '@components/DropdownMenu'
+import { NewCategoryButton } from '@components/NewCategoryButton'
+import Sidebar from '@components/Sidebar'
 import { RecoilInspector } from '@eyecuelab/recoil-devtools'
 import prisma from '@lib/prisma'
 import type { UserWithItems, CategoryWithItems } from '@prisma/prismaTypes'
+import { DEFAULT_USER, userState } from '@state/user'
 import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { LayoutGroup, motion } from 'framer-motion'
 import type { GetServerSideProps } from 'next'
-import styled from 'styled-components'
+import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import styled, { css } from 'styled-components'
 
 import ActionBar from '~/components/ActionBar'
 import Category from '~/components/Category'
 import Header from '~/components/Header'
-import Sidebar from '~/components/Sidebar/Sidebar'
+
 // import RecoilInspector from '~/tools/recoilDevTools/DebugInspector'
 
 const Container = styled(motion.div)`
@@ -25,43 +35,74 @@ const Container = styled(motion.div)`
   padding: 100px;
   padding-left: 180px;
 `
+const SectionHeader = styled(Header)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 1000;
+`
 
-export default function Home({ user }: { user: string }) {
-  const userObj: UserWithItems = JSON.parse(user)
-  const { data } = useQuery([`user`], { initialData: userObj })
-  const { categories } = data
-  const showTools = typeof window !== `undefined`
+export default function Home() {
+  const { data: session, status } = useSession()
+  const user = useRecoilValue(userState)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!session && status === `unauthenticated`) {
+      router.push(`/login`)
+    }
+  }, [session, status])
+
+  const { data: categories } = useQuery(
+    [`categories`],
+    async () =>
+      axios
+        .get(`/api/category/findMany`, {
+          params: {
+            id: user.id,
+          },
+        })
+        .then((res) => res.data.categories),
+    { placeholderData: [], enabled: user.email !== `` },
+  )
+
+  const setUser = useSetRecoilState(userState)
+
+  const { data: userData, refetch } = useQuery(
+    [`user`],
+    async () =>
+      axios
+        .get(`/api/user/current`, {
+          params: {
+            email: session?.user?.email ?? ``,
+          },
+        })
+        .then((res) => res.data),
+    {
+      placeholderData: DEFAULT_USER,
+      onSuccess: (data) => setUser(data.user),
+      enabled: !!session,
+    },
+  )
+
   return (
     <>
       <Sidebar />
       <ActionBar />
       <Container>
-        <Header>
+        <button onClick={() => console.log(session)}>log session</button>
+        <SectionHeader>
           <h1>Wishlists</h1>
-        </Header>
+          <NewCategoryButton />
+        </SectionHeader>
         <LayoutGroup>
-          {categories.map((category: CategoryWithItems) => (
+          {categories?.map((category: CategoryWithItems) => (
             <Category key={category.id + `wishlist`} categoryId={category.id} />
           ))}
         </LayoutGroup>
       </Container>
     </>
   )
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const [user] = [
-    await prisma.user.findMany({
-      include: {
-        categories: {
-          where: { categoryType: `WISHLIST` },
-          include: { items: true },
-        },
-      },
-    }),
-  ]
-
-  return {
-    props: { user: JSON.stringify(user[0]) },
-  }
 }

@@ -5,12 +5,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  if (req.method === `POST`) {
+  if (req.method === `GET`) {
     try {
-      const item = await prisma.item.create({
-        data: req.body,
+      const categories = await prisma.category.findMany({
+        where: {
+          AND: [
+            { categoryType: `WISHLIST` },
+            { userId: req.query.userId?.toString() },
+          ],
+        },
+        include: { items: true },
       })
-      return res.status(200).json({ item })
+      return res.status(200).json({ categories })
     } catch (err) {
       console.error(err)
       return res.status(500).json({ msg: `Something went wrong` })

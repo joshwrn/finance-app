@@ -1,11 +1,13 @@
-import Avatar from '@assets/image/avatar.jpg'
-import Image from 'next/image'
+import { userState } from '@state/user'
+import { signOut } from 'next-auth/react'
 import React from 'react'
 import { FaClipboardList } from 'react-icons/fa'
 import { IoWallet } from 'react-icons/io5'
+import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
-import { Divider } from '../Divider'
+import { Divider } from './Divider'
+import { DropdownMenu } from './DropdownMenu'
 
 const Container = styled.div`
   display: flex;
@@ -24,39 +26,41 @@ const Container = styled.div`
     fill: var(--fc-tertiary);
   }
 `
-const IconsContainer = styled.div`
+const Top = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 30px;
   width: 100%;
 `
-const Top = styled(IconsContainer)`
-  > .sb-img-container {
+const ImageContainer = styled.div`
+  cursor: pointer;
+  img {
+    border: 1px solid var(--bg-item);
     width: 40px;
     height: 40px;
-    border: 1px solid var(--bg-item);
-    overflow: hidden;
     border-radius: 50%;
-    img {
-      object-fit: cover;
-    }
+    object-fit: cover;
+    position: relative;
   }
 `
-const Bottom = styled(IconsContainer)``
 
 const Sidebar = () => {
+  const user = useRecoilValue(userState)
+  const [showMenu, setShowMenu] = React.useState(false)
   return (
     <Container>
       <Top>
-        <div className="sb-img-container">
-          <Image src={Avatar} layout={`fixed`} width={40} height={40} />
-        </div>
+        <DropdownMenu setShow={setShowMenu} show={showMenu}>
+          <button onClick={() => signOut()}>Sign Out</button>
+        </DropdownMenu>
+        <ImageContainer onClick={() => setShowMenu((prev) => !prev)}>
+          <img src={user.image ?? ``} width={40} height={40} />
+        </ImageContainer>
         <Divider />
         <FaClipboardList size={26} />
         <IoWallet size={26} />
       </Top>
-      <Bottom></Bottom>
     </Container>
   )
 }

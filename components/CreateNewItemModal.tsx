@@ -1,14 +1,16 @@
 import { VALID_URL } from '@lib/yup'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import { userState } from '@state/user'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { Formik, Form } from 'formik'
+import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 
 import MainButton from './Button'
 import { Divider } from './Divider'
-import Input from './FormFieldInput'
+import { Input } from './FormFieldInput'
 
 const Container = styled.div`
   display: flex;
@@ -68,27 +70,30 @@ const CreateNewItemModal = ({
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const queryClient = useQueryClient()
+  const user = useRecoilValue(userState)
   const mutation = useMutation(
     (newItem: MutationArgs) => {
       return axios.post(`/api/item/create`, newItem)
     },
     {
-      onSuccess: (newData) => {
-        queryClient.setQueryData<UserWithItems>([`user`], (oldData) => {
-          if (!oldData) return
-          return {
-            ...oldData,
-            categories: oldData.categories.map((category: CategoryWithItems) => {
-              if (category.id === categoryId) {
-                return {
-                  ...category,
-                  items: [...category.items, newData.data.data],
+      onSuccess: (res) => {
+        queryClient.setQueryData<CategoryWithItems[]>(
+          [`categories`],
+          (oldData) => {
+            if (!oldData) return
+            return [
+              ...oldData.map((category: CategoryWithItems) => {
+                if (category.id === categoryId) {
+                  return {
+                    ...category,
+                    items: [...category.items, res.data.item],
+                  }
                 }
-              }
-              return category
-            }),
-          }
-        })
+                return category
+              }),
+            ]
+          },
+        )
         setIsOpen(false)
       },
     },
@@ -105,7 +110,7 @@ const CreateNewItemModal = ({
           price: ``,
         }}
         onSubmit={(values: InputValues) => {
-          mutation.mutate({ ...values, categoryId, userId: `1` })
+          mutation.mutate({ ...values, categoryId, userId: user.id })
         }}
         validationSchema={ItemInputSchema}
       >
