@@ -1,5 +1,8 @@
+import ActionBar from '@components/ActionBar'
 import MainButton from '@components/Button'
+import Category from '@components/Category'
 import { DropdownMenu } from '@components/DropdownMenu'
+import Header from '@components/Header'
 import { NewCategoryButton } from '@components/NewCategoryButton'
 import Sidebar from '@components/Sidebar'
 import { RecoilInspector } from '@eyecuelab/recoil-devtools'
@@ -15,10 +18,6 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import styled, { css } from 'styled-components'
-
-import ActionBar from '~/components/ActionBar'
-import Category from '~/components/Category'
-import Header from '~/components/Header'
 
 // import RecoilInspector from '~/tools/recoilDevTools/DebugInspector'
 

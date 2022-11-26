@@ -1,20 +1,16 @@
 import useIntersection from '@hooks/useIntersection'
 import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import { currentItemState, currentHoverState } from '@state/drag'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
 import axios from 'axios'
 import { motion } from 'framer-motion'
-import { useAtom } from 'jotai'
-import { useAtomDevtools } from 'jotai/devtools'
 import type { FC } from 'react'
 import type React from 'react'
-import { useState } from 'react'
 import { BiCategory } from 'react-icons/bi'
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
 import styled, { keyframes } from 'styled-components'
-
-import { convertDate, filterHost, numberToCurrency } from '~/logic/utils'
-import { currentItemState, currentHoverState } from '~/state/drag'
 
 import { tableLayout } from './TableLabels'
 

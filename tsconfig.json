@@ -4,18 +4,18 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": ".",
     "paths": {
-      "@reusable/*": ["components/reusable/*"],
-      "@components/*": ["components/*"],
-      "@lib/*": ["lib/*"],
+      "@reusable/*": ["src/components/reusable/*"],
+      "@components/*": ["src/components/*"],
+      "@lib/*": ["src/lib/*"],
       "@prisma/*": ["prisma/*"],
-      "@logic/*": ["logic/*"],
-      "@axios/*": ["lib/axios/*"],
-      "@assets/*": ["assets/*"],
-      "@hooks/*": ["hooks/*"],
-      "@state/*": ["state/*"],
-      "@styles/*": ["styles/*"],
-      "@contexts/*": ["contexts/*"],
-      "@customTypes": ["customTypes"],
+      "@utils/*": ["src/utils/*"],
+      "@axios/*": ["src/lib/axios/*"],
+      "@assets/*": ["src/assets/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@state/*": ["src/state/*"],
+      "@styles/*": ["src/styles/*"],
+      "@contexts/*": ["src/contexts/*"],
+      "@customTypes": ["src/customTypes"],
       "~/*": ["*"]
     },
     "allowJs": true,
@@ -37,9 +37,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "styles/GlobalStyle.jsx",
-    "lib/fetcher.ts",
-    "lib/prisma.ts"
+    "src/styles/GlobalStyle.jsx",
+    "src/lib/fetcher.ts",
+    "src/lib/prisma.ts"
   ],
   "exclude": ["node_modules"]
 }

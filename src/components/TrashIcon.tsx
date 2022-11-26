@@ -5,7 +5,7 @@ import { IoTrash } from 'react-icons/io5'
 import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
 
-import { currentHoverState, currentItemState } from '~/state/drag'
+import { currentHoverState, currentItemState } from '@state/drag'
 
 const DragContainer = styled(motion.div)`
   border-radius: 50%;
