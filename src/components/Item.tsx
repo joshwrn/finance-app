@@ -1,16 +1,18 @@
 import useIntersection from '@hooks/useIntersection'
-import type { Item as ItemType } from '@prisma/client'
-import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
+import type { Category, Item as ItemType } from '@prisma/client'
 import { currentItemState, currentHoverState } from '@state/drag'
+import { userState } from '@state/user'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpc } from '@utils/trpc'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
-import axios from 'axios'
 import { motion } from 'framer-motion'
 import type { FC } from 'react'
 import type React from 'react'
 import { BiCategory } from 'react-icons/bi'
-import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState, useRecoilValue } from 'recoil'
 import styled, { keyframes } from 'styled-components'
+
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import { tableLayout } from './TableLabels'
 
@@ -128,34 +130,41 @@ const Item: FC<{
 }> = ({ item, isCurrentItem = false, isOverTrash = false }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentItemState)
+  const user = useRecoilValue(userState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
   const queryClient = useQueryClient()
   const [myRef, inViewport] = useIntersection()
 
-  const deleteItem = useMutation((itemId: string) => {
-    return axios.post(`/api/item/delete`, { itemId })
-  })
+  const deleteItem = trpc.item.delete.useMutation()
 
   const handleDragEnd = () => {
     if (isOverTrash) {
-      deleteItem.mutate(id)
-      queryClient.setQueryData<CategoryWithItems[]>(
-        [`categories`],
+      deleteItem.mutate({ id, userId: user.id })
+      queryClient.setQueryData<{ categories: CategoryWithItems[] }>(
+        [
+          [`category`, `list`],
+          {
+            input: { userId: user.id, categoryType: `WISHLIST` },
+            type: `query`,
+          },
+        ],
         (oldData) => {
           if (!oldData) return
-          return [
-            ...oldData.map((category: CategoryWithItems) => {
-              if (category.id === categoryId) {
-                return {
-                  ...category,
-                  items: category.items.filter(
-                    (item: ItemType) => item.id !== id,
-                  ),
+          return {
+            categories: [
+              ...oldData.categories.map((category: CategoryWithItems) => {
+                if (category.id === categoryId) {
+                  return {
+                    ...category,
+                    items: category.items.filter(
+                      (item: ItemType) => item.id !== id,
+                    ),
+                  }
                 }
-              }
-              return category
-            }),
-          ]
+                return category
+              }),
+            ],
+          }
         },
       )
     }

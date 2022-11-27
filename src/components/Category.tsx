@@ -5,15 +5,17 @@ import useIntersection from '@hooks/useIntersection'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
-import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { currentHoverState, currentItemState } from '@state/drag'
 import { userState } from '@state/user'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
+
+import type { CategoryWithItems, UserWithItems } from '~/prisma/prismaTypes'
 
 import NewItemButton from './Button'
 import CreateNewItemModal from './CreateNewItemModal'
@@ -114,12 +116,17 @@ interface ItemWithGroup extends ItemType {
 
 const Category = ({ categoryId }: { categoryId: string }) => {
   const queryClient = useQueryClient()
+  const user = useRecoilValue(userState)
   const {
     isLoading,
     isError,
-    data: count,
-  } = useQuery([`itemCountFor${categoryId}`], () => getItemCount(categoryId))
-  const user = useRecoilValue(userState)
+    data: sCount,
+  } = trpc.item.count.useQuery({
+    categoryId,
+    userId: user.id,
+  })
+
+  const count = sCount as unknown as number
 
   const data: { categories: CategoryWithItems[] } | undefined =
     queryClient.getQueryData(
@@ -161,10 +168,10 @@ const Category = ({ categoryId }: { categoryId: string }) => {
         height: `auto`,
       }}
       whileDrag={{
-        scale: 0.5,
+        scale: 0.25,
         opacity: 0.5,
-        translateX: `25%`,
-        translateY: `-20%`,
+        // translateX: `25%`,
+        translateY: `-40%`,
       }}
     >
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -173,12 +180,16 @@ const Category = ({ categoryId }: { categoryId: string }) => {
           categoryId={categoryData?.id ?? ``}
         />
       </Modal>
-      <HeadingContainer ref={ref} isStuck={isStuck}>
+      <HeadingContainer
+        onPointerDown={(e) => controls.start(e)}
+        ref={ref}
+        isStuck={isStuck}
+      >
         <Header>
           <h3>{categoryData?.name ?? ``}</h3>
-          {!isLoading && !isError && count?.data > 0 && (
+          {!isLoading && !isError && count > 0 && (
             <Badge>
-              <p>{count.data}</p>
+              <p>{count}</p>
             </Badge>
           )}
         </Header>

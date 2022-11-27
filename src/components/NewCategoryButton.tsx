@@ -1,6 +1,7 @@
-import type { CategoryWithItems } from '@prisma/prismaTypes'
+import type { Category } from '@prisma/client'
 import { userState } from '@state/user'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpc } from '@utils/trpc'
 import axios from 'axios'
 import { Form, Formik } from 'formik'
 import type { FC } from 'react'
@@ -8,6 +9,8 @@ import { useState } from 'react'
 import React from 'react'
 import { useRecoilValue } from 'recoil'
 import * as Yup from 'yup'
+
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import MainButton from './Button'
 import { DropdownMenu } from './DropdownMenu'
@@ -24,31 +27,28 @@ interface InputValues {
   name: string
 }
 
-interface MutationArgs extends InputValues {
-  userId: string
-  categoryType: string
-}
-
 export const NewCategoryButton: FC = () => {
   const [showNewCategoryModal, setShowNewCategoryModal] = useState(false)
   const user = useRecoilValue(userState)
   const queryClient = useQueryClient()
-  const mutation = useMutation(
-    (newItem: MutationArgs) => {
-      return axios.post(`/api/category/create`, newItem)
-    },
-    {
-      onSuccess: (res) => {
-        queryClient.setQueryData<CategoryWithItems[]>(
-          [`categories`],
-          (oldData) => {
-            if (!oldData) return
-            return [...oldData, res.data.category]
+  const mutation = trpc.category.add.useMutation({
+    onSuccess: (res: { category: Category }) => {
+      setShowNewCategoryModal(false)
+      queryClient.setQueryData<{ categories: Category[] }>(
+        [
+          [`category`, `list`],
+          {
+            input: { userId: user.id, categoryType: `WISHLIST` },
+            type: `query`,
           },
-        )
-      },
+        ],
+        (oldData) => {
+          if (!oldData) return
+          return { categories: [...oldData.categories, res.category] }
+        },
+      )
     },
-  )
+  })
   return (
     <div style={{ position: `relative` }}>
       <DropdownMenu

@@ -88,7 +88,7 @@ export const Input = ({
   title?: string
   field: string
   placeholder?: string
-  value: string
+  value: number | string
 }) => {
   const invalid = Boolean(errors && touched)
   const isValid = Boolean(!errors && value !== ``)

@@ -3,18 +3,16 @@ import Category from '@components/Category'
 import Header from '@components/Header'
 import { NewCategoryButton } from '@components/NewCategoryButton'
 import Sidebar from '@components/Sidebar'
-import { RecoilInspector } from '@eyecuelab/recoil-devtools'
-import type { UserWithItems, CategoryWithItems } from '@prisma/prismaTypes'
 import { DEFAULT_USER, userState } from '@state/user'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@utils/trpc'
-import axios from 'axios'
 import { LayoutGroup, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
+
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 // import RecoilInspector from '~/tools/recoilDevTools/DebugInspector'
 
@@ -59,25 +57,17 @@ export default function Home() {
     },
   )
 
-  const categories = data?.categories as unknown as CategoryWithItems[]
-  console.log(`data:`, data?.categories)
-
+  const categories = data?.categories
   const setUser = useSetRecoilState(userState)
 
-  const { data: userData, refetch } = useQuery(
-    [`user`],
-    async () =>
-      axios
-        .get(`/api/user/current`, {
-          params: {
-            email: session?.user?.email ?? ``,
-          },
-        })
-        .then((res) => res.data),
+  trpc.user.current.useQuery(
+    {
+      email: session?.user?.email as string,
+    },
     {
       placeholderData: DEFAULT_USER,
-      onSuccess: (data) => setUser(data.user),
       enabled: !!session,
+      onSuccess: (data) => data.user && setUser(data.user),
     },
   )
 
@@ -86,7 +76,6 @@ export default function Home() {
       <Sidebar />
       <ActionBar />
       <Container>
-        <button onClick={() => console.log(session)}>log session</button>
         <SectionHeader>
           <h1>Wishlists</h1>
           <NewCategoryButton />

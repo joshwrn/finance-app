@@ -1,12 +1,14 @@
 import { VALID_URL } from '@lib/yup'
-import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { userState } from '@state/user'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpc } from '@utils/trpc'
 import axios from 'axios'
 import { Formik, Form } from 'formik'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import * as Yup from 'yup'
+
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import MainButton from './Button'
 import { Divider } from './Divider'
@@ -46,7 +48,7 @@ const InputsContainer = styled.div`
 interface InputValues {
   name: string
   link: string
-  price: string
+  price: number
 }
 interface MutationArgs extends InputValues {
   categoryId: string
@@ -71,33 +73,36 @@ const CreateNewItemModal = ({
 }) => {
   const queryClient = useQueryClient()
   const user = useRecoilValue(userState)
-  const mutation = useMutation(
-    (newItem: MutationArgs) => {
-      return axios.post(`/api/item/create`, newItem)
-    },
-    {
-      onSuccess: (res) => {
-        queryClient.setQueryData<CategoryWithItems[]>(
-          [`categories`],
-          (oldData) => {
-            if (!oldData) return
-            return [
-              ...oldData.map((category: CategoryWithItems) => {
+  const mutation = trpc.item.add.useMutation({
+    onSuccess: (res) => {
+      queryClient.setQueryData<{ categories: CategoryWithItems[] }>(
+        [
+          [`category`, `list`],
+          {
+            input: { userId: user.id, categoryType: `WISHLIST` },
+            type: `query`,
+          },
+        ],
+        (oldData) => {
+          if (!oldData) return
+          return {
+            categories: [
+              ...oldData.categories.map((category: CategoryWithItems) => {
                 if (category.id === categoryId) {
                   return {
                     ...category,
-                    items: [...category.items, res.data.item],
+                    items: [...category.items, res.item],
                   }
                 }
                 return category
               }),
-            ]
-          },
-        )
-        setIsOpen(false)
-      },
+            ],
+          }
+        },
+      )
+      setIsOpen(false)
     },
-  )
+  })
 
   return (
     <Container>
@@ -107,7 +112,7 @@ const CreateNewItemModal = ({
         initialValues={{
           name: ``,
           link: ``,
-          price: ``,
+          price: 0,
         }}
         onSubmit={(values: InputValues) => {
           mutation.mutate({ ...values, categoryId, userId: user.id })

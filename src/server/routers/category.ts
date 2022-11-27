@@ -1,12 +1,13 @@
 import prisma from '@lib/prisma'
-import { CategoryType } from '@prisma/client'
+import { CategorySchema } from '@lib/zod/category'
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
+
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import { router, procedure } from '../trpc'
 
 /**
- * Default selector for Post.
  * It's important to always explicitly say which fields you want to return in order to not
  * leak extra information
  * @see https://github.com/prisma/prisma/issues/9353
@@ -15,9 +16,9 @@ import { router, procedure } from '../trpc'
 export const categoryRouter = router({
   list: procedure
     .input(
-      z.object({
-        userId: z.string(),
-        categoryType: z.nativeEnum(CategoryType),
+      CategorySchema.pick({
+        userId: true,
+        categoryType: true,
       }),
     )
     .query(async ({ input }) => {
@@ -27,17 +28,16 @@ export const categoryRouter = router({
         },
         include: { items: true },
       })
-
       return {
         categories,
-      }
+      } as { categories: CategoryWithItems[] }
     }),
   add: procedure
     .input(
-      z.object({
-        name: z.string(),
-        userId: z.string(),
-        categoryType: z.nativeEnum(CategoryType),
+      z.object(CategorySchema.shape).pick({
+        name: true,
+        userId: true,
+        categoryType: true,
       }),
     )
     .mutation(async ({ input }) => {
@@ -49,5 +49,22 @@ export const categoryRouter = router({
         },
       })
       return { category }
+    }),
+  count: procedure
+    .input(
+      z.object(CategorySchema.shape).pick({
+        userId: true,
+        categoryType: true,
+      }),
+    )
+    .query(async ({ input }) => {
+      const count = await prisma.category.count({
+        where: {
+          AND: [{ categoryType: input.categoryType }, { userId: input.userId }],
+        },
+      })
+      return {
+        count,
+      }
     }),
 })

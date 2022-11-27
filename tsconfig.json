@@ -7,7 +7,6 @@
       "@reusable/*": ["src/components/reusable/*"],
       "@components/*": ["src/components/*"],
       "@lib/*": ["src/lib/*"],
-      "@prisma/*": ["prisma/*"],
       "@utils/*": ["src/utils/*"],
       "@axios/*": ["src/lib/axios/*"],
       "@assets/*": ["src/assets/*"],

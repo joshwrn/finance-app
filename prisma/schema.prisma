@@ -6,6 +6,7 @@ generator client {
 datasource db {
     provider             = "mysql"
     url                  = env("DATABASE_URL")
+    shadowDatabaseUrl    = env("DATABASE_URL_SHADOW")
     referentialIntegrity = "prisma"
 }
 
@@ -78,7 +79,7 @@ model SubItem {
 model Item {
     id            String    @id @default(cuid())
     name          String
-    price         Decimal?
+    price         Int?
     dateAdded     DateTime  @default(now())
     datePurchased DateTime?
     link          String?
