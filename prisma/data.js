@@ -1,5 +1,6 @@
 // const { Prisma } = require('@prisma/client')
-const { faker } = require('@faker-js/faker')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { faker } = require(`@faker-js/faker`)
 
 const items = []
 
@@ -10,7 +11,7 @@ for (let i = 0; i < 150; i++) {
     name: faker.commerce.product(),
     id: faker.datatype.uuid(),
     dateAdded: faker.date.past(),
-    userId: '1',
+    userId: `1`,
     categoryId: faker.datatype.number({ min: 1, max: 3 }).toString(),
     price: faker.commerce.price(50, 1000),
     link: faker.internet.url(),
@@ -19,7 +20,7 @@ for (let i = 0; i < 150; i++) {
 
 const users = [
   {
-    id: '1',
+    id: `1`,
     username: faker.internet.userName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
@@ -29,22 +30,22 @@ const users = [
 
 const categories = [
   {
-    id: '1',
-    name: 'Tech',
-    categoryType: 'WISHLIST',
-    userId: '1',
+    id: `1`,
+    name: `Tech`,
+    categoryType: `WISHLIST`,
+    userId: `1`,
   },
   {
-    id: '2',
-    name: 'Life',
-    categoryType: 'WISHLIST',
-    userId: '1',
+    id: `2`,
+    name: `Life`,
+    categoryType: `WISHLIST`,
+    userId: `1`,
   },
   {
-    id: '3',
-    name: 'Clothes',
-    categoryType: 'WISHLIST',
-    userId: '1',
+    id: `3`,
+    name: `Clothes`,
+    categoryType: `WISHLIST`,
+    userId: `1`,
   },
 ]
 
