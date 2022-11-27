@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/extensions
 import Background from '@assets/image/bg.png'
-import { RecoilInspector } from '@eyecuelab/recoil-devtools'
 import { GlobalStyle } from '@styles/GlobalStyle'
 import { darkTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -23,7 +22,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
             <GlobalStyle />
             <PageWrapper>
               <ComponentWrapper>
-                <RecoilInspector />
                 <Component {...pageProps} />
               </ComponentWrapper>
               <BlurOverlay />
