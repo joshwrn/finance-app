@@ -7,6 +7,7 @@ import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
 import type { CategoryWithItems, UserWithItems } from '@prisma/prismaTypes'
 import { currentHoverState, currentItemState } from '@state/drag'
+import { userState } from '@state/user'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { numberToCurrency } from '@utils/utils'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
@@ -118,11 +119,17 @@ const Category = ({ categoryId }: { categoryId: string }) => {
     isError,
     data: count,
   } = useQuery([`itemCountFor${categoryId}`], () => getItemCount(categoryId))
+  const user = useRecoilValue(userState)
 
-  const data: CategoryWithItems[] | undefined = queryClient.getQueryData([
-    `categories`,
-  ])
-  const categoryData = data?.find(
+  const data: { categories: CategoryWithItems[] } | undefined =
+    queryClient.getQueryData(
+      [[`category`, `list`], { input: { userId: user.id }, type: `query` }],
+      { exact: false },
+    )
+  useEffect(() => {
+    console.log(`category data`, data)
+  }, [data])
+  const categoryData = data?.categories.find(
     (category: CategoryWithItems) => category.id === categoryId,
   )
 

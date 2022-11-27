@@ -1,19 +1,16 @@
 import ActionBar from '@components/ActionBar'
-import MainButton from '@components/Button'
 import Category from '@components/Category'
-import { DropdownMenu } from '@components/DropdownMenu'
 import Header from '@components/Header'
 import { NewCategoryButton } from '@components/NewCategoryButton'
 import Sidebar from '@components/Sidebar'
 import { RecoilInspector } from '@eyecuelab/recoil-devtools'
-import prisma from '@lib/prisma'
 import type { UserWithItems, CategoryWithItems } from '@prisma/prismaTypes'
 import { DEFAULT_USER, userState } from '@state/user'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { trpc } from '@utils/trpc'
 import axios from 'axios'
 import { LayoutGroup, motion } from 'framer-motion'
-import type { GetServerSideProps } from 'next'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -54,18 +51,16 @@ export default function Home() {
     }
   }, [session, status])
 
-  const { data: categories } = useQuery(
-    [`categories`],
-    async () =>
-      axios
-        .get(`/api/category/findMany`, {
-          params: {
-            id: user.id,
-          },
-        })
-        .then((res) => res.data.categories),
-    { placeholderData: [], enabled: user.email !== `` },
+  const { data } = trpc.category.list.useQuery(
+    { userId: user.id, CategoryType: `WISHLIST` },
+    {
+      enabled: user.id !== ``,
+      placeholderData: { categories: [] },
+    },
   )
+
+  const categories = data?.categories as unknown as CategoryWithItems[]
+  console.log(`data:`, data?.categories)
 
   const setUser = useSetRecoilState(userState)
 
@@ -96,6 +91,7 @@ export default function Home() {
           <h1>Wishlists</h1>
           <NewCategoryButton />
         </SectionHeader>
+        <p>Hello, {user.name?.split(` `)[0]}!</p>
         <LayoutGroup>
           {categories?.map((category: CategoryWithItems) => (
             <Category key={category.id + `wishlist`} categoryId={category.id} />

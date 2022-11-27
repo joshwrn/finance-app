@@ -33,7 +33,7 @@
   "devDependencies": {
     "@eyecuelab/recoil-devtools": "latest",
     "@faker-js/faker": "^7.4.0",
-    "@tanstack/react-query-devtools": "^4.0.10",
+    "@tanstack/react-query-devtools": "^4.18.0",
     "@types/node": "^18.0.6",
     "@types/react": "^18.0.15",
     "@types/react-portal": "^4.0.4",

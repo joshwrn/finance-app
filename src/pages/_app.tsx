@@ -3,6 +3,8 @@ import { RecoilInspector } from '@eyecuelab/recoil-devtools'
 import { GlobalStyle } from '@styles/GlobalStyle'
 import { darkTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { trpc } from '@utils/trpc'
 import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import Image from 'next/image'
@@ -12,10 +14,7 @@ import styled from 'styled-components'
 
 const queryClient = new QueryClient()
 
-export default function MyApp({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
@@ -30,13 +29,15 @@ export default function MyApp({
               <BlurOverlay />
               <Image src={Background} layout="fill" />
             </PageWrapper>
-            {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            <ReactQueryDevtools initialIsOpen={false} />
           </ThemeProvider>
         </RecoilRoot>
       </QueryClientProvider>
     </SessionProvider>
   )
 }
+
+export default trpc.withTRPC(MyApp)
 
 const PageWrapper = styled.main`
   display: flex;

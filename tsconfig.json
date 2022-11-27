@@ -15,7 +15,8 @@
       "@state/*": ["src/state/*"],
       "@styles/*": ["src/styles/*"],
       "@contexts/*": ["src/contexts/*"],
-      "@customTypes": ["src/customTypes"],
+      "@customTypes": ["src/customTypes/*"],
+      "@server": ["src/server/*"],
       "~/*": ["*"]
     },
     "allowJs": true,
@@ -39,7 +40,7 @@
     "**/*.tsx",
     "src/styles/GlobalStyle.jsx",
     "src/lib/fetcher.ts",
-    "src/lib/prisma.ts"
+    "src/lib/prisma.ts",
   ],
   "exclude": ["node_modules"]
 }
