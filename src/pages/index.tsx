@@ -52,7 +52,7 @@ export default function Home() {
   }, [session, status])
 
   const { data } = trpc.category.list.useQuery(
-    { userId: user.id, CategoryType: `WISHLIST` },
+    { userId: user.id, categoryType: `WISHLIST` },
     {
       enabled: user.id !== ``,
       placeholderData: { categories: [] },

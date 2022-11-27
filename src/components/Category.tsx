@@ -123,12 +123,13 @@ const Category = ({ categoryId }: { categoryId: string }) => {
 
   const data: { categories: CategoryWithItems[] } | undefined =
     queryClient.getQueryData(
-      [[`category`, `list`], { input: { userId: user.id }, type: `query` }],
+      [
+        [`category`, `list`],
+        { input: { userId: user.id, categoryType: `WISHLIST` } },
+      ],
       { exact: false },
     )
-  useEffect(() => {
-    console.log(`category data`, data)
-  }, [data])
+
   const categoryData = data?.categories.find(
     (category: CategoryWithItems) => category.id === categoryId,
   )

@@ -17,13 +17,13 @@ export const categoryRouter = router({
     .input(
       z.object({
         userId: z.string(),
-        CategoryType: z.nativeEnum(CategoryType),
+        categoryType: z.nativeEnum(CategoryType),
       }),
     )
     .query(async ({ input }) => {
       const categories = await prisma.category.findMany({
         where: {
-          AND: [{ categoryType: input.CategoryType }, { userId: input.userId }],
+          AND: [{ categoryType: input.categoryType }, { userId: input.userId }],
         },
         include: { items: true },
       })
