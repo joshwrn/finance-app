@@ -1,6 +1,8 @@
+import type { FC } from 'react'
+import React from 'react'
+
 import type { Item as ItemType } from '@prisma/client'
 import { AnimatePresence } from 'framer-motion'
-import React from 'react'
 import styled from 'styled-components'
 
 import Item from './Item'
@@ -16,7 +18,7 @@ const Container = styled.div`
   position: relative;
 `
 
-const ItemGroup = ({ items }: { items: ItemType[] }) => {
+const ItemGroup: FC<{ items: ItemType[] }> = ({ items }) => {
   return (
     <Container>
       <h3>{items[0].group}</h3>

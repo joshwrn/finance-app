@@ -12,7 +12,7 @@ export const numberToCurrency = (
   }).format(Number(num))
 }
 
-export const filterHost = (url: string | null | undefined) => {
+export const filterHost = (url: string | null | undefined): string => {
   if (!url) return `-`
   let host
   try {
@@ -25,7 +25,7 @@ export const filterHost = (url: string | null | undefined) => {
   return remove.substring(0, index)
 }
 
-export const convertDate = (date: Date | string) => {
+export const convertDate = (date: Date | string): string => {
   const dateObj = new Date(date)
   return dateObj.toLocaleDateString(`en-US`, {
     month: `short`,

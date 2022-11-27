@@ -1,9 +1,9 @@
+import React, { useEffect } from 'react'
+
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import React from 'react'
 
-export default function login() {
+const Login: React.FC = () => {
   const { data: session, status } = useSession()
 
   const router = useRouter()
@@ -23,3 +23,5 @@ export default function login() {
     </div>
   )
 }
+
+export default Login

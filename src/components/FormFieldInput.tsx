@@ -1,5 +1,6 @@
+import type { FC, HTMLProps } from 'react'
+
 import { Field } from 'formik'
-import type { HTMLProps } from 'react'
 import { BsPatchCheckFill, BsFillPatchExclamationFill } from 'react-icons/bs'
 import styled, { css } from 'styled-components'
 
@@ -71,16 +72,7 @@ const Badge = styled.div<{ isValid: boolean }>`
   border-radius: 50%;
 `
 
-export const Input = ({
-  props,
-  errors,
-  touched,
-  title,
-  field,
-  placeholder,
-  fieldType = `text`,
-  value,
-}: {
+export const Input: FC<{
   props?: HTMLProps<HTMLInputElement>
   errors?: string
   touched?: boolean
@@ -89,6 +81,15 @@ export const Input = ({
   field: string
   placeholder?: string
   value: number | string
+}> = ({
+  props,
+  errors,
+  touched,
+  title,
+  field,
+  placeholder,
+  fieldType = `text`,
+  value,
 }) => {
   const invalid = Boolean(errors && touched)
   const isValid = Boolean(!errors && value !== ``)

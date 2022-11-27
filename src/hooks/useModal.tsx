@@ -1,8 +1,11 @@
+import type { FC } from 'react'
+import React, { useState } from 'react'
+
 import { motion, AnimatePresence } from 'framer-motion'
-import type React from 'react'
-import { useState } from 'react'
 import { Portal } from 'react-portal'
 import styled from 'styled-components'
+
+import type { SetState } from '~/customTypes'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -40,15 +43,13 @@ const Backdrop = styled.div`
 /* defining the modal component inside the hook causes 
 the exit animation to NOT be triggered */
 
-const ModalComp = ({
-  children,
-  isOpen,
-  setIsOpen,
-}: {
-  children?: React.ReactNode
+interface Modal {
   isOpen: boolean
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+  setIsOpen: SetState<boolean>
+  children?: React.ReactNode
+}
+
+const ModalComp: FC<Modal> = ({ children, isOpen, setIsOpen }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -68,7 +69,11 @@ const ModalComp = ({
   )
 }
 
-const useModal = () => {
+const useModal = (): {
+  isOpen: boolean
+  setIsOpen: SetState<boolean>
+  Modal: FC<Modal>
+} => {
   const [isOpen, setIsOpen] = useState(false)
 
   return {

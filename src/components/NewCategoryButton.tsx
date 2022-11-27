@@ -1,16 +1,13 @@
+import type { FC } from 'react'
+import React, { useState } from 'react'
+
 import type { Category } from '@prisma/client'
 import { userState } from '@state/user'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@utils/trpc'
-import axios from 'axios'
 import { Form, Formik } from 'formik'
-import type { FC } from 'react'
-import { useState } from 'react'
-import React from 'react'
 import { useRecoilValue } from 'recoil'
 import * as Yup from 'yup'
-
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import MainButton from './Button'
 import { DropdownMenu } from './DropdownMenu'

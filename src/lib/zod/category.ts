@@ -1,6 +1,5 @@
 import { CategoryType } from '@prisma/client'
-import type { Category } from '@prisma/client'
-import type { Prisma } from '@prisma/client'
+import type { Category, Prisma } from '@prisma/client'
 import { z } from 'zod'
 
 import type { Properties } from '.'

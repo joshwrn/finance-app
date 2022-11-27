@@ -1,6 +1,7 @@
-import { useOutsideClick } from '@hooks/useOutsideClick'
 import type { FC } from 'react'
-import type React from 'react'
+import React from 'react'
+
+import { useOutsideClick } from '@hooks/useOutsideClick'
 import styled from 'styled-components'
 
 export const DropdownMenu: FC<{

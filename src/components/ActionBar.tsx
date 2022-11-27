@@ -1,4 +1,6 @@
+import type { FC } from 'react'
 import React from 'react'
+
 import styled from 'styled-components'
 
 import TrashIcon from './TrashIcon'
@@ -15,7 +17,7 @@ const Container = styled.div`
   }
 `
 
-const ActionBar = () => {
+const ActionBar: FC = () => {
   return (
     <Container>
       <TrashIcon />

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/extensions
 import Background from '@assets/image/bg.png'
 import { RecoilInspector } from '@eyecuelab/recoil-devtools'
 import { GlobalStyle } from '@styles/GlobalStyle'
@@ -9,8 +10,7 @@ import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import Image from 'next/image'
 import { RecoilRoot } from 'recoil'
-import { ThemeProvider } from 'styled-components'
-import styled from 'styled-components'
+import styled, { ThemeProvider } from 'styled-components'
 
 const queryClient = new QueryClient()
 

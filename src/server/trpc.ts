@@ -1,4 +1,4 @@
-import { TRPCError, initTRPC } from '@trpc/server'
+import { initTRPC } from '@trpc/server'
 import SuperJSON from 'superjson'
 // Avoid exporting the entire t-object
 // since it's not very descriptive.

@@ -1,3 +1,6 @@
+import type { FC } from 'react'
+import { useEffect } from 'react'
+
 import ActionBar from '@components/ActionBar'
 import Category from '@components/Category'
 import Header from '@components/Header'
@@ -8,7 +11,6 @@ import { trpc } from '@utils/trpc'
 import { LayoutGroup, motion } from 'framer-motion'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import styled from 'styled-components'
 
@@ -38,7 +40,7 @@ const SectionHeader = styled(Header)`
   z-index: 1000;
 `
 
-export default function Home() {
+const Home: FC = () => {
   const { data: session, status } = useSession()
   const user = useRecoilValue(userState)
   const router = useRouter()
@@ -90,3 +92,5 @@ export default function Home() {
     </>
   )
 }
+
+export default Home

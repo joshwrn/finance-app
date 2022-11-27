@@ -1,6 +1,8 @@
+import type { FC } from 'react'
+import React from 'react'
+
 import { userState } from '@state/user'
 import { signOut } from 'next-auth/react'
-import React from 'react'
 import { FaClipboardList } from 'react-icons/fa'
 import { IoWallet } from 'react-icons/io5'
 import { useRecoilValue } from 'recoil'
@@ -45,7 +47,7 @@ const ImageContainer = styled.div`
   }
 `
 
-const Sidebar = () => {
+const Sidebar: FC = () => {
   const user = useRecoilValue(userState)
   const [showMenu, setShowMenu] = React.useState(false)
   return (

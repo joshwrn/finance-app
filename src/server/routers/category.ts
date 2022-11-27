@@ -1,6 +1,5 @@
 import prisma from '@lib/prisma'
 import { CategorySchema } from '@lib/zod/category'
-import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'

@@ -1,21 +1,21 @@
-import { getItemCount } from '@axios/items'
+import type { FC } from 'react'
+import React, { useMemo } from 'react'
+
 import Header from '@components/Header'
-import Item, { ItemContainer } from '@components/Item'
-import useIntersection from '@hooks/useIntersection'
+import Item from '@components/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
 import { currentHoverState, currentItemState } from '@state/drag'
 import { userState } from '@state/user'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
-import React, { useEffect, useMemo, useRef } from 'react'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
-import type { CategoryWithItems, UserWithItems } from '~/prisma/prismaTypes'
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import NewItemButton from './Button'
 import CreateNewItemModal from './CreateNewItemModal'
@@ -114,7 +114,7 @@ interface ItemWithGroup extends ItemType {
   items?: ItemType[]
 }
 
-const Category = ({ categoryId }: { categoryId: string }) => {
+const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   const queryClient = useQueryClient()
   const user = useRecoilValue(userState)
   const {

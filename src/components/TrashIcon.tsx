@@ -1,11 +1,11 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { useAtom, useAtomValue } from 'jotai'
+import type { FC } from 'react'
 import React from 'react'
+
+import { currentHoverState, currentItemState } from '@state/drag'
+import { AnimatePresence, motion } from 'framer-motion'
 import { IoTrash } from 'react-icons/io5'
 import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
-
-import { currentHoverState, currentItemState } from '@state/drag'
 
 const DragContainer = styled(motion.div)`
   border-radius: 50%;
@@ -47,7 +47,7 @@ const trashVariants = {
   }),
 }
 
-const TrashIcon = () => {
+const TrashIcon: FC = () => {
   const [currentItem, setCurrentItem] = useRecoilState(currentItemState)
   const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
   return (

@@ -1,4 +1,6 @@
+import type { FC } from 'react'
 import React from 'react'
+
 import styled, { css } from 'styled-components'
 
 export const tableLayout = css`
@@ -24,7 +26,7 @@ const Container = styled.div`
   ${tableLayout}
 `
 
-const TableLabels = ({ labels }: { labels: string[] }) => {
+const TableLabels: FC<{ labels: string[] }> = ({ labels }) => {
   return (
     <Container>
       {labels.map((label) => {

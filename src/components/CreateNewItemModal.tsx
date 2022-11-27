@@ -1,8 +1,9 @@
+import type { FC } from 'react'
+
 import { VALID_URL } from '@lib/yup'
 import { userState } from '@state/user'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@utils/trpc'
-import axios from 'axios'
 import { Formik, Form } from 'formik'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
@@ -50,10 +51,6 @@ interface InputValues {
   link: string
   price: number
 }
-interface MutationArgs extends InputValues {
-  categoryId: string
-  userId: string
-}
 
 const ItemInputSchema = Yup.object().shape({
   name: Yup.string()
@@ -64,13 +61,10 @@ const ItemInputSchema = Yup.object().shape({
   link: Yup.string().matches(VALID_URL, `Invalid URL`),
 })
 
-const CreateNewItemModal = ({
-  categoryId,
-  setIsOpen,
-}: {
+const CreateNewItemModal: FC<{
   categoryId: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+}> = ({ categoryId, setIsOpen }) => {
   const queryClient = useQueryClient()
   const user = useRecoilValue(userState)
   const mutation = trpc.item.add.useMutation({

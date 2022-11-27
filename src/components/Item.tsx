@@ -1,13 +1,14 @@
+import type { FC } from 'react'
+import React from 'react'
+
 import useIntersection from '@hooks/useIntersection'
-import type { Category, Item as ItemType } from '@prisma/client'
+import type { Item as ItemType } from '@prisma/client'
 import { currentItemState, currentHoverState } from '@state/drag'
 import { userState } from '@state/user'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@utils/trpc'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
 import { motion } from 'framer-motion'
-import type { FC } from 'react'
-import type React from 'react'
 import { BiCategory } from 'react-icons/bi'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
 import styled, { keyframes } from 'styled-components'
@@ -71,7 +72,7 @@ export const itemVariants = {
   initial: {
     opacity: 0,
   },
-  animate: (isOverTrash: boolean) => ({
+  animate: (isOverTrash: boolean): any => ({
     opacity: isOverTrash ? 0.5 : 1,
     scale: isOverTrash ? 0.7 : 1,
     transition: {
@@ -79,7 +80,7 @@ export const itemVariants = {
       duration: 0.5,
     },
   }),
-  exit: (isOverTrash: boolean) => ({
+  exit: (isOverTrash: boolean): any => ({
     opacity: 0,
     bottom: isOverTrash ? -500 : 0,
     transition: {
