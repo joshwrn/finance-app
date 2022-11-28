@@ -31,7 +31,7 @@ export const useGetUser = (): void => {
 
   useEffect(() => {
     if (!session && status === `unauthenticated`) {
-      router.push(`/login`)
+      router.push(`/`)
     }
   }, [session, status])
 

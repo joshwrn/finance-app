@@ -6,13 +6,16 @@ import Item from '@components/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
-import { currentHoverState, currentItemState } from '@state/drag'
-import { categoryState } from '@state/entities/category'
+import { currentHoverState, currentDragState } from '@state/drag'
+import {
+  categoryState,
+  useDeleteCategoryMutation,
+} from '@state/entities/category'
 import { userState } from '@state/user'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import NewItemButton from './Button'
@@ -26,7 +29,6 @@ const Container = styled(motion.div)`
   gap: 20px;
   width: 100%;
   flex-shrink: 0;
-  height: 50px;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -44,9 +46,12 @@ const HeadingContainer = styled.div<{ isStuck: boolean }>`
   top: -1px;
   padding-top: 30px;
   padding-bottom: 30px;
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: 30px;
+  padding-right: 30px;
   border: 1px solid transparent;
+  border-radius: 20px;
+  margin-top: 15px;
+  transition: background-color 0.1s ease-in-out;
   ::before {
     content: '';
     position: absolute;
@@ -84,10 +89,11 @@ const HeadingContainer = styled.div<{ isStuck: boolean }>`
     ${NewItemButton} {
       opacity: 1;
     }
+    background-color: var(--bg-item);
   }
   ${NewItemButton} {
     opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+    transition: opacity 0.4s ease-in-out;
   }
 `
 const Badge = styled.div`
@@ -138,8 +144,22 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   const [isStuck, ref] = useSticky()
   const controls = useDragControls()
 
-  const currentItem = useRecoilValue(currentItemState)
-  const currentHover = useRecoilValue(currentHoverState)
+  const [currentItem, setCurrentItem] = useRecoilState(currentDragState)
+  const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
+  const isOverTrash = currentHover === `trash`
+
+  const { mutate } = useDeleteCategoryMutation()
+  const handleDragEnd = () => {
+    if (isOverTrash) {
+      mutate({ id: categoryId })
+    }
+    setCurrentHover(null)
+    setCurrentItem({ id: null, type: null })
+  }
+
+  const handleDragStart = () => {
+    setCurrentItem({ id: categoryId, type: `category` })
+  }
 
   return (
     <Container
@@ -148,19 +168,13 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
       drag
       layout={true}
       dragSnapToOrigin
-      initial={{ height: `auto` }}
-      animate={{
-        height: `auto`,
-      }}
-      style={{
-        height: `auto`,
-      }}
       whileDrag={{
-        scale: 0.25,
-        opacity: 0.5,
-        // translateX: `25%`,
-        translateY: `-40%`,
+        opacity: 0.35,
+        zIndex: 999,
+        position: `relative`,
       }}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <CreateNewItemModal
@@ -198,13 +212,13 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
           <AnimatePresence initial={false}>
             {items.map((item: ItemWithGroup) => {
               if (!item.isGroup) {
-                const isCurrentItem = currentItem === item.id
+                const isCurrentItem = currentItem.id === item.id
                 return (
                   <Item
                     item={item}
                     key={item.name + item.id}
                     isCurrentItem={isCurrentItem}
-                    isOverTrash={currentHover === `trash` && isCurrentItem}
+                    isOverTrash={isOverTrash && isCurrentItem}
                   />
                 )
               } else if (item.isGroup && item.items) {

@@ -46,7 +46,7 @@ const InputsContainer = styled.div`
 interface InputValues {
   name: string
   link: string
-  price: number
+  price: string
 }
 
 const ItemInputSchema = Yup.object().shape({
@@ -76,10 +76,15 @@ const CreateNewItemModal: FC<{
         initialValues={{
           name: ``,
           link: ``,
-          price: 0,
+          price: ``,
         }}
         onSubmit={(values: InputValues) => {
-          mutate({ ...values, categoryId, userId: user.id })
+          mutate({
+            ...values,
+            categoryId,
+            userId: user.id,
+            price: Number(values.price),
+          })
         }}
         validationSchema={ItemInputSchema}
       >

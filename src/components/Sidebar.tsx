@@ -3,8 +3,9 @@ import React from 'react'
 
 import { userState } from '@state/user'
 import { signOut } from 'next-auth/react'
-import { FaClipboardList } from 'react-icons/fa'
-import { IoWallet } from 'react-icons/io5'
+import Link from 'next/link'
+import { BsWallet2 } from 'react-icons/bs'
+import { IoPricetagOutline } from 'react-icons/io5'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
@@ -26,6 +27,10 @@ const Container = styled.div`
   svg {
     cursor: pointer;
     fill: var(--fc-tertiary);
+    stroke: var(--fc-tertiary);
+    path {
+      stroke: var(--fc-tertiary);
+    }
   }
 `
 const Top = styled.div`
@@ -60,8 +65,12 @@ const Sidebar: FC = () => {
           <img src={user.image ?? ``} width={40} height={40} />
         </ImageContainer>
         <Divider />
-        <FaClipboardList size={26} />
-        <IoWallet size={26} />
+        <Link href={`/expenses`}>
+          <IoPricetagOutline size={26} />
+        </Link>
+        <Link href={`/wishlist`}>
+          <BsWallet2 size={22} />
+        </Link>
       </Top>
     </Container>
   )

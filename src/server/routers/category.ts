@@ -29,7 +29,7 @@ export const categoryRouter = router({
         categories,
       }
     }),
-  add: procedure
+  create: procedure
     .input(
       z.object(CategorySchema.shape).pick({
         name: true,
@@ -51,13 +51,17 @@ export const categoryRouter = router({
     .input(
       CategorySchema.pick({
         id: true,
-        userId: true,
       }),
     )
     .mutation(async ({ input }) => {
       const category = await prisma.category.delete({
         where: {
           id: input.id,
+        },
+      })
+      await prisma.item.deleteMany({
+        where: {
+          categoryId: input.id,
         },
       })
       return { category }

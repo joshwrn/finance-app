@@ -2,9 +2,11 @@ import { atom } from 'recoil'
 
 export const currentHoverState = atom<string | null>({
   key: `currentHoverState`,
-  default: ``,
+  default: null,
 })
-export const currentItemState = atom<string | null>({
-  key: `currentItemState`,
-  default: ``,
-})
+export const currentDragState = atom<{ id: string | null; type: string | null }>(
+  {
+    key: `currentItemState`,
+    default: { id: null, type: null },
+  },
+)
