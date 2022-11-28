@@ -10,6 +10,7 @@ export const themeColors = {
   'black-35': `rgba(0, 0, 0, 0.35)`,
   'black-50': `rgba(0, 0, 0, 0.50)`,
   'black-75': `rgba(0, 0, 0, 0.75)`,
+  'black-80': `rgba(0, 0, 0, 0.80)`,
   'black-90': `rgba(0, 0, 0, .9)`,
   'black-100': `rgba(0, 0, 0, 1)`,
 }
@@ -19,7 +20,7 @@ export const darkTheme = {
     type: `dark`,
   },
   bg: {
-    primary: themeColors[`black-75`],
+    primary: themeColors[`black-80`],
     sidebar: themeColors[`black-35`],
     item: themeColors[`white-05`],
   },
@@ -45,7 +46,7 @@ export const lightTheme = {
   type: `light`,
   bg: {
     primary: themeColors[`white-100`],
-    sidebar: themeColors[`white-100`],
+    sidebar: themeColors[`black-05`],
     item: themeColors[`black-05`],
   },
   fc: {
@@ -56,7 +57,7 @@ export const lightTheme = {
     error: themeColors[`coral`],
   },
   btn: {
-    primary: themeColors[`eucalyptus`],
+    primary: `rgb(35, 169, 127)`,
   },
   badge: {
     primary: themeColors[`coral`],

@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import React from 'react'
 
-import { currentHoverState, currentItemState } from '@state/drag'
+import { currentDragState, currentHoverState } from '@state/drag'
 import { AnimatePresence, motion } from 'framer-motion'
 import { IoTrash } from 'react-icons/io5'
 import { useRecoilState } from 'recoil'
@@ -48,11 +48,11 @@ const trashVariants = {
 }
 
 const TrashIcon: FC = () => {
-  const [currentItem, setCurrentItem] = useRecoilState(currentItemState)
+  const [currentItem, setCurrentItem] = useRecoilState(currentDragState)
   const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
   return (
     <AnimatePresence>
-      {currentItem && (
+      {currentItem.id && (
         <DragContainer
           onMouseOver={() => setCurrentHover(`trash`)}
           onMouseLeave={() => setCurrentHover(null)}

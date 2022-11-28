@@ -3,17 +3,14 @@ import React from 'react'
 
 import useIntersection from '@hooks/useIntersection'
 import type { Item as ItemType } from '@prisma/client'
-import { currentItemState, currentHoverState } from '@state/drag'
-import { userState } from '@state/user'
-import { useQueryClient } from '@tanstack/react-query'
-import { trpc } from '@utils/trpc'
+import { currentHoverState, currentDragState } from '@state/drag'
+import { useDeleteItemMutation } from '@state/entities/item'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
+import type { Variants } from 'framer-motion'
 import { motion } from 'framer-motion'
 import { BiCategory } from 'react-icons/bi'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import styled, { keyframes } from 'styled-components'
-
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import { tableLayout } from './TableLabels'
 
@@ -68,11 +65,11 @@ const NameContainer = styled.div`
   }
 `
 
-export const itemVariants = {
+export const itemVariants: Variants = {
   initial: {
     opacity: 0,
   },
-  animate: (isOverTrash: boolean): any => ({
+  animate: (isOverTrash: boolean) => ({
     opacity: isOverTrash ? 0.5 : 1,
     scale: isOverTrash ? 0.7 : 1,
     transition: {
@@ -80,7 +77,7 @@ export const itemVariants = {
       duration: 0.5,
     },
   }),
-  exit: (isOverTrash: boolean): any => ({
+  exit: (isOverTrash: boolean) => ({
     opacity: 0,
     bottom: isOverTrash ? -500 : 0,
     transition: {
@@ -130,51 +127,21 @@ const Item: FC<{
   isOverTrash?: boolean
 }> = ({ item, isCurrentItem = false, isOverTrash = false }) => {
   const { id, categoryId } = item
-  const setCurrentItem = useSetRecoilState(currentItemState)
-  const user = useRecoilValue(userState)
+  const setCurrentItem = useSetRecoilState(currentDragState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
-  const queryClient = useQueryClient()
   const [myRef, inViewport] = useIntersection()
-
-  const deleteItem = trpc.item.delete.useMutation()
+  const { mutate } = useDeleteItemMutation()
 
   const handleDragEnd = () => {
     if (isOverTrash) {
-      deleteItem.mutate({ id, userId: user.id })
-      queryClient.setQueryData<{ categories: CategoryWithItems[] }>(
-        [
-          [`category`, `list`],
-          {
-            input: { userId: user.id, categoryType: `WISHLIST` },
-            type: `query`,
-          },
-        ],
-        (oldData) => {
-          if (!oldData) return
-          return {
-            categories: [
-              ...oldData.categories.map((category: CategoryWithItems) => {
-                if (category.id === categoryId) {
-                  return {
-                    ...category,
-                    items: category.items.filter(
-                      (item: ItemType) => item.id !== id,
-                    ),
-                  }
-                }
-                return category
-              }),
-            ],
-          }
-        },
-      )
+      mutate({ id, categoryId })
     }
     setCurrentHover(null)
-    setCurrentItem(null)
+    setCurrentItem({ id: null, type: null })
   }
 
   const handleDragStart = () => {
-    setCurrentItem(id)
+    setCurrentItem({ id, type: `item` })
   }
   return (
     <ItemContainer

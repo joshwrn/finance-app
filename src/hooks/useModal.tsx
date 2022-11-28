@@ -1,11 +1,10 @@
 import type { FC } from 'react'
 import React, { useState } from 'react'
 
+import type { SetState } from '@state/index'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Portal } from 'react-portal'
 import styled from 'styled-components'
-
-import type { SetState } from '~/customTypes'
 
 const Container = styled(motion.div)`
   display: flex;

@@ -1,15 +1,12 @@
 import type { FC } from 'react'
 
 import { VALID_URL } from '@lib/yup'
+import { useCreateItemMutation } from '@state/entities/item'
 import { userState } from '@state/user'
-import { useQueryClient } from '@tanstack/react-query'
-import { trpc } from '@utils/trpc'
 import { Formik, Form } from 'formik'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import * as Yup from 'yup'
-
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import MainButton from './Button'
 import { Divider } from './Divider'
@@ -49,7 +46,7 @@ const InputsContainer = styled.div`
 interface InputValues {
   name: string
   link: string
-  price: number
+  price: string
 }
 
 const ItemInputSchema = Yup.object().shape({
@@ -65,37 +62,10 @@ const CreateNewItemModal: FC<{
   categoryId: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }> = ({ categoryId, setIsOpen }) => {
-  const queryClient = useQueryClient()
   const user = useRecoilValue(userState)
-  const mutation = trpc.item.add.useMutation({
-    onSuccess: (res) => {
-      queryClient.setQueryData<{ categories: CategoryWithItems[] }>(
-        [
-          [`category`, `list`],
-          {
-            input: { userId: user.id, categoryType: `WISHLIST` },
-            type: `query`,
-          },
-        ],
-        (oldData) => {
-          if (!oldData) return
-          return {
-            categories: [
-              ...oldData.categories.map((category: CategoryWithItems) => {
-                if (category.id === categoryId) {
-                  return {
-                    ...category,
-                    items: [...category.items, res.item],
-                  }
-                }
-                return category
-              }),
-            ],
-          }
-        },
-      )
-      setIsOpen(false)
-    },
+  const { mutate } = useCreateItemMutation({
+    categoryId,
+    action: () => setIsOpen(false),
   })
 
   return (
@@ -106,10 +76,15 @@ const CreateNewItemModal: FC<{
         initialValues={{
           name: ``,
           link: ``,
-          price: 0,
+          price: ``,
         }}
         onSubmit={(values: InputValues) => {
-          mutation.mutate({ ...values, categoryId, userId: user.id })
+          mutate({
+            ...values,
+            categoryId,
+            userId: user.id,
+            price: Number(values.price),
+          })
         }}
         validationSchema={ItemInputSchema}
       >
