@@ -4,16 +4,12 @@ import React from 'react'
 import useIntersection from '@hooks/useIntersection'
 import type { Item as ItemType } from '@prisma/client'
 import { currentItemState, currentHoverState } from '@state/drag'
-import { userState } from '@state/user'
-import { useQueryClient } from '@tanstack/react-query'
-import { trpc } from '@utils/trpc'
+import { useDeleteItemMutation } from '@state/entities/item'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
 import { motion } from 'framer-motion'
 import { BiCategory } from 'react-icons/bi'
-import { useSetRecoilState, useRecoilValue } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import styled, { keyframes } from 'styled-components'
-
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import { tableLayout } from './TableLabels'
 
@@ -131,43 +127,13 @@ const Item: FC<{
 }> = ({ item, isCurrentItem = false, isOverTrash = false }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentItemState)
-  const user = useRecoilValue(userState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
-  const queryClient = useQueryClient()
   const [myRef, inViewport] = useIntersection()
-
-  const deleteItem = trpc.item.delete.useMutation()
+  const { mutate } = useDeleteItemMutation()
 
   const handleDragEnd = () => {
     if (isOverTrash) {
-      deleteItem.mutate({ id, userId: user.id })
-      queryClient.setQueryData<{ categories: CategoryWithItems[] }>(
-        [
-          [`category`, `list`],
-          {
-            input: { userId: user.id, categoryType: `WISHLIST` },
-            type: `query`,
-          },
-        ],
-        (oldData) => {
-          if (!oldData) return
-          return {
-            categories: [
-              ...oldData.categories.map((category: CategoryWithItems) => {
-                if (category.id === categoryId) {
-                  return {
-                    ...category,
-                    items: category.items.filter(
-                      (item: ItemType) => item.id !== id,
-                    ),
-                  }
-                }
-                return category
-              }),
-            ],
-          }
-        },
-      )
+      mutate({ id, categoryId })
     }
     setCurrentHover(null)
     setCurrentItem(null)

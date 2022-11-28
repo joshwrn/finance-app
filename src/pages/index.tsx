@@ -1,17 +1,14 @@
 import type { FC } from 'react'
-import { useEffect } from 'react'
 
 import ActionBar from '@components/ActionBar'
 import Category from '@components/Category'
 import Header from '@components/Header'
 import { NewCategoryButton } from '@components/NewCategoryButton'
 import Sidebar from '@components/Sidebar'
-import { DEFAULT_USER, userState } from '@state/user'
-import { trpc } from '@utils/trpc'
+import { categoryState, useCategoryList } from '@state/entities/category'
+import { useGetUser, useUser } from '@state/user'
 import { LayoutGroup, motion } from 'framer-motion'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
@@ -41,38 +38,10 @@ const SectionHeader = styled(Header)`
 `
 
 const Home: FC = () => {
-  const { data: session, status } = useSession()
-  const user = useRecoilValue(userState)
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!session && status === `unauthenticated`) {
-      router.push(`/login`)
-    }
-  }, [session, status])
-
-  const { data } = trpc.category.list.useQuery(
-    { userId: user.id, categoryType: `WISHLIST` },
-    {
-      enabled: user.id !== ``,
-      placeholderData: { categories: [] },
-    },
-  )
-
-  const categories = data?.categories
-  const setUser = useSetRecoilState(userState)
-
-  trpc.user.current.useQuery(
-    {
-      email: session?.user?.email as string,
-    },
-    {
-      placeholderData: DEFAULT_USER,
-      enabled: !!session,
-      onSuccess: (data) => data.user && setUser(data.user),
-    },
-  )
-
+  useCategoryList({ categoryType: `WISHLIST` })
+  useGetUser()
+  const categories = useRecoilValue(categoryState)
+  const user = useUser()
   return (
     <>
       <Sidebar />
@@ -84,7 +53,7 @@ const Home: FC = () => {
         </SectionHeader>
         <p>Hello, {user.name?.split(` `)[0]}!</p>
         <LayoutGroup>
-          {categories?.map((category: CategoryWithItems) => (
+          {categories.map((category: CategoryWithItems) => (
             <Category key={category.id + `wishlist`} categoryId={category.id} />
           ))}
         </LayoutGroup>

@@ -2,8 +2,6 @@ import prisma from '@lib/prisma'
 import { CategorySchema } from '@lib/zod/category'
 import { z } from 'zod'
 
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
-
 import { router, procedure } from '../trpc'
 
 /**
@@ -29,7 +27,7 @@ export const categoryRouter = router({
       })
       return {
         categories,
-      } as { categories: CategoryWithItems[] }
+      }
     }),
   add: procedure
     .input(
@@ -45,6 +43,21 @@ export const categoryRouter = router({
           name: input.name,
           userId: input.userId,
           categoryType: input.categoryType,
+        },
+      })
+      return { category }
+    }),
+  delete: procedure
+    .input(
+      CategorySchema.pick({
+        id: true,
+        userId: true,
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const category = await prisma.category.delete({
+        where: {
+          id: input.id,
         },
       })
       return { category }

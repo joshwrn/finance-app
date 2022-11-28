@@ -19,7 +19,6 @@ const Login: React.FC = () => {
       log in
       <button onClick={() => signIn()}>sign in</button>
       <button onClick={() => signOut()}>sign out</button>
-      <button onClick={() => console.log(session)}>log session</button>
     </div>
   )
 }

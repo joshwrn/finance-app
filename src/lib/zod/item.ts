@@ -1,5 +1,4 @@
 import type { Item } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime'
 import { z } from 'zod'
 
 import type { Properties } from '.'
@@ -14,4 +13,12 @@ export const ItemSchema = z.object<Properties<Item>>({
   group: z.boolean(),
   link: z.string().nullable(),
   datePurchased: z.date().nullable(),
+})
+
+export const CreateItemInput = ItemSchema.pick({
+  name: true,
+  userId: true,
+  price: true,
+  link: true,
+  categoryId: true,
 })

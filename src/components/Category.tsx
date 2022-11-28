@@ -7,15 +7,13 @@ import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
 import { currentHoverState, currentItemState } from '@state/drag'
+import { categoryState } from '@state/entities/category'
 import { userState } from '@state/user'
-import { useQueryClient } from '@tanstack/react-query'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
-
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
 import NewItemButton from './Button'
 import CreateNewItemModal from './CreateNewItemModal'
@@ -115,7 +113,6 @@ interface ItemWithGroup extends ItemType {
 }
 
 const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
-  const queryClient = useQueryClient()
   const user = useRecoilValue(userState)
   const {
     isLoading,
@@ -128,17 +125,8 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
 
   const count = sCount as unknown as number
 
-  const data: { categories: CategoryWithItems[] } | undefined =
-    queryClient.getQueryData(
-      [
-        [`category`, `list`],
-        { input: { userId: user.id, categoryType: `WISHLIST` } },
-      ],
-      { exact: false },
-    )
-
-  const categoryData = data?.categories.find(
-    (category: CategoryWithItems) => category.id === categoryId,
+  const categoryData = useRecoilValue(categoryState).find(
+    (c) => c.id === categoryId,
   )
 
   const items = categoryData?.items || []
