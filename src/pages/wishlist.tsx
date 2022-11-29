@@ -1,9 +1,9 @@
 import type { FC } from 'react'
 
-import ActionBar from '@components/ActionBar'
-import Category from '@components/Category'
+import ActionBar from '@components/ActionBar/ActionBar'
+import Category from '@components/Category/Category'
 import Header from '@components/Header'
-import { NewCategoryButton } from '@components/NewCategoryButton'
+import { NewCategoryButton } from '@components/Category/NewCategoryButton'
 import Sidebar from '@components/Sidebar'
 import { categoryState, useCategoryListQuery } from '@state/entities/category'
 import { useGetUser } from '@state/user'

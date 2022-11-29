@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import React, { useMemo } from 'react'
 
 import Header from '@components/Header'
-import Item from '@components/Item'
+import Item from '@components/Item/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
@@ -18,10 +18,10 @@ import { AnimatePresence, motion, useDragControls } from 'framer-motion'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
-import NewItemButton from './Button'
-import CreateNewItemModal from './CreateNewItemModal'
-import ItemGroup from './ItemGroup'
-import TableLabels from './TableLabels'
+import NewItemButton from '../Button'
+import CreateNewItemModal from '../Item/CreateNewItemModal'
+import ItemGroup from '../Item/ItemGroup'
+import TableLabels from '../TableLabels'
 
 const Container = styled(motion.div)`
   display: flex;

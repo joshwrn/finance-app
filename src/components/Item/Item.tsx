@@ -12,7 +12,7 @@ import { BiCategory } from 'react-icons/bi'
 import { useSetRecoilState } from 'recoil'
 import styled, { keyframes } from 'styled-components'
 
-import { tableLayout } from './TableLabels'
+import { tableLayout } from '../TableLabels'
 
 const fade = keyframes`
   from {

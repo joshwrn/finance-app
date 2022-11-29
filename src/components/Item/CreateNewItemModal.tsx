@@ -8,9 +8,9 @@ import { useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 
-import MainButton from './Button'
-import { Divider } from './Divider'
-import { Input } from './FormFieldInput'
+import MainButton from '../Button'
+import { Divider } from '../Divider'
+import { Input } from '../FormFieldInput'
 
 const Container = styled.div`
   display: flex;

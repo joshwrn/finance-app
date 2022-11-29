@@ -7,9 +7,9 @@ import { Form, Formik } from 'formik'
 import { useRecoilValue } from 'recoil'
 import * as Yup from 'yup'
 
-import MainButton from './Button'
-import { DropdownMenu } from './DropdownMenu'
-import { Input } from './FormFieldInput'
+import MainButton from '../Button'
+import { DropdownMenu } from '../DropdownMenu'
+import { Input } from '../FormFieldInput'
 
 const ItemInputSchema = Yup.object().shape({
   name: Yup.string()
