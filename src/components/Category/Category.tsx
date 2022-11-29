@@ -231,7 +231,13 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
                   />
                 )
               } else if (item.isGroup && item.items) {
-                return <ItemGroup key={item.name + `group`} items={item.items} />
+                return (
+                  <ItemGroup
+                    currentHover={currentHover}
+                    key={item.name + `group`}
+                    items={item.items}
+                  />
+                )
               }
             })}
           </AnimatePresence>
