@@ -1,8 +1,18 @@
 import { atom } from 'recoil'
 
-export const currentHoverState = atom<string | null>({
+export type HoverTypes = `category` | `move` | `trash`
+
+export const DEFAULT_HOVER_STATE = {
+  type: null as HoverTypes | null,
+  id: null as string | null,
+}
+
+export const currentHoverState = atom<{
+  type: HoverTypes | null
+  id: string | null
+}>({
   key: `currentHoverState`,
-  default: null,
+  default: DEFAULT_HOVER_STATE,
 })
 export const currentDragState = atom<{ id: string | null; type: string | null }>(
   {

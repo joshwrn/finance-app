@@ -37,7 +37,7 @@ const SectionHeader = styled(Header)`
 `
 
 const Home: FC = () => {
-  useCategoryListQuery({ categoryType: `WISHLIST` })
+  useCategoryListQuery({ categoryType: `EXPENSE` })
   useGetUser()
   const categories = useRecoilValue(categoryState)
   return (
@@ -46,7 +46,7 @@ const Home: FC = () => {
       <ActionBar />
       <Container>
         <SectionHeader>
-          <h1>Wishlist</h1>
+          <h1>Expenses</h1>
           <NewCategoryButton />
         </SectionHeader>
         {/* <p>Hello, {user.name?.split(` `)[0]}!</p> */}

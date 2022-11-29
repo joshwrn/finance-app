@@ -1,5 +1,6 @@
 import prisma from '@lib/prisma'
 import { CreateItemInput, ItemSchema } from '@lib/zod/item'
+import { z } from 'zod'
 
 import { router, procedure } from '../trpc'
 
@@ -16,6 +17,48 @@ export const itemRouter = router({
     })
     return { item }
   }),
+  move: procedure
+    .input(
+      ItemSchema.pick({
+        id: true,
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const findItem = await prisma.item.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+      if (!findItem) {
+        throw new Error(`Item not found`)
+      }
+      const item = await prisma.item.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          datePurchased: findItem.datePurchased ? null : new Date(),
+        },
+      })
+      return { item }
+    }),
+  switchCategory: procedure
+    .input(
+      ItemSchema.pick({
+        id: true,
+      }).extend({ newCategoryId: z.string() }),
+    )
+    .mutation(async ({ input }) => {
+      const item = await prisma.item.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          categoryId: input.newCategoryId,
+        },
+      })
+      return { item }
+    }),
   delete: procedure
     .input(
       ItemSchema.pick({

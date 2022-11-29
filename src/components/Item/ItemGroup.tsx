@@ -18,13 +18,20 @@ const Container = styled.div`
   position: relative;
 `
 
-const ItemGroup: FC<{ items: ItemType[] }> = ({ items }) => {
+const ItemGroup: FC<{
+  items: ItemType[]
+  currentHover: { id: string | null; type: string | null }
+}> = ({ items, currentHover }) => {
   return (
     <Container>
       <h3>{items[0].group}</h3>
       <AnimatePresence>
         {items.map((item) => (
-          <Item item={item} key={item.name + item.id + items[0].group} />
+          <Item
+            currentHover={currentHover}
+            item={item}
+            key={item.name + item.id + items[0].group}
+          />
         ))}
       </AnimatePresence>
     </Container>

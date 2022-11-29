@@ -1,7 +1,11 @@
 import type { FC } from 'react'
 import React from 'react'
 
-import { currentDragState, currentHoverState } from '@state/drag'
+import {
+  currentDragState,
+  currentHoverState,
+  DEFAULT_HOVER_STATE,
+} from '@state/drag'
 import { AnimatePresence, motion } from 'framer-motion'
 import { IoTrash } from 'react-icons/io5'
 import { useRecoilState } from 'recoil'
@@ -18,6 +22,9 @@ const DragContainer = styled(motion.div)`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  svg {
+    fill: var(--fc-secondary);
+  }
   :hover {
     svg {
       fill: var(--color-coral);
@@ -54,13 +61,13 @@ const TrashIcon: FC = () => {
     <AnimatePresence>
       {currentItem.id && (
         <DragContainer
-          onMouseOver={() => setCurrentHover(`trash`)}
-          onMouseLeave={() => setCurrentHover(null)}
+          onMouseOver={() => setCurrentHover({ type: `trash`, id: null })}
+          onMouseLeave={() => setCurrentHover(DEFAULT_HOVER_STATE)}
           variants={trashVariants}
           initial={`initial`}
           animate={`animate`}
           exit={`exit`}
-          custom={currentHover === `trash`}
+          custom={currentHover.type === `trash`}
         >
           <IoTrash size={36} />
         </DragContainer>
