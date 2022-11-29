@@ -6,7 +6,11 @@ import Item from '@components/Item/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { Item as ItemType } from '@prisma/client'
-import { currentHoverState, currentDragState } from '@state/drag'
+import {
+  currentHoverState,
+  currentDragState,
+  DEFAULT_HOVER_STATE,
+} from '@state/drag'
 import {
   categoryState,
   useDeleteCategoryMutation,
@@ -146,14 +150,14 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
 
   const [currentItem, setCurrentItem] = useRecoilState(currentDragState)
   const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
-  const isOverTrash = currentHover === `trash`
+  const isOverTrash = currentHover.type === `trash`
 
   const { mutate } = useDeleteCategoryMutation()
   const handleDragEnd = () => {
     if (isOverTrash) {
       mutate({ id: categoryId })
     }
-    setCurrentHover(null)
+    setCurrentHover(DEFAULT_HOVER_STATE)
     setCurrentItem({ id: null, type: null })
   }
 
@@ -167,7 +171,7 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
       dragControls={controls}
       drag
       layout={true}
-      dragSnapToOrigin
+      dragSnapToOrigin={currentHover.type ? false : true}
       whileDrag={{
         opacity: 0.35,
         zIndex: 999,
@@ -175,6 +179,11 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
       }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onMouseOver={() =>
+        currentItem.type === `item` &&
+        setCurrentHover({ id: categoryId, type: `category` })
+      }
+      onMouseLeave={() => setCurrentHover(DEFAULT_HOVER_STATE)}
     >
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
         <CreateNewItemModal
@@ -218,7 +227,7 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
                     item={item}
                     key={item.name + item.id}
                     isCurrentItem={isCurrentItem}
-                    isOverTrash={isOverTrash && isCurrentItem}
+                    currentHover={currentHover}
                   />
                 )
               } else if (item.isGroup && item.items) {

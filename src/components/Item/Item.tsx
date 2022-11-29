@@ -3,8 +3,16 @@ import React from 'react'
 
 import useIntersection from '@hooks/useIntersection'
 import type { Item as ItemType } from '@prisma/client'
-import { currentHoverState, currentDragState } from '@state/drag'
-import { useDeleteItemMutation } from '@state/entities/item'
+import {
+  currentHoverState,
+  currentDragState,
+  DEFAULT_HOVER_STATE,
+} from '@state/drag'
+import {
+  useDeleteItemMutation,
+  useMoveItemMutation,
+  useSwitchItemCategoryMutation,
+} from '@state/entities/item'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
 import type { Variants } from 'framer-motion'
 import { motion } from 'framer-motion'
@@ -124,19 +132,33 @@ const ItemWithState = ({
 const Item: FC<{
   item: ItemType
   isCurrentItem?: boolean
-  isOverTrash?: boolean
-}> = ({ item, isCurrentItem = false, isOverTrash = false }) => {
+  currentHover: { id: string | null; type: string | null }
+}> = ({ item, isCurrentItem = false, currentHover }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentDragState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
   const [myRef, inViewport] = useIntersection()
-  const { mutate } = useDeleteItemMutation()
+  const { mutate: deleteItem } = useDeleteItemMutation()
+  const { mutate: moveItem } = useMoveItemMutation()
+  const { mutate: switchCategory } = useSwitchItemCategoryMutation()
 
   const handleDragEnd = () => {
-    if (isOverTrash) {
-      mutate({ id, categoryId })
+    switch (currentHover.type) {
+      case `trash`:
+        deleteItem({ id, categoryId })
+        break
+      case `move`:
+        moveItem({ id, categoryId })
+        break
+      case `category`:
+        if (currentHover.id !== categoryId) {
+          switchCategory({ item: item, newCategoryId: currentHover.id })
+        }
+        break
+      default:
+        break
     }
-    setCurrentHover(null)
+    setCurrentHover(DEFAULT_HOVER_STATE)
     setCurrentItem({ id: null, type: null })
   }
 
@@ -149,10 +171,10 @@ const Item: FC<{
       initial={`initial`}
       animate={`animate`}
       exit={`exit`}
-      custom={isOverTrash}
+      custom={currentHover.id === id}
       layout={true}
       drag
-      dragSnapToOrigin={isOverTrash ? false : true}
+      dragSnapToOrigin={currentHover.type ? true : false}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       whileDrag={{

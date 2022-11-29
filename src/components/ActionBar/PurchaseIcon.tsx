@@ -7,7 +7,7 @@ import {
   DEFAULT_HOVER_STATE,
 } from '@state/drag'
 import { AnimatePresence, motion } from 'framer-motion'
-import { IoTrash } from 'react-icons/io5'
+import { HiOutlineShoppingCart } from 'react-icons/hi'
 import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
 
@@ -23,11 +23,11 @@ const DragContainer = styled(motion.div)`
   align-items: center;
   cursor: pointer;
   svg {
-    fill: var(--fc-secondary);
+    stroke: var(--fc-secondary);
   }
   :hover {
     svg {
-      fill: var(--color-coral);
+      stroke: var(--color-eucalyptus);
     }
   }
   svg {
@@ -54,26 +54,24 @@ const trashVariants = {
   }),
 }
 
-const TrashIcon: FC = () => {
+export const PurchaseIcon: FC = () => {
   const [currentItem, setCurrentItem] = useRecoilState(currentDragState)
   const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
   return (
     <AnimatePresence>
-      {currentItem.id && (
+      {currentItem.id && currentItem.type === `item` && (
         <DragContainer
-          onMouseOver={() => setCurrentHover({ type: `trash`, id: null })}
+          onMouseOver={() => setCurrentHover({ type: `move`, id: null })}
           onMouseLeave={() => setCurrentHover(DEFAULT_HOVER_STATE)}
           variants={trashVariants}
           initial={`initial`}
           animate={`animate`}
           exit={`exit`}
-          custom={currentHover.type === `trash`}
+          custom={currentHover.type === `move`}
         >
-          <IoTrash size={36} />
+          <HiOutlineShoppingCart size={36} />
         </DragContainer>
       )}
     </AnimatePresence>
   )
 }
-
-export default TrashIcon

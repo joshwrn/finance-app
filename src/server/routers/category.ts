@@ -20,10 +20,15 @@ export const categoryRouter = router({
     )
     .query(async ({ input }) => {
       const categories = await prisma.category.findMany({
-        where: {
-          AND: [{ categoryType: input.categoryType }, { userId: input.userId }],
+        where: { userId: input.userId },
+        include: {
+          items: {
+            where: {
+              datePurchased:
+                input.categoryType === `WISHLIST` ? null : { not: null },
+            },
+          },
         },
-        include: { items: true },
       })
       return {
         categories,
