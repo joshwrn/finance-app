@@ -1,6 +1,5 @@
 import type { FC, HTMLProps } from 'react'
 
-import { Field } from 'formik'
 import { BsPatchCheckFill, BsFillPatchExclamationFill } from 'react-icons/bs'
 import styled, { css } from 'styled-components'
 
@@ -46,7 +45,7 @@ const ErrorLabel = styled.div`
   color: var(--fc-error);
   font-size: 12px;
   padding-left: 7px;
-  /* height: 20px; */
+  height: 20px;
   opacity: 0.9;
 `
 
@@ -72,27 +71,18 @@ const Badge = styled.div<{ isValid: boolean }>`
   border-radius: 50%;
 `
 
-export const Input: FC<{
-  props?: HTMLProps<HTMLInputElement>
-  errors?: string
-  touched?: boolean
-  fieldType?: string
-  title?: string
-  field: string
-  placeholder?: string
-  value: number | string
-}> = ({
-  props,
-  errors,
-  touched,
-  title,
-  field,
-  placeholder,
-  fieldType = `text`,
-  value,
-}) => {
+export const Input: FC<
+  HTMLProps<HTMLInputElement> & {
+    errors?: string
+    touched?: boolean
+    title?: string
+    field: string
+    value: number | string
+    children: any
+  }
+> = ({ errors, touched, title, field, value, children }) => {
   const invalid = Boolean(errors && touched)
-  const isValid = Boolean(!errors && value !== ``)
+  const isValid = Boolean(!errors && value && value !== ``)
   return (
     <FieldContainer error={invalid} isValid={isValid}>
       {title && (
@@ -101,14 +91,7 @@ export const Input: FC<{
         </label>
       )}
       <div style={{ position: `relative` }}>
-        <Field
-          type={fieldType}
-          id={field}
-          name={field}
-          placeholder={placeholder}
-          autoComplete="off"
-          {...props}
-        />
+        {children}
         {(invalid || isValid) && (
           <Badge isValid={isValid}>
             {isValid ? <BsPatchCheckFill /> : <BsFillPatchExclamationFill />}
