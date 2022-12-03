@@ -1,5 +1,7 @@
 import type { FC, HTMLProps } from 'react'
+import { useEffect, useState } from 'react'
 
+import { useFormContext, useWatch } from 'react-hook-form'
 import { BsPatchCheckFill, BsFillPatchExclamationFill } from 'react-icons/bs'
 import styled, { css } from 'styled-components'
 
@@ -73,16 +75,43 @@ const Badge = styled.div<{ isValid: boolean }>`
 
 export const Input: FC<
   HTMLProps<HTMLInputElement> & {
-    errors?: string
-    touched?: boolean
     title?: string
     field: string
-    value: number | string
-    children: any
   }
-> = ({ errors, touched, title, field, value, children }) => {
-  const invalid = Boolean(errors && touched)
-  const isValid = Boolean(!errors && value && value !== ``)
+> = ({ title, field, ...props }) => {
+  const {
+    register,
+    formState: { errors, touchedFields },
+  } = useFormContext()
+
+  const value = useWatch({ name: field })
+  const [isValid, setIsValid] = useState(false)
+  const [invalid, setInValid] = useState(false)
+  const [error, setError] = useState<any>()
+  const [touched, setTouched] = useState(false)
+
+  useEffect(() => {
+    const error = errors[field]?.message
+    const touched = touchedFields[field]
+
+    setError(error)
+    setTouched(touched)
+  }, [errors[field]?.message, touchedFields[field]])
+
+  useEffect(() => {
+    const error = errors[field]?.message
+    const touched = touchedFields[field]
+
+    if ((error && touched) || (touched && !value)) {
+      setInValid(true)
+      setIsValid(false)
+    }
+    if (!error && value && value !== ``) {
+      setIsValid(true)
+      setInValid(false)
+    }
+  }, [value, error, touched])
+
   return (
     <FieldContainer error={invalid} isValid={isValid}>
       {title && (
@@ -91,14 +120,20 @@ export const Input: FC<
         </label>
       )}
       <div style={{ position: `relative` }}>
-        {children}
+        <input
+          {...register(field, {
+            required: `This field is required`,
+          })}
+          autoComplete="off"
+          {...props}
+        />
         {(invalid || isValid) && (
           <Badge isValid={isValid}>
             {isValid ? <BsPatchCheckFill /> : <BsFillPatchExclamationFill />}
           </Badge>
         )}
       </div>
-      <ErrorLabel>{invalid ? errors : ``}</ErrorLabel>
+      <ErrorLabel>{invalid ? error?.toString() : ``}</ErrorLabel>
     </FieldContainer>
   )
 }
