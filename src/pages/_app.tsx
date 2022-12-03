@@ -21,6 +21,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           <ThemeProvider theme={darkTheme}>
             <GlobalStyle />
             <PageWrapper>
+              {/* <Aligner /> */}
               <ComponentWrapper>
                 <Component {...pageProps} />
               </ComponentWrapper>

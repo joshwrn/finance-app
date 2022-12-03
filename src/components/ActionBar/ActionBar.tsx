@@ -14,10 +14,9 @@ const Container = styled.div`
   display: flex;
   position: fixed;
   bottom: 50px;
-  left: 0;
+  left: 42.7%;
   z-index: 5;
   gap: 30px;
-  width: 100%;
   justify-content: center;
   svg {
     cursor: pointer;
@@ -31,6 +30,7 @@ const BlurLight = styled(motion.div)<{ currentHover: HoverTypes | null }>`
   z-index: -1;
   bottom: 0;
   border-radius: 90% 90% 0 0;
+  pointer-events: none;
   opacity: 0.5;
   filter: blur(70px);
   transition: background 0.9s;

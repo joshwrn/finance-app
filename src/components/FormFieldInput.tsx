@@ -30,7 +30,7 @@ const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
       return css`
         border: 1px solid var(--bg-item);
         :focus {
-          border: 1px solid var(--btn-primary);
+          border: 1px solid var(--bg-item);
         }
       `
     }}
@@ -70,6 +70,28 @@ const Badge = styled.div<{ isValid: boolean }>`
   right: 12px;
   top: 25%;
   border-radius: 50%;
+  cursor: default;
+  :hover {
+    ${ErrorLabel} {
+      opacity: 1;
+    }
+  }
+  ${ErrorLabel} {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    position: absolute;
+    right: 32px;
+    background: var(--fc-error);
+    color: var(--fc-primary);
+    border-radius: 7px;
+    padding: 5px 10px;
+    transition: opacity 0.2s ease-in-out;
+    width: fit-content;
+    white-space: nowrap;
+    pointer-events: none;
+  }
 `
 
 export const Input: FC<
@@ -81,6 +103,7 @@ export const Input: FC<
     field: string
     placeholder?: string
     value: number | string
+    showError?: boolean
   }
 > = ({
   errors,
@@ -90,6 +113,7 @@ export const Input: FC<
   placeholder,
   fieldType = `text`,
   value,
+  showError = true,
   ...props
 }) => {
   const invalid = Boolean(errors && touched)
@@ -113,10 +137,11 @@ export const Input: FC<
         {(invalid || isValid) && (
           <Badge isValid={isValid}>
             {isValid ? <BsPatchCheckFill /> : <BsFillPatchExclamationFill />}
+            {invalid && <ErrorLabel>{errors}</ErrorLabel>}
           </Badge>
         )}
       </div>
-      <ErrorLabel>{invalid ? errors : ``}</ErrorLabel>
+      {showError && <ErrorLabel>{invalid ? errors : ``}</ErrorLabel>}
     </FieldContainer>
   )
 }

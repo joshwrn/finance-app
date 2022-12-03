@@ -11,7 +11,7 @@ import MainButton from '../Button'
 import { DropdownMenu } from '../DropdownMenu'
 import { Input } from '../FormFieldInput'
 
-const ItemInputSchema = Yup.object().shape({
+const InputSchema = Yup.object().shape({
   name: Yup.string()
     .min(2, `Too Short!`)
     .max(25, `Too Long!`)
@@ -47,7 +47,7 @@ export const NewCategoryButton: FC = () => {
               categoryType: `WISHLIST`,
             })
           }}
-          validationSchema={ItemInputSchema}
+          validationSchema={InputSchema}
         >
           {({ errors, touched, values }) => (
             <Form>
@@ -57,6 +57,7 @@ export const NewCategoryButton: FC = () => {
                 field="name"
                 placeholder="Name"
                 value={values.name}
+                showError={false}
                 maxLength={25}
                 minLength={2}
                 autoFocus={true}

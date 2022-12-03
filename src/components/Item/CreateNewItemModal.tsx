@@ -110,6 +110,8 @@ const CreateNewItemModal: FC<{
                 placeholder="Price"
                 value={values.price}
               />
+            </InputsContainer>
+            <InputsContainer>
               <Input
                 errors={errors.link}
                 touched={touched.link}
