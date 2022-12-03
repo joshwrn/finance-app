@@ -57,7 +57,9 @@ export const NewCategoryButton: FC = () => {
                 field="name"
                 placeholder="Name"
                 value={values.name}
-                props={{ maxLength: 25, minLength: 2, autoFocus: true }}
+                maxLength={25}
+                minLength={2}
+                autoFocus={true}
               />
               <button type="submit">
                 <p>Add</p>

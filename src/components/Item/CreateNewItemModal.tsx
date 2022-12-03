@@ -98,7 +98,8 @@ const CreateNewItemModal: FC<{
                 field="name"
                 placeholder="Name"
                 value={values.name}
-                props={{ maxLength: 25, minLength: 2 }}
+                maxLength={25}
+                minLength={2}
               />
               <Input
                 errors={errors.price}

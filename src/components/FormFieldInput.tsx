@@ -46,7 +46,7 @@ const ErrorLabel = styled.div`
   color: var(--fc-error);
   font-size: 12px;
   padding-left: 7px;
-  /* height: 20px; */
+  height: 20px;
   opacity: 0.9;
 `
 
@@ -72,17 +72,17 @@ const Badge = styled.div<{ isValid: boolean }>`
   border-radius: 50%;
 `
 
-export const Input: FC<{
-  props?: HTMLProps<HTMLInputElement>
-  errors?: string
-  touched?: boolean
-  fieldType?: string
-  title?: string
-  field: string
-  placeholder?: string
-  value: number | string
-}> = ({
-  props,
+export const Input: FC<
+  HTMLProps<HTMLInputElement> & {
+    errors?: string
+    touched?: boolean
+    fieldType?: string
+    title?: string
+    field: string
+    placeholder?: string
+    value: number | string
+  }
+> = ({
   errors,
   touched,
   title,
@@ -90,6 +90,7 @@ export const Input: FC<{
   placeholder,
   fieldType = `text`,
   value,
+  ...props
 }) => {
   const invalid = Boolean(errors && touched)
   const isValid = Boolean(!errors && value !== ``)
