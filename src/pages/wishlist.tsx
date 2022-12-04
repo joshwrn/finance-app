@@ -40,6 +40,7 @@ const Home: FC = () => {
   useCategoryListQuery({ categoryType: `WISHLIST` })
   useGetUser()
   const categories = useRecoilValue(categoryState)
+
   return (
     <>
       <Sidebar />

@@ -64,16 +64,15 @@ model User {
 }
 
 model SubItem {
-    id         String   @id @default(cuid())
-    name       String
-    price      Decimal?
-    dateAdded  DateTime @default(now())
-    link       String?
-    Item       Item?    @relation(fields: [itemId], references: [id])
-    itemId     String?
-    categoryId String
-    user       User     @relation(fields: [userId], references: [id])
-    userId     String
+    id        String   @id @default(cuid())
+    name      String
+    price     Int?
+    dateAdded DateTime @default(now())
+    link      String?
+    Item      Item     @relation(fields: [itemId], references: [id])
+    itemId    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
 }
 
 model Item {

@@ -61,10 +61,10 @@ const ItemInputSchema = Yup.object().shape({
 const CreateNewItemModal: FC<{
   categoryId: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({ categoryId, setIsOpen }) => {
+  parentItemId?: string
+}> = ({ categoryId, setIsOpen, parentItemId }) => {
   const user = useRecoilValue(userState)
   const { mutate } = useCreateItemMutation({
-    categoryId,
     action: () => setIsOpen(false),
   })
 

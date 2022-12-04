@@ -2,7 +2,11 @@ import { Prisma } from '@prisma/client'
 
 const categoryWithItems = Prisma.validator<Prisma.CategoryArgs>()({
   include: {
-    items: true,
+    items: {
+      include: {
+        subItems: true,
+      },
+    },
   },
 })
 

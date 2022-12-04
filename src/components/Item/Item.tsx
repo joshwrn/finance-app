@@ -1,7 +1,9 @@
 import type { FC } from 'react'
 import React from 'react'
 
+import { anchorPointState, contextMenuState } from '@components/ContextMenu'
 import useIntersection from '@hooks/useIntersection'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import type { Item as ItemType } from '@prisma/client'
 import {
   currentHoverState,
@@ -130,13 +132,15 @@ const ItemWithState = ({
 }
 
 const Item: FC<{
-  item: ItemType
+  item: ItemWithSubItems
   isCurrentItem?: boolean
   currentHover: { id: string | null; type: string | null }
 }> = ({ item, isCurrentItem = false, currentHover }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentDragState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
+  const setContextMenu = useSetRecoilState(contextMenuState)
+  const setAnchorPoint = useSetRecoilState(anchorPointState)
   const [myRef, inViewport] = useIntersection()
   const { mutate: deleteItem } = useDeleteItemMutation()
   const { mutate: moveItem } = useMoveItemMutation()
@@ -165,6 +169,12 @@ const Item: FC<{
   const handleDragStart = () => {
     setCurrentItem({ id, type: `item` })
   }
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setContextMenu({ id, type: `item` })
+    setAnchorPoint({ x: e.pageX, y: e.pageY })
+  }
   return (
     <ItemContainer
       variants={itemVariants}
@@ -179,9 +189,10 @@ const Item: FC<{
       onDragEnd={handleDragEnd}
       whileDrag={{
         pointerEvents: `none`,
-        zIndex: 150,
+        zIndex: 99999,
       }}
       ref={myRef}
+      onContextMenu={handleContextMenu}
     >
       {inViewport && <ItemWithState item={item} isCurrentItem={isCurrentItem} />}
     </ItemContainer>
