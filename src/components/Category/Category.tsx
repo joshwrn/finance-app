@@ -5,6 +5,7 @@ import Header from '@components/Header'
 import Item from '@components/Item/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import type { Item as ItemType } from '@prisma/client'
 import {
   currentHoverState,
@@ -219,8 +220,8 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
         <>
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence initial={false}>
-            {items.map((item: ItemWithGroup) => {
-              if (!item.isGroup) {
+            {items.map((item: ItemWithSubItems) => {
+              if (!item.group) {
                 const isCurrentItem = currentItem.id === item.id
                 return (
                   <Item
@@ -230,12 +231,12 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
                     currentHover={currentHover}
                   />
                 )
-              } else if (item.isGroup && item.items) {
+              } else if (item.group && item.subItems) {
                 return (
                   <ItemGroup
                     currentHover={currentHover}
                     key={item.name + `group`}
-                    items={item.items}
+                    item={item}
                   />
                 )
               }

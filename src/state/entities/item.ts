@@ -11,44 +11,25 @@ import type { z } from 'zod'
 
 import { categoryState } from './category'
 
-const useUpdateState = () => {
-  const setCategory = useSetRecoilState(categoryState)
-  const update = ({
-    modifier,
-    categoryId,
-  }: {
-    modifier: (prev: ItemWithSubItems[]) => ItemWithSubItems[]
-    categoryId: string
-  }) => {
-    setCategory((prev) =>
-      prev.map((category) => {
-        if (category.id === categoryId) {
-          return {
-            ...category,
-            items: modifier(category.items),
-          }
-        }
-        return category
-      }),
-    )
-  }
-  return update
-}
-
 export const useCreateItemMutation = ({
+  categoryId,
   action,
 }: {
+  categoryId: string
   action?: () => void
 }): {
   mutate: (input: z.infer<typeof CreateItemInput>) => void
 } => {
-  const update = useUpdateState()
+  const setCategories = useSetRecoilState(categoryState)
   const create = trpc.item.create.useMutation({
     onSuccess: (res) => {
-      update({
-        modifier: (prev) => [...prev, res.item],
-        categoryId: res.item.categoryId,
-      })
+      setCategories((prev) =>
+        prev.map((category) => {
+          return category.id === categoryId
+            ? { ...category, items: [...category.items, res.item] }
+            : category
+        }),
+      )
       action?.()
     },
   })
@@ -56,34 +37,36 @@ export const useCreateItemMutation = ({
 }
 
 export const useCreateSubItemMutation = ({
-  itemId,
-  categoryId,
+  parentItem,
   action,
 }: {
-  itemId: string
-  categoryId: string
+  parentItem?: ItemWithSubItems
   action?: () => void
 }): {
-  mutate: (input: z.infer<typeof CreateSubItemInput>) => void
+  mutate: (
+    input: z.infer<typeof CreateSubItemInput> & { parentId: string },
+  ) => void
 } => {
-  const update = useUpdateState()
+  const setCategories = useSetRecoilState(categoryState)
   const create = trpc.item.createSubItem.useMutation({
     onSuccess: (res) => {
-      update({
-        modifier: (prev) => {
-          return prev.map((item) => {
-            if (item.id === itemId) {
-              return {
-                ...item,
-                subItems: [...item.subItems, res],
+      if (!parentItem) {
+        return
+      }
+      setCategories((prev) =>
+        prev.map((category) => {
+          return category.id === parentItem.categoryId
+            ? {
+                ...category,
+                items: category.items.map((i) =>
+                  i.id === parentItem.id
+                    ? { ...i, group: true, subItems: [...i.subItems, res] }
+                    : i,
+                ),
               }
-            }
-            return item
-          })
-        },
-        categoryId,
-      })
-
+            : category
+        }),
+      )
       action?.()
     },
   })
@@ -94,14 +77,20 @@ export const useDeleteItemMutation = (): {
   mutate: (input: { id: string; categoryId: string }) => void
 } => {
   const user = useUser()
-  const update = useUpdateState()
+  const setCategories = useSetRecoilState(categoryState)
   const deleteItem = trpc.item.delete.useMutation()
   const mutate = ({ categoryId, id }: { categoryId: string; id: string }) => {
     deleteItem.mutate({ id, userId: user.id })
-    update({
-      modifier: (prev) => prev.filter((item) => item.id !== id),
-      categoryId,
-    })
+    setCategories((prev) =>
+      prev.map((category) => {
+        return category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.filter((item) => item.id !== id),
+            }
+          : category
+      }),
+    )
   }
   return { mutate }
 }
@@ -109,14 +98,20 @@ export const useDeleteItemMutation = (): {
 export const useMoveItemMutation = (): {
   mutate: (input: { id: string; categoryId: string }) => void
 } => {
-  const update = useUpdateState()
+  const setCategories = useSetRecoilState(categoryState)
   const moveItem = trpc.item.move.useMutation()
   const mutate = ({ categoryId, id }: { categoryId: string; id: string }) => {
     moveItem.mutate({ id })
-    update({
-      modifier: (prev) => prev.filter((item) => item.id !== id),
-      categoryId,
-    })
+    setCategories((prev) =>
+      prev.map((category) => {
+        return category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.filter((item) => item.id !== id),
+            }
+          : category
+      }),
+    )
   }
   return { mutate }
 }

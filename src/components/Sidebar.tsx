@@ -61,9 +61,9 @@ const Sidebar: FC = () => {
         <DropdownMenu setShow={setShowMenu} show={showMenu}>
           <button onClick={() => signOut()}>Sign Out</button>
         </DropdownMenu>
-        <ImageContainer onClick={() => setShowMenu((prev) => !prev)}>
+        {/* <ImageContainer onClick={() => setShowMenu((prev) => !prev)}>
           <img src={user.image ?? ``} width={40} height={40} />
-        </ImageContainer>
+        </ImageContainer> */}
         <Divider />
         <Link href={`/expenses`}>
           <IoPricetagOutline size={26} />

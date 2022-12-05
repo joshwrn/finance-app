@@ -2,9 +2,18 @@ import type { FC } from 'react'
 import React from 'react'
 
 import { useOutsideClick } from '@hooks/useOutsideClick'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import type { Entities } from '@state/entities'
-import { atom, useRecoilState } from 'recoil'
+import {
+  atom,
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from 'recoil'
 import styled from 'styled-components'
+
+import { createItemModalState } from '../pages/wishlist'
 
 export const anchorPointState = atom<{
   x: number | null
@@ -19,19 +28,23 @@ export const anchorPointState = atom<{
 
 export const contextMenuState = atom<{
   type: Entities | null
-  id: string | null
+  item: ItemWithSubItems | null
 }>({
   key: `contextMenu`,
   default: {
     type: null,
-    id: null,
+    item: null,
   },
 })
 
-const ItemOptions: FC<{ id: string }> = ({ id }) => {
+const ItemOptions: FC = () => {
+  const setIsOpen = useSetRecoilState(createItemModalState)
+  const setAnchorPoint = useResetRecoilState(anchorPointState)
   return (
     <>
-      <ListItem>Add Subitem</ListItem>
+      <ListItem onClick={() => (setIsOpen(true), setAnchorPoint())}>
+        Add Subitem
+      </ListItem>
       <ListItem>Edit</ListItem>
     </>
   )
@@ -39,13 +52,12 @@ const ItemOptions: FC<{ id: string }> = ({ id }) => {
 
 export const ContextMenu: FC = () => {
   const [anchorPoint, setAnchorPoint] = useRecoilState(anchorPointState)
-  const [contextMenu, setContextMenu] = useRecoilState(contextMenuState)
+  const contextMenu = useRecoilValue(contextMenuState)
+  const resetContextMenu = useResetRecoilState(contextMenuState)
   const ref = useOutsideClick(
-    () => (
-      setAnchorPoint({ x: null, y: null }),
-      setContextMenu({ type: null, id: null })
-    ),
+    () => (setAnchorPoint({ x: null, y: null }), resetContextMenu()),
   )
+
   return (
     <>
       {anchorPoint.x !== null && anchorPoint.y !== null && (
@@ -56,8 +68,8 @@ export const ContextMenu: FC = () => {
           }}
           ref={ref}
         >
-          {contextMenu.type === `item` && contextMenu.id && (
-            <ItemOptions id={contextMenu.id} />
+          {contextMenu.type === `item` && contextMenu.item?.id && (
+            <ItemOptions />
           )}
         </Menu>
       )}

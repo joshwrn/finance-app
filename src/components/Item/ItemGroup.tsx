@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import React from 'react'
 
-import type { Item as ItemType } from '@prisma/client'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import { AnimatePresence } from 'framer-motion'
 import styled from 'styled-components'
 
@@ -10,27 +10,33 @@ import Item from './Item'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
   width: 100%;
   flex-shrink: 0;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
+  background-color: var(--bg-item);
+  border-radius: 16px;
+  h3 {
+    padding: 10px 50px;
+  }
 `
 
 const ItemGroup: FC<{
-  items: ItemType[]
+  item: ItemWithSubItems
   currentHover: { id: string | null; type: string | null }
-}> = ({ items, currentHover }) => {
+}> = ({ item, currentHover }) => {
   return (
     <Container>
-      <h3>{items[0].group}</h3>
+      <h3>{item.name}</h3>
       <AnimatePresence>
-        {items.map((item) => (
+        <Item item={item} currentHover={currentHover} />
+        {item.subItems.map((i) => (
           <Item
             currentHover={currentHover}
             item={item}
-            key={item.name + item.id + items[0].group}
+            subItem={i}
+            key={i.name + i.id + item.group}
           />
         ))}
       </AnimatePresence>

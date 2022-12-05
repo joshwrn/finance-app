@@ -3,12 +3,16 @@ import type { FC } from 'react'
 import ActionBar from '@components/ActionBar/ActionBar'
 import Category from '@components/Category/Category'
 import { NewCategoryButton } from '@components/Category/NewCategoryButton'
+import { contextMenuState } from '@components/ContextMenu'
 import Header from '@components/Header'
+import CreateNewItemModal from '@components/Item/CreateNewItemModal'
 import Sidebar from '@components/Sidebar'
+import { Modal } from '@hooks/useModal'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import { categoryState, useCategoryListQuery } from '@state/entities/category'
 import { useGetUser } from '@state/user'
 import { LayoutGroup, motion } from 'framer-motion'
-import { useRecoilValue } from 'recoil'
+import { atom, useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
@@ -36,11 +40,17 @@ const SectionHeader = styled(Header)`
   padding: 0 30px;
 `
 
+export const createItemModalState = atom({
+  key: `createItemModalState`,
+  default: false,
+})
+
 const Home: FC = () => {
   useCategoryListQuery({ categoryType: `WISHLIST` })
   useGetUser()
   const categories = useRecoilValue(categoryState)
-
+  const [isOpen, setIsOpen] = useRecoilState(createItemModalState)
+  const contextMenu = useRecoilValue(contextMenuState)
   return (
     <>
       <Sidebar />
@@ -51,6 +61,13 @@ const Home: FC = () => {
           <NewCategoryButton />
         </SectionHeader>
         {/* <p>Hello, {user.name?.split(` `)[0]}!</p> */}
+        <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+          <CreateNewItemModal
+            setIsOpen={setIsOpen}
+            categoryId={contextMenu.item?.categoryId ?? ``}
+            parentItem={contextMenu.item as unknown as ItemWithSubItems}
+          />
+        </Modal>
         <LayoutGroup>
           {categories.map((category: CategoryWithItems) => (
             <Category key={category.id + `wishlist`} categoryId={category.id} />

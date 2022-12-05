@@ -21,10 +21,10 @@ export const itemRouter = router({
     return { item }
   }),
   createSubItem: procedure
-    .input(CreateSubItemInput)
+    .input(CreateSubItemInput.extend({ parentId: z.string() }))
     .mutation(async ({ input }) => {
       const parent = await prisma.item.update({
-        where: { id: input.itemId },
+        where: { id: input.parentId },
         data: { group: true },
       })
       const subItem = await prisma.subItem.create({
@@ -33,7 +33,7 @@ export const itemRouter = router({
           userId: input.userId,
           price: input.price,
           link: input.link,
-          itemId: input.itemId,
+          itemId: input.parentId,
         },
       })
       return subItem

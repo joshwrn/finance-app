@@ -4,7 +4,7 @@ import React from 'react'
 import { anchorPointState, contextMenuState } from '@components/ContextMenu'
 import useIntersection from '@hooks/useIntersection'
 import type { ItemWithSubItems } from '@lib/zod/item'
-import type { Item as ItemType } from '@prisma/client'
+import type { SubItem } from '@prisma/client'
 import {
   currentHoverState,
   currentDragState,
@@ -99,18 +99,21 @@ export const itemVariants: Variants = {
 const ItemWithState = ({
   item,
   isCurrentItem,
+  subItem,
 }: {
-  item: ItemType
+  item: ItemWithSubItems
+  subItem?: SubItem
   isCurrentItem?: boolean
   isOverTrash?: boolean
 }) => {
-  const { name, price, dateAdded, datePurchased, link } = item
+  const cur = subItem || item
+  const { name, price, dateAdded, link } = cur
   const url = filterHost(link)
 
   return (
     <Inner>
       <NameContainer>
-        {item.group && <BiCategory size={16} />}
+        {!subItem && <BiCategory size={16} />}
         <p>{name}</p>
       </NameContainer>
       <div>
@@ -126,16 +129,17 @@ const ItemWithState = ({
         )}
       </div>
       {!item.group && <p>{numberToCurrency(price)}</p>}
-      <p>{convertDate(datePurchased ?? dateAdded)}</p>
+      <p>{convertDate(item.datePurchased ?? dateAdded)}</p>
     </Inner>
   )
 }
 
 const Item: FC<{
   item: ItemWithSubItems
+  subItem?: SubItem
   isCurrentItem?: boolean
   currentHover: { id: string | null; type: string | null }
-}> = ({ item, isCurrentItem = false, currentHover }) => {
+}> = ({ item, isCurrentItem = false, currentHover, subItem }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentDragState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
@@ -172,7 +176,7 @@ const Item: FC<{
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
-    setContextMenu({ id, type: `item` })
+    setContextMenu({ type: `item`, item })
     setAnchorPoint({ x: e.pageX, y: e.pageY })
   }
   return (
@@ -194,7 +198,13 @@ const Item: FC<{
       ref={myRef}
       onContextMenu={handleContextMenu}
     >
-      {inViewport && <ItemWithState item={item} isCurrentItem={isCurrentItem} />}
+      {inViewport && (
+        <ItemWithState
+          subItem={subItem}
+          item={item}
+          isCurrentItem={isCurrentItem}
+        />
+      )}
     </ItemContainer>
   )
 }

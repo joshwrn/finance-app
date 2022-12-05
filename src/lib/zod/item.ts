@@ -22,7 +22,6 @@ export const CreateSubItemInput = SubItemSchema.pick({
   userId: true,
   price: true,
   link: true,
-  itemId: true,
 })
 
 export const ItemSchema = z.object<Properties<ItemWithSubItems>>({

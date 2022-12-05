@@ -48,7 +48,7 @@ interface Modal {
   children?: React.ReactNode
 }
 
-const ModalComp: FC<Modal> = ({ children, isOpen, setIsOpen }) => {
+export const Modal: FC<Modal> = ({ children, isOpen, setIsOpen }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -78,7 +78,7 @@ const useModal = (): {
   return {
     isOpen,
     setIsOpen,
-    Modal: ModalComp,
+    Modal: Modal,
   }
 }
 
