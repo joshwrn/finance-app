@@ -6,7 +6,6 @@ import Item from '@components/Item/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
 import type { ItemWithSubItems } from '@lib/zod/item'
-import type { Item as ItemType } from '@prisma/client'
 import {
   currentHoverState,
   currentDragState,
@@ -116,11 +115,6 @@ const Badge = styled.div`
     color: var(--color-white-100);
   }
 `
-
-interface ItemWithGroup extends ItemType {
-  isGroup?: boolean
-  items?: ItemType[]
-}
 
 const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   const user = useRecoilValue(userState)

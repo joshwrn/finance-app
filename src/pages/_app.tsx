@@ -1,5 +1,4 @@
 // eslint-disable-next-line import/extensions
-
 import Background from '@assets/image/bg.png'
 import { ContextMenu } from '@components/ContextMenu'
 import { GlobalStyle } from '@styles/GlobalStyle'
