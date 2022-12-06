@@ -34,6 +34,7 @@ export const itemRouter = router({
           price: input.price,
           link: input.link,
           itemId: input.parentId,
+          categoryId: parent.categoryId,
         },
       })
       return subItem

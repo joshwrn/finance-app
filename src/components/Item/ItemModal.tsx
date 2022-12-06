@@ -62,7 +62,7 @@ const ItemInputSchema = Yup.object().shape({
   link: Yup.string().matches(VALID_URL, `Invalid URL`),
 })
 
-const CreateNewItemModal: FC<{
+const ItemModal: FC<{
   categoryId?: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   parentItem?: ItemWithSubItems
@@ -80,7 +80,6 @@ const CreateNewItemModal: FC<{
   return (
     <Container>
       {parentItem ? <h2>Create Sub Item</h2> : <h2>Create New Item</h2>}
-
       <Divider />
       <Formik
         initialValues={{
@@ -101,6 +100,7 @@ const CreateNewItemModal: FC<{
                 price: Number(values.price),
                 userId: user.id,
                 parentId: parentItem.id,
+                categoryId: parentItem.categoryId,
               })
         }}
         validationSchema={ItemInputSchema}
@@ -148,4 +148,4 @@ const CreateNewItemModal: FC<{
   )
 }
 
-export default CreateNewItemModal
+export default ItemModal

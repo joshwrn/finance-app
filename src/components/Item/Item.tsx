@@ -46,12 +46,12 @@ const Inner = styled.div`
 
 export const ItemContainer = styled(motion.div)`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   position: relative;
   width: 100%;
-  height: 55px;
-  padding: 10px 50px;
+  padding: 18px 50px;
   background-color: var(--bg-item);
   border-radius: 16px;
   backdrop-filter: blur(10px);
@@ -72,6 +72,18 @@ const NameContainer = styled.div`
   position: relative;
   svg {
     fill: var(--fc-tertiary);
+    cursor: pointer;
+  }
+`
+const SubItemContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin: 10px 0 0 0;
+  ${Inner} {
+    border-top: 1px solid var(--bg-item);
+    padding: 10px 0 0 0;
   }
 `
 
@@ -100,46 +112,63 @@ const ItemWithState = ({
   item,
   isCurrentItem,
   subItem,
+  showSubItems,
 }: {
-  item: ItemWithSubItems
-  subItem?: SubItem
+  item?: ItemWithSubItems
   isCurrentItem?: boolean
   isOverTrash?: boolean
+  subItem?: SubItem
+  showSubItems?: boolean
 }) => {
-  const cur = subItem || item
+  const cur = item || subItem
+  if (!cur) return null
   const { name, price, dateAdded, link } = cur
   const url = filterHost(link)
 
+  const hasSubItems = item && item.subItems.length > 0
+
   return (
-    <Inner>
-      <NameContainer>
-        {!subItem && <BiCategory size={16} />}
-        <p>{name}</p>
-      </NameContainer>
-      <div>
-        {link && (
-          <a
-            href={link}
-            onClick={(e) => isCurrentItem && e.preventDefault()}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {url} {`->`}
-          </a>
-        )}
-      </div>
-      {!item.group && <p>{numberToCurrency(price)}</p>}
-      <p>{convertDate(item.datePurchased ?? dateAdded)}</p>
-    </Inner>
+    <>
+      <Inner>
+        <NameContainer>
+          {hasSubItems && <BiCategory size={16} />}
+          <p>{name}</p>
+        </NameContainer>
+        <div>
+          {link && (
+            <a
+              href={link}
+              onClick={(e) => isCurrentItem && e.preventDefault()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {url} {`->`}
+            </a>
+          )}
+        </div>
+        {<p>{numberToCurrency(price)}</p>}
+        <p>{convertDate(item?.datePurchased ?? dateAdded)}</p>
+      </Inner>
+      {showSubItems && hasSubItems && (
+        <SubItemContainer>
+          {item?.subItems.map((subItem) => (
+            <ItemWithState
+              key={subItem.id}
+              subItem={subItem}
+              isCurrentItem={isCurrentItem}
+            />
+          ))}
+        </SubItemContainer>
+      )}
+    </>
   )
 }
 
 const Item: FC<{
   item: ItemWithSubItems
-  subItem?: SubItem
   isCurrentItem?: boolean
   currentHover: { id: string | null; type: string | null }
-}> = ({ item, isCurrentItem = false, currentHover, subItem }) => {
+}> = ({ item, isCurrentItem = false, currentHover }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentDragState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
@@ -149,6 +178,7 @@ const Item: FC<{
   const { mutate: deleteItem } = useDeleteItemMutation()
   const { mutate: moveItem } = useMoveItemMutation()
   const { mutate: switchCategory } = useSwitchItemCategoryMutation()
+  const [showSubItems, setShowSubItems] = React.useState(false)
 
   const handleDragEnd = () => {
     switch (currentHover.type) {
@@ -197,12 +227,13 @@ const Item: FC<{
       }}
       ref={myRef}
       onContextMenu={handleContextMenu}
+      onClick={() => setShowSubItems(!showSubItems)}
     >
       {inViewport && (
         <ItemWithState
-          subItem={subItem}
           item={item}
           isCurrentItem={isCurrentItem}
+          showSubItems={showSubItems}
         />
       )}
     </ItemContainer>

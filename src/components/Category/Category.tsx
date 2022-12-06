@@ -24,8 +24,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import NewItemButton from '../Button'
-import CreateNewItemModal from '../Item/CreateNewItemModal'
-import ItemGroup from '../Item/ItemGroup'
+import CreateNewItemModal from '../Item/ItemModal'
 import TableLabels from '../TableLabels'
 
 const Container = styled(motion.div)`
@@ -211,35 +210,21 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
         <NewItemButton onClick={() => setIsOpen(true)}>
           <p>+ New Item</p>
         </NewItemButton>
-        {/* <MdOutlineDragIndicator
-          size={30}
-          onPointerDown={(e) => controls.start(e)}
-        /> */}
       </HeadingContainer>
       {items.length > 0 ? (
         <>
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence initial={false}>
             {items.map((item: ItemWithSubItems) => {
-              if (!item.group) {
-                const isCurrentItem = currentItem.id === item.id
-                return (
-                  <Item
-                    item={item}
-                    key={item.name + item.id}
-                    isCurrentItem={isCurrentItem}
-                    currentHover={currentHover}
-                  />
-                )
-              } else if (item.group && item.subItems) {
-                return (
-                  <ItemGroup
-                    currentHover={currentHover}
-                    key={item.name + `group`}
-                    item={item}
-                  />
-                )
-              }
+              const isCurrentItem = currentItem.id === item.id
+              return (
+                <Item
+                  item={item}
+                  key={item.name + item.id}
+                  isCurrentItem={isCurrentItem}
+                  currentHover={currentHover}
+                />
+              )
             })}
           </AnimatePresence>
         </>
