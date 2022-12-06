@@ -8,7 +8,7 @@ import {
 } from '@state/drag'
 import { AnimatePresence, motion } from 'framer-motion'
 import { HiOutlineShoppingCart } from 'react-icons/hi'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 const DragContainer = styled(motion.div)`
@@ -55,7 +55,7 @@ const trashVariants = {
 }
 
 export const PurchaseIcon: FC = () => {
-  const [currentItem, setCurrentItem] = useRecoilState(currentDragState)
+  const currentItem = useRecoilValue(currentDragState)
   const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
   return (
     <AnimatePresence>

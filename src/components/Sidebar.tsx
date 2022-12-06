@@ -3,6 +3,7 @@ import React from 'react'
 
 import { userState } from '@state/user'
 import { signOut } from 'next-auth/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { BsWallet2 } from 'react-icons/bs'
 import { IoPricetagOutline } from 'react-icons/io5'
@@ -42,14 +43,12 @@ const Top = styled.div`
 `
 const ImageContainer = styled.div`
   cursor: pointer;
-  img {
-    border: 1px solid var(--bg-item);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    position: relative;
-  }
+  overflow: hidden;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--color-eucalyptus);
 `
 
 const Sidebar: FC = () => {
@@ -61,9 +60,11 @@ const Sidebar: FC = () => {
         <DropdownMenu setShow={setShowMenu} show={showMenu}>
           <button onClick={() => signOut()}>Sign Out</button>
         </DropdownMenu>
-        <ImageContainer onClick={() => setShowMenu((prev) => !prev)}>
-          <img src={user.image ?? ``} width={40} height={40} />
-        </ImageContainer>
+        {user.image && (
+          <ImageContainer onClick={() => setShowMenu((prev) => !prev)}>
+            <Image src={user.image ?? ``} layout="fill" />
+          </ImageContainer>
+        )}
         <Divider />
         <Link href={`/expenses`}>
           <IoPricetagOutline size={26} />

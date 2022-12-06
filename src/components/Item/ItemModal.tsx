@@ -1,7 +1,11 @@
 import type { FC } from 'react'
 
 import { VALID_URL } from '@lib/yup'
-import { useCreateItemMutation } from '@state/entities/item'
+import type { ItemWithSubItems } from '@lib/zod/item'
+import {
+  useCreateItemMutation,
+  useCreateSubItemMutation,
+} from '@state/entities/item'
 import { userState } from '@state/user'
 import { Formik, Form } from 'formik'
 import { useRecoilValue } from 'recoil'
@@ -58,19 +62,24 @@ const ItemInputSchema = Yup.object().shape({
   link: Yup.string().matches(VALID_URL, `Invalid URL`),
 })
 
-const CreateNewItemModal: FC<{
-  categoryId: string
+const ItemModal: FC<{
+  categoryId?: string
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({ categoryId, setIsOpen }) => {
+  parentItem?: ItemWithSubItems
+}> = ({ categoryId, setIsOpen, parentItem }) => {
   const user = useRecoilValue(userState)
-  const { mutate } = useCreateItemMutation({
-    categoryId,
+  const { mutate: createItem } = useCreateItemMutation({
+    categoryId: categoryId ?? ``,
+    action: () => setIsOpen(false),
+  })
+  const { mutate: createSubItem } = useCreateSubItemMutation({
+    parentItem,
     action: () => setIsOpen(false),
   })
 
   return (
     <Container>
-      <h2>Create New Item</h2>
+      {parentItem ? <h2>Create Sub Item</h2> : <h2>Create New Item</h2>}
       <Divider />
       <Formik
         initialValues={{
@@ -79,12 +88,20 @@ const CreateNewItemModal: FC<{
           price: ``,
         }}
         onSubmit={(values: InputValues) => {
-          mutate({
-            ...values,
-            categoryId,
-            userId: user.id,
-            price: Number(values.price),
-          })
+          !parentItem
+            ? createItem({
+                ...values,
+                categoryId: categoryId ?? ``,
+                userId: user.id,
+                price: Number(values.price),
+              })
+            : createSubItem({
+                ...values,
+                price: Number(values.price),
+                userId: user.id,
+                parentId: parentItem.id,
+                categoryId: parentItem.categoryId,
+              })
         }}
         validationSchema={ItemInputSchema}
       >
@@ -131,4 +148,4 @@ const CreateNewItemModal: FC<{
   )
 }
 
-export default CreateNewItemModal
+export default ItemModal

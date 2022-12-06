@@ -27,6 +27,9 @@ export const categoryRouter = router({
               datePurchased:
                 input.categoryType === `WISHLIST` ? null : { not: null },
             },
+            include: {
+              subItems: true,
+            },
           },
         },
       })

@@ -1,8 +1,13 @@
-import type { CreateItemInput, ItemSchema } from '@lib/zod/item'
+import type {
+  CreateItemInput,
+  CreateSubItemInput,
+  ItemSchema,
+  ItemWithSubItems,
+} from '@lib/zod/item'
 import { useUser } from '@state/user'
 import { trpc } from '@utils/trpc'
 import { useSetRecoilState } from 'recoil'
-import type { infer, z } from 'zod'
+import type { z } from 'zod'
 
 import { categoryState } from './category'
 
@@ -22,6 +27,43 @@ export const useCreateItemMutation = ({
         prev.map((category) => {
           return category.id === categoryId
             ? { ...category, items: [...category.items, res.item] }
+            : category
+        }),
+      )
+      action?.()
+    },
+  })
+  return { mutate: create.mutate }
+}
+
+export const useCreateSubItemMutation = ({
+  parentItem,
+  action,
+}: {
+  parentItem?: ItemWithSubItems
+  action?: () => void
+}): {
+  mutate: (
+    input: z.infer<typeof CreateSubItemInput> & { parentId: string },
+  ) => void
+} => {
+  const setCategories = useSetRecoilState(categoryState)
+  const create = trpc.item.createSubItem.useMutation({
+    onSuccess: (res) => {
+      if (!parentItem) {
+        return
+      }
+      setCategories((prev) =>
+        prev.map((category) => {
+          return category.id === parentItem.categoryId
+            ? {
+                ...category,
+                items: category.items.map((i) =>
+                  i.id === parentItem.id
+                    ? { ...i, group: true, subItems: [...i.subItems, res] }
+                    : i,
+                ),
+              }
             : category
         }),
       )

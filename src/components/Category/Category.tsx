@@ -5,7 +5,7 @@ import Header from '@components/Header'
 import Item from '@components/Item/Item'
 import useModal from '@hooks/useModal'
 import useSticky from '@hooks/useSticky'
-import type { Item as ItemType } from '@prisma/client'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import {
   currentHoverState,
   currentDragState,
@@ -23,8 +23,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import NewItemButton from '../Button'
-import CreateNewItemModal from '../Item/CreateNewItemModal'
-import ItemGroup from '../Item/ItemGroup'
+import CreateNewItemModal from '../Item/ItemModal'
 import TableLabels from '../TableLabels'
 
 const Container = styled(motion.div)`
@@ -117,11 +116,6 @@ const Badge = styled.div`
   }
 `
 
-interface ItemWithGroup extends ItemType {
-  isGroup?: boolean
-  items?: ItemType[]
-}
-
 const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   const user = useRecoilValue(userState)
   const {
@@ -210,35 +204,21 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
         <NewItemButton onClick={() => setIsOpen(true)}>
           <p>+ New Item</p>
         </NewItemButton>
-        {/* <MdOutlineDragIndicator
-          size={30}
-          onPointerDown={(e) => controls.start(e)}
-        /> */}
       </HeadingContainer>
       {items.length > 0 ? (
         <>
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence initial={false}>
-            {items.map((item: ItemWithGroup) => {
-              if (!item.isGroup) {
-                const isCurrentItem = currentItem.id === item.id
-                return (
-                  <Item
-                    item={item}
-                    key={item.name + item.id}
-                    isCurrentItem={isCurrentItem}
-                    currentHover={currentHover}
-                  />
-                )
-              } else if (item.isGroup && item.items) {
-                return (
-                  <ItemGroup
-                    currentHover={currentHover}
-                    key={item.name + `group`}
-                    items={item.items}
-                  />
-                )
-              }
+            {items.map((item: ItemWithSubItems) => {
+              const isCurrentItem = currentItem.id === item.id
+              return (
+                <Item
+                  item={item}
+                  key={item.name + item.id}
+                  isCurrentItem={isCurrentItem}
+                  currentHover={currentHover}
+                />
+              )
             })}
           </AnimatePresence>
         </>

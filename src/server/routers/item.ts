@@ -1,5 +1,5 @@
 import prisma from '@lib/prisma'
-import { CreateItemInput, ItemSchema } from '@lib/zod/item'
+import { CreateItemInput, CreateSubItemInput, ItemSchema } from '@lib/zod/item'
 import { z } from 'zod'
 
 import { router, procedure } from '../trpc'
@@ -14,9 +14,31 @@ export const itemRouter = router({
         link: input.link,
         categoryId: input.categoryId,
       },
+      include: {
+        subItems: true,
+      },
     })
     return { item }
   }),
+  createSubItem: procedure
+    .input(CreateSubItemInput.extend({ parentId: z.string() }))
+    .mutation(async ({ input }) => {
+      const parent = await prisma.item.update({
+        where: { id: input.parentId },
+        data: { group: true },
+      })
+      const subItem = await prisma.subItem.create({
+        data: {
+          name: input.name,
+          userId: input.userId,
+          price: input.price,
+          link: input.link,
+          itemId: input.parentId,
+          categoryId: parent.categoryId,
+        },
+      })
+      return subItem
+    }),
   move: procedure
     .input(
       ItemSchema.pick({

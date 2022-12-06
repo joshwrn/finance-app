@@ -1,8 +1,10 @@
 import type { FC } from 'react'
 import React from 'react'
 
+import { anchorPointState, contextMenuState } from '@components/ContextMenu'
 import useIntersection from '@hooks/useIntersection'
-import type { Item as ItemType } from '@prisma/client'
+import type { ItemWithSubItems } from '@lib/zod/item'
+import type { SubItem } from '@prisma/client'
 import {
   currentHoverState,
   currentDragState,
@@ -44,12 +46,12 @@ const Inner = styled.div`
 
 export const ItemContainer = styled(motion.div)`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   position: relative;
   width: 100%;
-  height: 55px;
-  padding: 10px 50px;
+  padding: 18px 50px;
   background-color: var(--bg-item);
   border-radius: 16px;
   backdrop-filter: blur(10px);
@@ -70,6 +72,18 @@ const NameContainer = styled.div`
   position: relative;
   svg {
     fill: var(--fc-tertiary);
+    cursor: pointer;
+  }
+`
+const SubItemContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin: 10px 0 0 0;
+  ${Inner} {
+    border-top: 1px solid var(--bg-item);
+    padding: 10px 0 0 0;
   }
 `
 
@@ -97,50 +111,74 @@ export const itemVariants: Variants = {
 const ItemWithState = ({
   item,
   isCurrentItem,
+  subItem,
+  showSubItems,
 }: {
-  item: ItemType
+  item?: ItemWithSubItems
   isCurrentItem?: boolean
   isOverTrash?: boolean
+  subItem?: SubItem
+  showSubItems?: boolean
 }) => {
-  const { name, price, dateAdded, datePurchased, link } = item
+  const cur = item || subItem
+  if (!cur) return null
+  const { name, price, dateAdded, link } = cur
   const url = filterHost(link)
 
+  const hasSubItems = item && item.subItems.length > 0
+
   return (
-    <Inner>
-      <NameContainer>
-        {item.group && <BiCategory size={16} />}
-        <p>{name}</p>
-      </NameContainer>
-      <div>
-        {link && (
-          <a
-            href={link}
-            onClick={(e) => isCurrentItem && e.preventDefault()}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {url} {`->`}
-          </a>
-        )}
-      </div>
-      {!item.group && <p>{numberToCurrency(price)}</p>}
-      <p>{convertDate(datePurchased ?? dateAdded)}</p>
-    </Inner>
+    <>
+      <Inner>
+        <NameContainer>
+          {hasSubItems && <BiCategory size={16} />}
+          <p>{name}</p>
+        </NameContainer>
+        <div>
+          {link && (
+            <a
+              href={link}
+              onClick={(e) => isCurrentItem && e.preventDefault()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {url} {`->`}
+            </a>
+          )}
+        </div>
+        {<p>{numberToCurrency(price)}</p>}
+        <p>{convertDate(item?.datePurchased ?? dateAdded)}</p>
+      </Inner>
+      {showSubItems && hasSubItems && (
+        <SubItemContainer>
+          {item?.subItems.map((subItem) => (
+            <ItemWithState
+              key={subItem.id}
+              subItem={subItem}
+              isCurrentItem={isCurrentItem}
+            />
+          ))}
+        </SubItemContainer>
+      )}
+    </>
   )
 }
 
 const Item: FC<{
-  item: ItemType
+  item: ItemWithSubItems
   isCurrentItem?: boolean
   currentHover: { id: string | null; type: string | null }
 }> = ({ item, isCurrentItem = false, currentHover }) => {
   const { id, categoryId } = item
   const setCurrentItem = useSetRecoilState(currentDragState)
   const setCurrentHover = useSetRecoilState(currentHoverState)
+  const setContextMenu = useSetRecoilState(contextMenuState)
+  const setAnchorPoint = useSetRecoilState(anchorPointState)
   const [myRef, inViewport] = useIntersection()
   const { mutate: deleteItem } = useDeleteItemMutation()
   const { mutate: moveItem } = useMoveItemMutation()
   const { mutate: switchCategory } = useSwitchItemCategoryMutation()
+  const [showSubItems, setShowSubItems] = React.useState(false)
 
   const handleDragEnd = () => {
     switch (currentHover.type) {
@@ -165,6 +203,12 @@ const Item: FC<{
   const handleDragStart = () => {
     setCurrentItem({ id, type: `item` })
   }
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setContextMenu({ type: `item`, item })
+    setAnchorPoint({ x: e.pageX, y: e.pageY })
+  }
   return (
     <ItemContainer
       variants={itemVariants}
@@ -179,11 +223,19 @@ const Item: FC<{
       onDragEnd={handleDragEnd}
       whileDrag={{
         pointerEvents: `none`,
-        zIndex: 150,
+        zIndex: 99999,
       }}
       ref={myRef}
+      onContextMenu={handleContextMenu}
+      onClick={() => setShowSubItems(!showSubItems)}
     >
-      {inViewport && <ItemWithState item={item} isCurrentItem={isCurrentItem} />}
+      {inViewport && (
+        <ItemWithState
+          item={item}
+          isCurrentItem={isCurrentItem}
+          showSubItems={showSubItems}
+        />
+      )}
     </ItemContainer>
   )
 }
