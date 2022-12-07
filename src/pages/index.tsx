@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import styled from 'styled-components'
 
 const Login: React.FC = () => {
   const { data: session, status } = useSession()
@@ -15,12 +16,42 @@ const Login: React.FC = () => {
   }, [session, status])
 
   return (
-    <div>
-      log in
-      <button onClick={() => signIn()}>sign in</button>
-      <button onClick={() => signOut()}>sign out</button>
-    </div>
+    <Wrapper>
+      <Container>
+        <button onClick={() => signIn()}>Login</button>
+        <button onClick={() => signIn()}>Create Account</button>
+      </Container>
+    </Wrapper>
   )
 }
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+`
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid var(--color-white-20);
+  border-radius: 10px;
+  padding: 100px 100px;
+  background-color: var(--bg-item);
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--color-white-20);
+    color: var(--fc-primary);
+    font-weight: 550;
+    font-size: 14px;
+    cursor: pointer;
+  }
+`
 
 export default Login

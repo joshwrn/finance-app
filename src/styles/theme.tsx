@@ -7,6 +7,7 @@ export const themeColors = {
   'white-50': `rgba(255, 255, 255, .50)`,
   'white-30': `rgba(255, 255, 255, .30)`,
   'white-20': `rgba(255, 255, 255, .20)`,
+  'white-10': `rgba(255, 255, 255, .10)`,
   'white-05': `rgba(255, 255, 255, 0.05)`,
   'black-05': `rgba(0, 0, 0, 0.05)`,
   'black-35': `rgba(0, 0, 0, 0.35)`,

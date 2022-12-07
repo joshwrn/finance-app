@@ -55,6 +55,7 @@ export const ItemContainer = styled(motion.div)`
   background-color: var(--bg-item);
   border-radius: 16px;
   backdrop-filter: blur(10px);
+  border: 1px solid var(--bg-item);
   a {
     user-select: none;
     -webkit-user-drag: none;

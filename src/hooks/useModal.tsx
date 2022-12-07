@@ -17,9 +17,9 @@ const Container = styled(motion.div)`
   top: 0;
   left: 0;
   z-index: 100;
-  background-color: var(--bg-primary);
+  /* background-color: var(--bg-primary); */
 `
-const ModalContainer = styled.div`
+const ModalContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,15 +28,16 @@ const ModalContainer = styled.div`
   width: 100%;
   height: fit-content;
   max-height: 500px;
-  background-color: var(--bg-item);
   border-radius: 20px;
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--color-white-10);
+  box-shadow: 0 0 50px var(--color-black-50);
 `
 const Backdrop = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: -1;
-  backdrop-filter: blur(30px);
 `
 
 /* defining the modal component inside the hook causes 
@@ -53,13 +54,14 @@ export const Modal: FC<Modal> = ({ children, isOpen, setIsOpen }) => {
     <AnimatePresence>
       {isOpen && (
         <Portal>
-          <Container
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            key={`modal`}
-          >
-            <ModalContainer>{children}</ModalContainer>
+          <Container key={`modal`}>
+            <ModalContainer
+              initial={{ opacity: 1, y: `50vh` }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 1, y: `100vh` }}
+            >
+              {children}
+            </ModalContainer>
             <Backdrop onClick={() => setIsOpen(false)} />
           </Container>
         </Portal>
