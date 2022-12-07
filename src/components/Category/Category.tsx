@@ -93,6 +93,7 @@ const HeadingContainer = styled.div<{ isStuck: boolean }>`
       opacity: 1;
     }
     background-color: var(--bg-item);
+    border: 1px solid var(--bg-item);
   }
   ${NewItemButton} {
     opacity: 0;

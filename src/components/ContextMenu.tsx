@@ -13,7 +13,7 @@ import {
 } from 'recoil'
 import styled from 'styled-components'
 
-import { createItemModalState } from '../pages/wishlist'
+import { createItemModalState } from './PageWrapper'
 
 export const anchorPointState = atom<{
   x: number | null

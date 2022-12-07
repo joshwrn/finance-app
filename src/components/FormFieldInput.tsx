@@ -2,7 +2,7 @@ import type { FC, HTMLProps } from 'react'
 
 import { Field } from 'formik'
 import { BsPatchCheckFill, BsFillPatchExclamationFill } from 'react-icons/bs'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 
 const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
   display: flex;
@@ -12,7 +12,7 @@ const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
   input {
     ${({ error, isValid }) => {
       if (error) {
-        return css`
+        return `
           border: 1px solid var(--fc-error);
           :focus {
             border: 1px solid var(--fc-error);
@@ -20,17 +20,17 @@ const FieldContainer = styled.div<{ error: boolean; isValid: boolean }>`
         `
       }
       if (isValid) {
-        return css`
+        return `
           border: 1px solid var(--btn-primary);
           :focus {
             border: 1px solid var(--btn-primary);
           }
         `
       }
-      return css`
-        border: 1px solid var(--bg-item);
+      return `
+        border: 1px solid var(--color-white-10);
         :focus {
-          border: 1px solid var(--bg-item);
+          border: 1px solid var(--color-white-10);
         }
       `
     }}
