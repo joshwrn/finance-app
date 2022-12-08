@@ -1,5 +1,6 @@
 export const themeColors = {
   'eucalyptus': `rgb(77, 236, 185)`,
+  'eucalyptus-10': `rgba(77, 236, 185, 0.1)`,
   'coral': `rgb(255, 74, 74)`,
   'white-100': `rgba(255, 255, 255, 1)`,
   'white-90': `rgba(255, 255, 255, .90)`,

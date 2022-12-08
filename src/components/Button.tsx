@@ -22,7 +22,7 @@ const MainButton = styled.button`
     font-size: 14px;
   }
   &:hover {
-    box-shadow: 0 0 15px rgb(77, 236, 185, 0.3);
+    box-shadow: 0 0 15px var(--color-eucalyptus-10);
   }
 `
 

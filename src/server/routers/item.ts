@@ -20,6 +20,24 @@ export const itemRouter = router({
     })
     return { item }
   }),
+  edit: procedure
+    .input(CreateItemInput.extend({ id: z.string() }))
+    .mutation(async ({ input }) => {
+      const item = await prisma.item.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          price: input.price,
+          link: input.link,
+        },
+        include: {
+          subItems: true,
+        },
+      })
+      return { item }
+    }),
   createSubItem: procedure
     .input(CreateSubItemInput.extend({ parentId: z.string() }))
     .mutation(async ({ input }) => {

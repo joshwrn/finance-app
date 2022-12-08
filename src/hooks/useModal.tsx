@@ -32,12 +32,14 @@ const ModalContainer = styled(motion.div)`
   backdrop-filter: blur(30px);
   border: 1px solid var(--color-white-10);
   box-shadow: 0 0 50px var(--color-black-50);
+  background-color: var(--bg-item);
 `
-const Backdrop = styled.div`
+const Backdrop = styled(motion.div)`
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: -1;
+  background-color: var(--color-black-35);
 `
 
 /* defining the modal component inside the hook causes 
@@ -62,7 +64,12 @@ export const Modal: FC<Modal> = ({ children, isOpen, setIsOpen }) => {
             >
               {children}
             </ModalContainer>
-            <Backdrop onClick={() => setIsOpen(false)} />
+            <Backdrop
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+            />
           </Container>
         </Portal>
       )}

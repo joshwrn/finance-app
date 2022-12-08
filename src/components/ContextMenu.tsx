@@ -13,7 +13,7 @@ import {
 } from 'recoil'
 import styled from 'styled-components'
 
-import { createItemModalState } from './PageWrapper'
+import { itemModalState } from './Item/ItemModal'
 
 export const anchorPointState = atom<{
   x: number | null
@@ -38,14 +38,34 @@ export const contextMenuState = atom<{
 })
 
 const ItemOptions: FC = () => {
-  const setIsOpen = useSetRecoilState(createItemModalState)
-  const setAnchorPoint = useResetRecoilState(anchorPointState)
+  const setItemModal = useSetRecoilState(itemModalState)
+  const resetAnchorPoint = useResetRecoilState(anchorPointState)
   return (
     <>
-      <ListItem onClick={() => (setIsOpen(true), setAnchorPoint())}>
+      <ListItem
+        onClick={() => (
+          setItemModal((prev) => ({
+            ...prev,
+            isOpen: true,
+            mode: `createSubItem`,
+          })),
+          resetAnchorPoint()
+        )}
+      >
         Add Subitem
       </ListItem>
-      <ListItem>Edit</ListItem>
+      <ListItem
+        onClick={() => (
+          setItemModal((prev) => ({
+            ...prev,
+            isOpen: true,
+            mode: `edit`,
+          })),
+          resetAnchorPoint()
+        )}
+      >
+        Edit
+      </ListItem>
     </>
   )
 }

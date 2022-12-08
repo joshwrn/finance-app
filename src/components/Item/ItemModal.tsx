@@ -1,14 +1,16 @@
 import type { FC } from 'react'
+import { useMemo } from 'react'
 
+import { contextMenuState } from '@components/ContextMenu'
 import { VALID_URL } from '@lib/yup'
-import type { ItemWithSubItems } from '@lib/zod/item'
 import {
   useCreateItemMutation,
   useCreateSubItemMutation,
+  useEditItemMutation,
 } from '@state/entities/item'
 import { userState } from '@state/user'
 import { Formik, Form } from 'formik'
-import { useRecoilValue } from 'recoil'
+import { atom, useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 import * as Yup from 'yup'
 
@@ -62,46 +64,103 @@ const ItemInputSchema = Yup.object().shape({
   link: Yup.string().matches(VALID_URL, `Invalid URL`),
 })
 
-const ItemModal: FC<{
+type ItemModalModes = `create` | `createSubItem` | `edit`
+
+export const itemModalState = atom<{
+  isOpen: boolean
+  mode: ItemModalModes
   categoryId?: string
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  parentItem?: ItemWithSubItems
-}> = ({ categoryId, setIsOpen, parentItem }) => {
+}>({
+  key: `itemModalState`,
+  default: {
+    isOpen: false,
+    mode: `create`,
+    categoryId: ``,
+  },
+})
+
+const ItemModal: FC = () => {
   const user = useRecoilValue(userState)
+  const contextMenu = useRecoilValue(contextMenuState)
+  const [{ mode, categoryId }, setModalState] = useRecoilState(itemModalState)
+  const closeModal = () =>
+    setModalState({ isOpen: false, mode: `create`, categoryId: `` })
   const { mutate: createItem } = useCreateItemMutation({
     categoryId: categoryId ?? ``,
-    action: () => setIsOpen(false),
+    action: () => closeModal(),
   })
   const { mutate: createSubItem } = useCreateSubItemMutation({
-    parentItem,
-    action: () => setIsOpen(false),
+    parentItem: contextMenu.item,
+    action: () => closeModal(),
   })
+  const { mutate: updateItem } = useEditItemMutation({
+    onSuccess: () => closeModal(),
+    categoryId: contextMenu.item?.categoryId ?? ``,
+  })
+
+  const Header = useMemo(() => {
+    switch (mode) {
+      case `edit`:
+        return <h2>Edit Item</h2>
+      case `create`:
+        return <h2>Create New Item</h2>
+      case `createSubItem`:
+        return <h2>Create Sub Item</h2>
+    }
+  }, [mode])
+
+  const initialValues = useMemo(() => {
+    const defaultValues = {
+      name: ``,
+      link: ``,
+      price: ``,
+    }
+    switch (mode) {
+      case `edit`:
+        return {
+          name: contextMenu.item?.name ?? ``,
+          link: contextMenu.item?.link ?? ``,
+          price: contextMenu.item?.price?.toString() ?? ``,
+        }
+      default:
+        return defaultValues
+    }
+  }, [mode, contextMenu.item])
 
   return (
     <Container>
-      {parentItem ? <h2>Create Sub Item</h2> : <h2>Create New Item</h2>}
+      {Header}
       <Divider />
       <Formik
-        initialValues={{
-          name: ``,
-          link: ``,
-          price: ``,
-        }}
+        initialValues={initialValues}
         onSubmit={(values: InputValues) => {
-          !parentItem
-            ? createItem({
+          switch (mode) {
+            case `edit`:
+              if (!contextMenu.item) return
+              return updateItem({
+                ...values,
+                id: contextMenu.item.id,
+                price: Number(values.price),
+                userId: user.id,
+                categoryId: contextMenu.item.categoryId,
+              })
+            case `create`:
+              return createItem({
                 ...values,
                 categoryId: categoryId ?? ``,
                 userId: user.id,
                 price: Number(values.price),
               })
-            : createSubItem({
+            case `createSubItem`:
+              if (!contextMenu.item) return
+              return createSubItem({
                 ...values,
                 price: Number(values.price),
                 userId: user.id,
-                parentId: parentItem.id,
-                categoryId: parentItem.categoryId,
+                parentId: contextMenu.item.id,
+                categoryId: contextMenu.item.categoryId,
               })
+          }
         }}
         validationSchema={ItemInputSchema}
       >
@@ -139,7 +198,7 @@ const ItemModal: FC<{
               />
             </InputsContainer>
             <MainButton type="submit">
-              <p>Add</p>
+              <p>{mode === `edit` ? `Save` : `Add`}</p>
             </MainButton>
           </StyledForm>
         )}

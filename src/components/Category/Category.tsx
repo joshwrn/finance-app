@@ -3,7 +3,7 @@ import React, { useMemo } from 'react'
 
 import Header from '@components/Header'
 import Item from '@components/Item/Item'
-import useModal from '@hooks/useModal'
+import { itemModalState } from '@components/Item/ItemModal'
 import useSticky from '@hooks/useSticky'
 import type { ItemWithSubItems } from '@lib/zod/item'
 import {
@@ -19,11 +19,10 @@ import { userState } from '@state/user'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
 import { AnimatePresence, motion, useDragControls } from 'framer-motion'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import styled from 'styled-components'
 
 import NewItemButton from '../Button'
-import CreateNewItemModal from '../Item/ItemModal'
 import TableLabels from '../TableLabels'
 
 const Container = styled(motion.div)`
@@ -135,7 +134,7 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   )
 
   const items = categoryData?.items || []
-  const { setIsOpen, isOpen, Modal } = useModal()
+  const setItemModal = useSetRecoilState(itemModalState)
   const total = useMemo(
     () => items.reduce((acc, item) => acc + Number(item.price), 0),
     [items],
@@ -180,12 +179,6 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
       }
       onMouseLeave={() => setCurrentHover(DEFAULT_HOVER_STATE)}
     >
-      <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <CreateNewItemModal
-          setIsOpen={setIsOpen}
-          categoryId={categoryData?.id ?? ``}
-        />
-      </Modal>
       <HeadingContainer
         onPointerDown={(e) => controls.start(e)}
         ref={ref}
@@ -202,7 +195,15 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
         <p>
           Total <span>{numberToCurrency(total)}</span>
         </p>
-        <NewItemButton onClick={() => setIsOpen(true)}>
+        <NewItemButton
+          onClick={() =>
+            setItemModal({
+              isOpen: true,
+              mode: `create`,
+              categoryId: categoryId,
+            })
+          }
+        >
           <p>+ New Item</p>
         </NewItemButton>
       </HeadingContainer>

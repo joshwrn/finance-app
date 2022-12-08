@@ -17,7 +17,7 @@ import {
 } from '@state/entities/item'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
 import type { Variants } from 'framer-motion'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { BiCategory } from 'react-icons/bi'
 import { useSetRecoilState } from 'recoil'
 import styled, { keyframes } from 'styled-components'
@@ -34,12 +34,13 @@ const fade = keyframes`
     filter: blur(0);
   }
 `
-const Inner = styled.div`
+const Inner = styled(motion.div)`
   width: 100%;
   height: 100%;
   /* opacity: 0; */
   display: flex;
   align-items: center;
+
   /* animation: ${fade} 0.15s ease-in-out forwards; */
   ${tableLayout}
 `
@@ -56,6 +57,7 @@ export const ItemContainer = styled(motion.div)`
   border-radius: 16px;
   backdrop-filter: blur(10px);
   border: 1px solid var(--bg-item);
+  overflow: hidden;
   a {
     user-select: none;
     -webkit-user-drag: none;
@@ -76,12 +78,11 @@ const NameContainer = styled.div`
     cursor: pointer;
   }
 `
-const SubItemContainer = styled.div`
+const SubItemContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
-  margin: 10px 0 0 0;
   ${Inner} {
     border-top: 1px solid var(--bg-item);
     padding: 10px 0 0 0;
@@ -130,7 +131,11 @@ const ItemWithState = ({
 
   return (
     <>
-      <Inner>
+      <Inner
+        animate={{
+          paddingBottom: showSubItems && hasSubItems ? 15 : 0,
+        }}
+      >
         <NameContainer>
           {hasSubItems && <BiCategory size={16} />}
           <p>{name}</p>
@@ -150,17 +155,23 @@ const ItemWithState = ({
         {<p>{numberToCurrency(price)}</p>}
         <p>{convertDate(item?.datePurchased ?? dateAdded)}</p>
       </Inner>
-      {showSubItems && hasSubItems && (
-        <SubItemContainer>
-          {item?.subItems.map((subItem) => (
-            <ItemWithState
-              key={subItem.id}
-              subItem={subItem}
-              isCurrentItem={isCurrentItem}
-            />
-          ))}
-        </SubItemContainer>
-      )}
+      <AnimatePresence>
+        {showSubItems && hasSubItems && (
+          <SubItemContainer
+            initial={{ height: 0, y: 100, opacity: 0 }}
+            animate={{ height: `fit-content`, y: 0, opacity: 1 }}
+            exit={{ height: 0, y: 100, opacity: 0 }}
+          >
+            {item?.subItems.map((subItem) => (
+              <ItemWithState
+                key={subItem.id}
+                subItem={subItem}
+                isCurrentItem={isCurrentItem}
+              />
+            ))}
+          </SubItemContainer>
+        )}
+      </AnimatePresence>
     </>
   )
 }

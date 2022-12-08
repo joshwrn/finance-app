@@ -36,11 +36,41 @@ export const useCreateItemMutation = ({
   return { mutate: create.mutate }
 }
 
+export const useEditItemMutation = ({
+  categoryId,
+  onSuccess,
+}: {
+  categoryId: string
+  onSuccess?: () => void
+}): {
+  mutate: (input: z.infer<typeof CreateItemInput> & { id: string }) => void
+} => {
+  const setCategories = useSetRecoilState(categoryState)
+  const edit = trpc.item.edit.useMutation({
+    onSuccess: (res) => {
+      setCategories((prev) =>
+        prev.map((category) => {
+          return category.id === categoryId
+            ? {
+                ...category,
+                items: category.items.map((i) =>
+                  i.id === res.item.id ? res.item : i,
+                ),
+              }
+            : category
+        }),
+      )
+      onSuccess?.()
+    },
+  })
+  return { mutate: edit.mutate }
+}
+
 export const useCreateSubItemMutation = ({
   parentItem,
   action,
 }: {
-  parentItem?: ItemWithSubItems
+  parentItem?: ItemWithSubItems | null
   action?: () => void
 }): {
   mutate: (
