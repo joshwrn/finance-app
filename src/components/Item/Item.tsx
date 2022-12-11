@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import React from 'react'
 
-import { anchorPointState, contextMenuState } from '@components/ContextMenu'
+import { contextMenuState } from '@components/ContextMenu'
 import useIntersection from '@hooks/useIntersection'
 import type { ItemWithSubItems } from '@lib/zod/item'
 import type { SubItem } from '@prisma/client'
@@ -9,6 +9,7 @@ import {
   currentHoverState,
   currentDragState,
   DEFAULT_HOVER_STATE,
+  anchorPointState,
 } from '@state/drag'
 import {
   useDeleteItemMutation,
@@ -212,13 +213,14 @@ const Item: FC<{
     setCurrentItem({ id: null, type: null })
   }
 
-  const handleDragStart = () => {
+  const handleDragStart = (e: MouseEvent) => {
     setCurrentItem({ id, type: `item` })
+    setAnchorPoint({ x: e.pageX, y: e.pageY })
   }
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
-    setContextMenu({ type: `item`, item })
+    setContextMenu({ type: `item`, item, show: true })
     setAnchorPoint({ x: e.pageX, y: e.pageY })
   }
   return (

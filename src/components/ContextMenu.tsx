@@ -3,6 +3,7 @@ import React from 'react'
 
 import { useOutsideClick } from '@hooks/useOutsideClick'
 import type { ItemWithSubItems } from '@lib/zod/item'
+import { anchorPointState } from '@state/drag'
 import type { Entities } from '@state/entities'
 import {
   atom,
@@ -15,31 +16,30 @@ import styled from 'styled-components'
 
 import { itemModalState } from './Item/ItemModal'
 
-export const anchorPointState = atom<{
-  x: number | null
-  y: number | null
-}>({
-  key: `anchorPoint`,
-  default: {
-    x: null,
-    y: null,
-  },
-})
-
 export const contextMenuState = atom<{
   type: Entities | null
   item: ItemWithSubItems | null
+  show: boolean
 }>({
   key: `contextMenu`,
   default: {
     type: null,
     item: null,
+    show: false,
   },
 })
 
 const ItemOptions: FC = () => {
   const setItemModal = useSetRecoilState(itemModalState)
+  const setContextMenu = useSetRecoilState(contextMenuState)
   const resetAnchorPoint = useResetRecoilState(anchorPointState)
+  const reset = () => {
+    resetAnchorPoint()
+    setContextMenu((prev) => ({
+      ...prev,
+      show: false,
+    }))
+  }
   return (
     <>
       <ListItem
@@ -49,7 +49,7 @@ const ItemOptions: FC = () => {
             isOpen: true,
             mode: `createSubItem`,
           })),
-          resetAnchorPoint()
+          reset()
         )}
       >
         Add Subitem
@@ -61,7 +61,7 @@ const ItemOptions: FC = () => {
             isOpen: true,
             mode: `edit`,
           })),
-          resetAnchorPoint()
+          reset()
         )}
       >
         Edit
@@ -80,11 +80,11 @@ export const ContextMenu: FC = () => {
 
   return (
     <>
-      {anchorPoint.x !== null && anchorPoint.y !== null && (
+      {contextMenu.show && (
         <Menu
           style={{
-            top: anchorPoint.y,
-            left: anchorPoint.x,
+            top: anchorPoint.y ?? 0,
+            left: anchorPoint.x ?? 0,
           }}
           ref={ref}
         >
