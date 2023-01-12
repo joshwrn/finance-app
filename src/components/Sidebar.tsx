@@ -62,7 +62,7 @@ const Sidebar: FC = () => {
         </DropdownMenu>
         {user.image && (
           <ImageContainer onClick={() => setShowMenu((prev) => !prev)}>
-            <Image src={user.image ?? ``} layout="fill" />
+            <Image alt="avi" src={user.image ?? ``} fill />
           </ImageContainer>
         )}
         <Divider />

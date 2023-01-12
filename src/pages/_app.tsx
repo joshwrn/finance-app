@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                 <Component {...pageProps} />
               </ComponentWrapper>
               <BlurOverlay />
-              <Image src={Background} layout="fill" />
+              <Image alt="bg" src={Background} fill />
             </PageWrapper>
             <ReactQueryDevtools initialIsOpen={false} />
           </ThemeProvider>
