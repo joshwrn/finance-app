@@ -1,19 +1,18 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { signIn, useSession } from 'next-auth/react'
-import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
 const Login: React.FC = () => {
   const { data: session, status } = useSession()
 
-  const router = useRouter()
+  // const router = useRouter()
 
-  useEffect(() => {
-    if (status === `authenticated`) {
-      router.push(`/wishlist`)
-    }
-  }, [session, status])
+  // useEffect(() => {
+  //   if (status === `authenticated`) {
+  //     router.push(`/wishlist`)
+  //   }
+  // }, [session, status])
 
   return (
     <Wrapper>

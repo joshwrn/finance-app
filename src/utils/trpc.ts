@@ -1,5 +1,4 @@
-import { httpBatchLink } from '@trpc/client'
-import { createTRPCNext } from '@trpc/next'
+import { httpBatchLink, createTRPCProxyClient } from '@trpc/client'
 import SuperJSON from 'superjson'
 
 import type { AppRouter } from '../server/routers/_app'
@@ -19,27 +18,19 @@ function getBaseUrl() {
   // assume localhost
   return `http://localhost:${process.env.PORT ?? 3000}`
 }
-export const trpc = createTRPCNext<AppRouter>({
-  config({ ctx }) {
-    return {
-      links: [
-        httpBatchLink({
-          /**
-           * If you want to use SSR, you need to use the server's full URL
-           * @link https://trpc.io/docs/ssr
-           **/
-          url: `${getBaseUrl()}/api/trpc`,
-        }),
-      ],
+export const trpc = createTRPCProxyClient<AppRouter>({
+  links: [
+    httpBatchLink({
       /**
-       * @link https://tanstack.com/query/v4/docs/reference/QueryClient
+       * If you want to use SSR, you need to use the server's full URL
+       * @link https://trpc.io/docs/ssr
        **/
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
-      transformer: SuperJSON,
-    }
-  },
+      url: `${getBaseUrl()}/api/trpc`,
+    }),
+  ],
   /**
-   * @link https://trpc.io/docs/ssr
+   * @link https://tanstack.com/query/v4/docs/reference/QueryClient
    **/
-  ssr: true,
+  // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+  transformer: SuperJSON,
 })

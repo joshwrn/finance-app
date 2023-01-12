@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import React, { useState } from 'react'
 
-import { useCreateCategoryMutation } from '@state/entities/category'
+// import { useCreateCategoryMutation } from '@state/entities/category'
 import { userState } from '@state/user'
 import { Form, Formik } from 'formik'
 import { useRecoilValue } from 'recoil'
@@ -25,9 +25,9 @@ interface InputValues {
 export const NewCategoryButton: FC = () => {
   const [showNewCategoryModal, setShowNewCategoryModal] = useState(false)
   const user = useRecoilValue(userState)
-  const { mutate } = useCreateCategoryMutation({
-    action: () => setShowNewCategoryModal(false),
-  })
+  // const { mutate } = useCreateCategoryMutation({
+  //   action: () => setShowNewCategoryModal(false),
+  // })
 
   return (
     <div style={{ position: `relative` }}>
@@ -41,11 +41,11 @@ export const NewCategoryButton: FC = () => {
             name: ``,
           }}
           onSubmit={(values: InputValues) => {
-            mutate({
-              ...values,
-              userId: user.id,
-              categoryType: `WISHLIST`,
-            })
+            // mutate({
+            //   ...values,
+            //   userId: user.id,
+            //   categoryType: `WISHLIST`,
+            // })
           }}
           validationSchema={InputSchema}
         >

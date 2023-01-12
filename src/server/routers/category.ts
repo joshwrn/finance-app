@@ -19,22 +19,29 @@ export const categoryRouter = router({
       }),
     )
     .query(async ({ input }) => {
-      const categories = await prisma.category.findMany({
-        where: { userId: input.userId },
-        include: {
-          items: {
-            where: {
-              datePurchased:
-                input.categoryType === `WISHLIST` ? null : { not: null },
-            },
-            include: {
-              subItems: true,
+      try {
+        const categories = await prisma.category.findMany({
+          where: { userId: input.userId },
+          include: {
+            items: {
+              where: {
+                datePurchased:
+                  input.categoryType === `WISHLIST` ? null : { not: null },
+              },
+              include: {
+                subItems: true,
+              },
             },
           },
-        },
-      })
-      return {
-        categories,
+        })
+        return {
+          categories,
+        }
+      } catch (error) {
+        console.error(error)
+        return {
+          categories: [],
+        }
       }
     }),
   create: procedure

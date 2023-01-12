@@ -24,25 +24,22 @@ export const useUser = (): User => {
   return user
 }
 
-export const useGetUser = (): void => {
+export const useGetUser = async (): Promise<void> => {
   const setUser = useSetRecoilState(userState)
   const { data: session, status } = useSession()
   const router = useRouter()
 
   useEffect(() => {
+    const get = async (): Promise<void> => {
+      const data = await trpc.user.current.query({
+        email: session?.user?.email ?? ``,
+      })
+      setUser(data.user ?? DEFAULT_USER)
+    }
     if (!session && status === `unauthenticated`) {
       router.push(`/`)
+    } else {
+      get()
     }
   }, [session, status])
-
-  trpc.user.current.useQuery(
-    {
-      email: session?.user?.email as string,
-    },
-    {
-      placeholderData: DEFAULT_USER,
-      enabled: !!session,
-      onSuccess: (data) => data.user && setUser(data.user),
-    },
-  )
 }
