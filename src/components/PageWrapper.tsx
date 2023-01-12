@@ -68,6 +68,11 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
           <CreateNewItemModal />
         </Modal>
         <LayoutGroup>
+          {categories.state === `hasValue`
+            ? categories?.contents?.map((category) => {
+                return <p key={category.id}>{category.name}</p>
+              })
+            : null}
           {/* {categories.map((category: CategoryWithItems) => (
             <Category key={category.id + title} categoryId={category.id} />
           ))} */}

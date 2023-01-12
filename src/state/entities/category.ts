@@ -1,7 +1,15 @@
+import type { CreateCategoryInput } from '@lib/zod/category'
 import type { CategoryType } from '@prisma/client'
 import { userState } from '@state/user'
 import { trpc } from '@utils/trpc'
-import { atom, selectorFamily, useRecoilValue } from 'recoil'
+import {
+  atom,
+  selectorFamily,
+  useRecoilRefresher_UNSTABLE,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
+import type { z } from 'zod'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
@@ -15,19 +23,10 @@ export const useCategories = (): { categories: CategoryWithItems[] } => {
   return { categories }
 }
 
-// const categoryListState = atom<CategoryWithItems[]>({
-//   key: `categoryList`,
-//   default: [],
-//   effects: [
-//     async ({ setSelf, onSet }) => {
-//       onSet((newCategories) => {
-//         setSelf(newCategories)
-//       })
-//     },
-//   ],
-// })
-
-export const categoryListSelector = selectorFamily({
+export const categoryListSelector = selectorFamily<
+  CategoryWithItems[],
+  CategoryType
+>({
   key: `categoryList`,
   get:
     (categoryType: CategoryType) =>
@@ -40,33 +39,29 @@ export const categoryListSelector = selectorFamily({
       })
       return response.categories
     },
+  set:
+    (categoryType: CategoryType) =>
+    ({ set }, newValue) => {
+      set(categoryState, newValue)
+    },
 })
 
-// type UseCategoryList = (input: { categoryType: CategoryType }) => {
-//   data?: { categories: CategoryWithItems[] }
-//   error: unknown
-// }
-// export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
-//   const user = useUser()
-//   const setCategories = useSetRecoilState(categoryState)
+export const useCreateCategoryMutation = (
+  categoryType: CategoryType,
+  action: () => void,
+): ((input: z.infer<typeof CreateCategoryInput>) => Promise<void>) => {
+  const setList = useSetRecoilState(categoryListSelector(categoryType))
+  const refresh = useRecoilRefresher_UNSTABLE(categoryListSelector(categoryType))
+  const create = async (input: z.infer<typeof CreateCategoryInput>) => {
+    const { mutate } = trpc.category.create
+    const { category } = await mutate(input)
+    setList((prev) => [...prev, { ...category, items: [] }])
+    refresh()
+    action()
+  }
 
-//   const { data, error } = trpc.category.list.useQuery<{
-//     categories: CategoryWithItems[]
-//   }>(
-//     { userId: user.id, categoryType },
-//     {
-//       enabled: user.id !== ``,
-//       placeholderData: { categories: [] },
-//       onSuccess: (data) => {
-//         setCategories(data?.categories)
-//       },
-//     },
-//   )
-//   return {
-//     data,
-//     error,
-//   }
-// }
+  return create
+}
 
 // export const useCreateCategoryMutation = ({
 //   action,
