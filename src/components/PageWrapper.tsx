@@ -1,6 +1,5 @@
 import type { FC } from 'react'
 
-import ActionBar from '@components/ActionBar/ActionBar'
 import Category from '@components/Category/Category'
 import { NewCategoryButton } from '@components/Category/NewCategoryButton'
 import Header from '@components/Header'
@@ -50,7 +49,6 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
   return (
     <>
       <Sidebar />
-      <ActionBar />
       <Container>
         <SectionHeader>
           <h1>{title}</h1>

@@ -12,7 +12,6 @@ import {
   anchorPointState,
 } from '@state/drag'
 import {
-  useDeleteItemMutation,
   useMoveItemMutation,
   useSwitchItemCategoryMutation,
 } from '@state/entities/item'
@@ -188,16 +187,12 @@ const Item: FC<{
   const setContextMenu = useSetRecoilState(contextMenuState)
   const setAnchorPoint = useSetRecoilState(anchorPointState)
   const [myRef, inViewport] = useIntersection()
-  const { mutate: deleteItem } = useDeleteItemMutation()
   const { mutate: moveItem } = useMoveItemMutation()
   const { mutate: switchCategory } = useSwitchItemCategoryMutation()
   const [showSubItems, setShowSubItems] = React.useState(false)
 
   const handleDragEnd = () => {
     switch (currentHover.type) {
-      case `trash`:
-        deleteItem({ id, categoryId })
-        break
       case `move`:
         moveItem({ id, categoryId })
         break
@@ -220,6 +215,7 @@ const Item: FC<{
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     setContextMenu({ type: `item`, item, show: true })
     setAnchorPoint({ x: e.pageX, y: e.pageY })
   }
@@ -232,7 +228,7 @@ const Item: FC<{
       custom={currentHover.id === id}
       layout={true}
       drag
-      dragSnapToOrigin={currentHover.type ? true : false}
+      dragSnapToOrigin={true}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       whileDrag={{
