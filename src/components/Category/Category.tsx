@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import React, { useMemo } from 'react'
 
+import { contextMenuState } from '@components/ContextMenu'
 import Header from '@components/Header'
 import Item from '@components/Item/Item'
 import { itemModalState } from '@components/Item/ItemModal'
@@ -10,11 +11,9 @@ import {
   currentHoverState,
   currentDragState,
   DEFAULT_HOVER_STATE,
+  anchorPointState,
 } from '@state/drag'
-import {
-  categoryState,
-  useDeleteCategoryMutation,
-} from '@state/entities/category'
+import { categoryState } from '@state/entities/category'
 import { userState } from '@state/user'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
@@ -142,39 +141,24 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   const [isStuck, ref] = useSticky()
   const controls = useDragControls()
 
-  const [currentItem, setCurrentItem] = useRecoilState(currentDragState)
+  const currentDrag = useRecoilValue(currentDragState)
   const [currentHover, setCurrentHover] = useRecoilState(currentHoverState)
-  const isOverTrash = currentHover.type === `trash`
+  const setContextMenu = useSetRecoilState(contextMenuState)
+  const setAnchorPoint = useSetRecoilState(anchorPointState)
 
-  const { mutate } = useDeleteCategoryMutation()
-  const handleDragEnd = () => {
-    if (isOverTrash) {
-      mutate({ id: categoryId })
-    }
-    setCurrentHover(DEFAULT_HOVER_STATE)
-    setCurrentItem({ id: null, type: null })
-  }
-
-  const handleDragStart = () => {
-    setCurrentItem({ id: categoryId, type: `category` })
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setContextMenu({ type: `category`, category: categoryData, show: true })
+    setAnchorPoint({ x: e.pageX, y: e.pageY })
   }
 
   return (
     <Container
-      dragListener={false}
-      dragControls={controls}
-      drag
       layout={true}
-      dragSnapToOrigin={currentHover.type ? false : true}
-      whileDrag={{
-        opacity: 0.35,
-        zIndex: 999,
-        position: `relative`,
-      }}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      onContextMenu={handleContextMenu}
       onMouseOver={() =>
-        currentItem.type === `item` &&
+        currentDrag.type === `item` &&
         setCurrentHover({ id: categoryId, type: `category` })
       }
       onMouseLeave={() => setCurrentHover(DEFAULT_HOVER_STATE)}
@@ -212,7 +196,7 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
           <TableLabels labels={[`Item`, `Link`, `Price`, `Date Added`]} />
           <AnimatePresence initial={false}>
             {items.map((item: ItemWithSubItems) => {
-              const isCurrentItem = currentItem.id === item.id
+              const isCurrentItem = currentDrag.id === item.id
               return (
                 <Item
                   item={item}

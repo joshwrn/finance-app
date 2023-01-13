@@ -78,29 +78,31 @@ export const useCreateSubItemMutation = ({
   ) => void
 } => {
   const setCategories = useSetRecoilState(categoryState)
-  const create = trpc.item.createSubItem.useMutation({
-    onSuccess: (res) => {
-      if (!parentItem) {
-        return
-      }
-      setCategories((prev) =>
-        prev.map((category) => {
-          return category.id === parentItem.categoryId
-            ? {
-                ...category,
-                items: category.items.map((i) =>
-                  i.id === parentItem.id
-                    ? { ...i, group: true, subItems: [...i.subItems, res] }
-                    : i,
-                ),
-              }
-            : category
-        }),
-      )
-      action?.()
-    },
-  })
-  return { mutate: create.mutate }
+  const create = trpc.item.createSubItem.useMutation()
+  const use = async (
+    input: z.infer<typeof CreateSubItemInput> & { parentId: string },
+  ) => {
+    const data = await create.mutateAsync(input)
+    if (!parentItem) {
+      return
+    }
+    setCategories((prev) =>
+      prev.map((category) => {
+        return category.id === parentItem.categoryId
+          ? {
+              ...category,
+              items: category.items.map((i) =>
+                i.id === parentItem.id
+                  ? { ...i, group: true, subItems: [...i.subItems, data] }
+                  : i,
+              ),
+            }
+          : category
+      }),
+    )
+    action?.()
+  }
+  return { mutate: use }
 }
 
 export const useDeleteItemMutation = (): {
@@ -109,8 +111,14 @@ export const useDeleteItemMutation = (): {
   const user = useUser()
   const setCategories = useSetRecoilState(categoryState)
   const deleteItem = trpc.item.delete.useMutation()
-  const mutate = ({ categoryId, id }: { categoryId: string; id: string }) => {
-    deleteItem.mutate({ id, userId: user.id })
+  const mutate = async ({
+    categoryId,
+    id,
+  }: {
+    categoryId: string
+    id: string
+  }) => {
+    deleteItem.mutateAsync({ id, userId: user.id })
     setCategories((prev) =>
       prev.map((category) => {
         return category.id === categoryId
