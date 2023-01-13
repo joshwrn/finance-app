@@ -16,7 +16,7 @@
     "@trpc/react-query": "^10.2.0",
     "@trpc/server": "^10.2.0",
     "axios": "^0.27.2",
-    "eslint-config-next": "^13.1.1",
+    "eslint-config-next": "^13.1.2",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
     "nanoid": "^4.0.0",

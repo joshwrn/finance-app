@@ -3,7 +3,7 @@
     "unused-imports"
   ],
   "extends": [
-    "@eyecuelab/react", "plugin:@next/next/recommended"
+    "plugin:@next/next/recommended",  "@eyecuelab/react"
   ],
   "rules": { 
   "max-len": "off",
