@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
-import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { signIn, useSession } from 'next-auth/react'
 import styled from 'styled-components'
 
 const Login: React.FC = () => {
