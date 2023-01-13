@@ -1,14 +1,10 @@
+import { useEffect } from 'react'
+
 import type { CreateCategoryInput } from '@lib/zod/category'
 import type { CategoryType } from '@prisma/client'
-import { userState } from '@state/user'
+import { useUser } from '@state/user'
 import { trpc } from '@utils/trpc'
-import {
-  atom,
-  selectorFamily,
-  useRecoilRefresher_UNSTABLE,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
 import type { z } from 'zod'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
@@ -23,40 +19,32 @@ export const useCategories = (): { categories: CategoryWithItems[] } => {
   return { categories }
 }
 
-export const categoryListSelector = selectorFamily<
-  CategoryWithItems[],
-  CategoryType
->({
-  key: `categoryList`,
-  get:
-    (categoryType: CategoryType) =>
-    async ({ get }) => {
-      const userId = get(userState).id
-      if (!userId) return []
-      const response = await trpc.category.list.query({
-        userId,
-        categoryType,
+export const useFetchCategories = (): void => {
+  const { query } = trpc.category.list
+  const user = useUser().id
+  const setList = useSetRecoilState(categoryState)
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { categories } = await query({
+        userId: user,
+        categoryType: `WISHLIST`,
       })
-      return response.categories
-    },
-  set:
-    (categoryType: CategoryType) =>
-    ({ set }, newValue) => {
-      set(categoryState, newValue)
-    },
-})
+      setList(categories)
+    }
+    fetchCategories()
+  }, [user, setList])
+}
 
 export const useCreateCategoryMutation = (
   categoryType: CategoryType,
   action: () => void,
 ): ((input: z.infer<typeof CreateCategoryInput>) => Promise<void>) => {
-  const setList = useSetRecoilState(categoryListSelector(categoryType))
-  const refresh = useRecoilRefresher_UNSTABLE(categoryListSelector(categoryType))
+  const setList = useSetRecoilState(categoryState)
   const create = async (input: z.infer<typeof CreateCategoryInput>) => {
     const { mutate } = trpc.category.create
     const { category } = await mutate(input)
     setList((prev) => [...prev, { ...category, items: [] }])
-    refresh()
     action()
   }
 

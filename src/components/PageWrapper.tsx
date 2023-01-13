@@ -7,10 +7,10 @@ import CreateNewItemModal, { itemModalState } from '@components/Item/ItemModal'
 import Sidebar from '@components/Sidebar'
 import { Modal } from '@hooks/useModal'
 import type { CategoryType } from '@prisma/client'
-import { categoryListSelector } from '@state/entities/category'
+import { categoryState, useFetchCategories } from '@state/entities/category'
 import { useGetUser } from '@state/user'
 import { LayoutGroup, motion } from 'framer-motion'
-import { useRecoilState, useRecoilValueLoadable } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 const Container = styled(motion.div)`
@@ -42,8 +42,8 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
 }) => {
   // useCategoryListQuery({ categoryType })
   useGetUser()
-  const categories = useRecoilValueLoadable(categoryListSelector(categoryType))
-  console.log(categories)
+  const categories = useRecoilValue(categoryState)
+  useFetchCategories()
   const [itemModal, setItemModal] = useRecoilState(itemModalState)
   return (
     <>
@@ -68,11 +68,9 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
           <CreateNewItemModal />
         </Modal>
         <LayoutGroup>
-          {categories.state === `hasValue`
-            ? categories?.contents?.map((category) => {
-                return <p key={category.id}>{category.name}</p>
-              })
-            : null}
+          {categories.map((category) => {
+            return <p key={category.id}>{category.name}</p>
+          })}
           {/* {categories.map((category: CategoryWithItems) => (
             <Category key={category.id + title} categoryId={category.id} />
           ))} */}
