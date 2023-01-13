@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 
 import type { User } from '@prisma/client'
 import { trpc } from '@utils/trpc'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { useSession } from 'next-auth/react'
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
 
 export const DEFAULT_USER: User = {

@@ -3,7 +3,10 @@ import React from 'react'
 
 import { useOutsideClick } from '@hooks/useOutsideClick'
 import type { ItemWithSubItems } from '@lib/zod/item'
+import { anchorPointState } from '@state/drag'
 import type { Entities } from '@state/entities'
+import { useDeleteCategoryMutation } from '@state/entities/category'
+import { useDeleteItemMutation } from '@state/entities/item'
 import {
   atom,
   useRecoilState,
@@ -13,33 +16,37 @@ import {
 } from 'recoil'
 import styled from 'styled-components'
 
-import { itemModalState } from './Item/ItemModal'
+import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
-export const anchorPointState = atom<{
-  x: number | null
-  y: number | null
-}>({
-  key: `anchorPoint`,
-  default: {
-    x: null,
-    y: null,
-  },
-})
+import { itemModalState } from './Item/ItemModal'
 
 export const contextMenuState = atom<{
   type: Entities | null
-  item: ItemWithSubItems | null
+  item?: ItemWithSubItems | null
+  category?: CategoryWithItems | null
+  show: boolean
 }>({
   key: `contextMenu`,
   default: {
     type: null,
     item: null,
+    show: false,
+    category: null,
   },
 })
 
 const ItemOptions: FC = () => {
   const setItemModal = useSetRecoilState(itemModalState)
+  const [contextMenu, setContextMenu] = useRecoilState(contextMenuState)
   const resetAnchorPoint = useResetRecoilState(anchorPointState)
+  const deleteItem = useDeleteItemMutation()
+  const reset = () => {
+    resetAnchorPoint()
+    setContextMenu((prev) => ({
+      ...prev,
+      show: false,
+    }))
+  }
   return (
     <>
       <ListItem
@@ -49,7 +56,7 @@ const ItemOptions: FC = () => {
             isOpen: true,
             mode: `createSubItem`,
           })),
-          resetAnchorPoint()
+          reset()
         )}
       >
         Add Subitem
@@ -61,12 +68,48 @@ const ItemOptions: FC = () => {
             isOpen: true,
             mode: `edit`,
           })),
-          resetAnchorPoint()
+          reset()
         )}
       >
         Edit
       </ListItem>
+      <ListItem
+        onClick={() => (
+          deleteItem.mutate({
+            id: contextMenu.item?.id ?? ``,
+            categoryId: contextMenu.item?.categoryId ?? ``,
+          }),
+          reset()
+        )}
+      >
+        Delete
+      </ListItem>
     </>
+  )
+}
+
+const CategoryOptions: FC = () => {
+  const resetAnchorPoint = useResetRecoilState(anchorPointState)
+  const [contextMenu, setContextMenu] = useRecoilState(contextMenuState)
+  const deleteCategory = useDeleteCategoryMutation()
+  const reset = () => {
+    resetAnchorPoint()
+    setContextMenu((prev) => ({
+      ...prev,
+      show: false,
+    }))
+  }
+  return (
+    <ListItem
+      onClick={() => (
+        deleteCategory.mutate({
+          id: contextMenu.category?.id ?? ``,
+        }),
+        reset()
+      )}
+    >
+      Delete
+    </ListItem>
   )
 }
 
@@ -80,16 +123,19 @@ export const ContextMenu: FC = () => {
 
   return (
     <>
-      {anchorPoint.x !== null && anchorPoint.y !== null && (
+      {contextMenu.show && (
         <Menu
           style={{
-            top: anchorPoint.y,
-            left: anchorPoint.x,
+            top: anchorPoint.y ?? 0,
+            left: anchorPoint.x ?? 0,
           }}
           ref={ref}
         >
           {contextMenu.type === `item` && contextMenu.item?.id && (
             <ItemOptions />
+          )}
+          {contextMenu.type === `category` && contextMenu.category?.id && (
+            <CategoryOptions />
           )}
         </Menu>
       )}

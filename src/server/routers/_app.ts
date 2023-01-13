@@ -1,7 +1,7 @@
-import { router } from '../trpc'
 import { categoryRouter } from './category'
 import { itemRouter } from './item'
 import { userRouter } from './user'
+import { router } from '../trpc'
 
 export const appRouter = router({
   category: categoryRouter,

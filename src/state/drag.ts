@@ -23,3 +23,14 @@ export const currentDragState = atom<{
   key: `currentItemState`,
   default: { id: null, type: null },
 })
+
+export const anchorPointState = atom<{
+  x: number | null
+  y: number | null
+}>({
+  key: `anchorPoint`,
+  default: {
+    x: null,
+    y: null,
+  },
+})

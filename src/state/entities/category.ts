@@ -25,9 +25,7 @@ export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
   const user = useUser()
   const setCategories = useSetRecoilState(categoryState)
 
-  const { data, error } = trpc.category.list.useQuery<{
-    categories: CategoryWithItems[]
-  }>(
+  const { data, error } = trpc.category.list.useQuery(
     { userId: user.id, categoryType },
     {
       enabled: user.id !== ``,
