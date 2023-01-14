@@ -6,7 +6,7 @@ import CreateNewItemModal, { itemModalState } from '@components/Item/ItemModal'
 import Sidebar from '@components/Sidebar'
 import { Modal } from '@hooks/useModal'
 import type { CategoryType } from '@prisma/client'
-import { categoryState, useCategoryListQuery } from '@state/entities/category'
+import { categoryState, useList } from '@state/entities/category'
 import { useGetUser } from '@state/user'
 import { LayoutGroup, motion } from 'framer-motion'
 import { useRecoilState, useRecoilValue } from 'recoil'
@@ -51,7 +51,9 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
   title,
   categoryType,
 }) => {
-  const { data } = useCategoryListQuery({ categoryType })
+  const {
+    query: { data },
+  } = useList()
   useGetUser()
   const categories = useRecoilValue(categoryState)
   const [itemModal, setItemModal] = useRecoilState(itemModalState)

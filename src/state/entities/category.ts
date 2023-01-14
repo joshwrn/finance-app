@@ -32,41 +32,29 @@ type ListCategoriesResult = RouterOutput[`category`][`list`]
 
 type UpdateList = (prev: ListCategoriesResult) => ListCategoriesResult
 
-export const useUpdateList = (): { refetch: () => void } => {
+export const useList = (): any => {
   const client = useQueryClient()
   const user = useUser()
-  const page = useRouter().pathname.includes(`wishlist`) ? `WISHLIST` : `EXPENSE`
+  const trpcList = trpc.category.list
+  const categoryType = useRouter().pathname.includes(`wishlist`)
+    ? `WISHLIST`
+    : `EXPENSE`
+  const input = { userId: user.id, categoryType } satisfies ListCategoriesInput
+  const query = trpcList.useQuery(input, {
+    enabled: user.id !== ``,
+    placeholderData: { categories: [] },
+  })
+
+  const key = trpcList.getQueryKey(input)
 
   const refetch = () => {
-    client.refetchQueries<ListCategoriesResult>([
-      [`category`, `list`],
-      {
-        input: {
-          userId: user.id,
-          categoryType: page,
-        },
-        type: `query`,
-      },
-    ])
+    client.refetchQueries<ListCategoriesResult>(key)
   }
 
-  return { refetch }
-}
-
-export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
-  const user = useUser()
-  const setCategories = useSetRecoilState(categoryState)
-
-  const { data, error } = trpc.category.list.useQuery(
-    { userId: user.id, categoryType },
-    {
-      enabled: user.id !== ``,
-      placeholderData: { categories: [] },
-    },
-  )
   return {
-    data,
-    error,
+    query,
+    key,
+    refetch,
   }
 }
 
@@ -78,8 +66,7 @@ export const useCreateCategoryMutation = ({
 }): {
   mutate: (input: z.infer<typeof CreateCategoryInput>) => void
 } => {
-  const setCategories = useSetRecoilState(categoryState)
-  const { refetch } = useUpdateList()
+  const { refetch } = useList()
   const create = trpc.category.create.useMutation({
     onMutate: () => {
       action?.()
@@ -87,7 +74,7 @@ export const useCreateCategoryMutation = ({
   })
   const m = async (input: CreateCategoryInput) => {
     const { mutateAsync } = create
-    const newData = await mutateAsync(input)
+    await mutateAsync(input)
     refetch()
   }
   return { mutate: m }
