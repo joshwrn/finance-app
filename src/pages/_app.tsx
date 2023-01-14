@@ -4,6 +4,7 @@ import { ContextMenu } from '@components/ContextMenu'
 import { GlobalStyle } from '@styles/GlobalStyle'
 import { darkTheme } from '@styles/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { trpc } from '@utils/trpc'
 import type { AppProps } from 'next/app'
 import Image from 'next/image'
@@ -19,6 +20,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <RecoilRoot>
           <ThemeProvider theme={darkTheme}>
+            <ReactQueryDevtools initialIsOpen={false} />
             <GlobalStyle />
             <ContextMenu />
             <PageWrapper>
@@ -29,6 +31,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               <BlurOverlay />
               <Image alt="bg" src={Background} fill />
             </PageWrapper>
+            <ReactQueryDevtools initialIsOpen={false} />
           </ThemeProvider>
         </RecoilRoot>
       </QueryClientProvider>

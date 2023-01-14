@@ -1,17 +1,16 @@
 import type { CreateCategoryInput } from '@lib/zod/category'
-import type { Category, CategoryType } from '@prisma/client'
+import type { CategoryType } from '@prisma/client'
 import { useUser } from '@state/user'
 import { useQueryClient } from '@tanstack/react-query'
-import type { TRPCClientError, TRPCClientErrorLike } from '@trpc/client'
-import type { UseTRPCQueryResult } from '@trpc/react-query/shared'
-import type { RouterError, RouterInput, RouterOutput } from '@utils/trpc'
+import type { RouterInput, RouterOutput } from '@utils/trpc'
 import { trpc } from '@utils/trpc'
+import { useRouter } from 'next/router'
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
 import type { z } from 'zod'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
 
-import type { AppRouter } from '../../server/routers/_app'
+import { appRouter } from '../../server/routers/_app'
 
 export const categoryState = atom<CategoryWithItems[]>({
   key: `category`,
@@ -31,6 +30,29 @@ type UseCategoryList = (input: { categoryType: CategoryType }) => {
 type ListCategoriesInput = RouterInput[`category`][`list`]
 type ListCategoriesResult = RouterOutput[`category`][`list`]
 
+type UpdateList = (prev: ListCategoriesResult) => ListCategoriesResult
+
+export const useUpdateList = (): { refetch: () => void } => {
+  const client = useQueryClient()
+  const user = useUser()
+  const page = useRouter().pathname.includes(`wishlist`) ? `WISHLIST` : `EXPENSE`
+
+  const refetch = () => {
+    client.refetchQueries<ListCategoriesResult>([
+      [`category`, `list`],
+      {
+        input: {
+          userId: user.id,
+          categoryType: page,
+        },
+        type: `query`,
+      },
+    ])
+  }
+
+  return { refetch }
+}
+
 export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
   const user = useUser()
   const setCategories = useSetRecoilState(categoryState)
@@ -40,9 +62,6 @@ export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
     {
       enabled: user.id !== ``,
       placeholderData: { categories: [] },
-      onSuccess: (data) => {
-        setCategories(data?.categories)
-      },
     },
   )
   return {
@@ -51,6 +70,7 @@ export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
   }
 }
 
+type CreateCategoryInput = RouterInput[`category`][`create`]
 export const useCreateCategoryMutation = ({
   action,
 }: {
@@ -59,15 +79,18 @@ export const useCreateCategoryMutation = ({
   mutate: (input: z.infer<typeof CreateCategoryInput>) => void
 } => {
   const setCategories = useSetRecoilState(categoryState)
+  const { refetch } = useUpdateList()
   const create = trpc.category.create.useMutation({
-    onSuccess: (res) => {
-      setCategories((prev) => [...prev, { ...res.category, items: [] }])
-    },
     onMutate: () => {
       action?.()
     },
   })
-  return { mutate: create.mutate }
+  const m = async (input: CreateCategoryInput) => {
+    const { mutateAsync } = create
+    const newData = await mutateAsync(input)
+    refetch()
+  }
+  return { mutate: m }
 }
 
 export const useDeleteCategoryMutation = (): {

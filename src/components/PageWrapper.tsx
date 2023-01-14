@@ -51,7 +51,7 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
   title,
   categoryType,
 }) => {
-  useCategoryListQuery({ categoryType })
+  const { data } = useCategoryListQuery({ categoryType })
   useGetUser()
   const categories = useRecoilValue(categoryState)
   const [itemModal, setItemModal] = useRecoilState(itemModalState)
@@ -76,11 +76,16 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
         >
           <CreateNewItemModal />
         </Modal>
-        <LayoutGroup>
+        <div>
+          {data?.categories.map((category: CategoryWithItems) => (
+            <p key={category.id}>{category.name}</p>
+          ))}
+        </div>
+        {/* <LayoutGroup>
           {categories.map((category: CategoryWithItems) => (
             <Category key={category.id + title} categoryId={category.id} />
           ))}
-        </LayoutGroup>
+        </LayoutGroup> */}
       </Container>
     </>
   )
