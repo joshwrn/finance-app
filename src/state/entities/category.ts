@@ -1,11 +1,17 @@
 import type { CreateCategoryInput } from '@lib/zod/category'
-import type { CategoryType } from '@prisma/client'
+import type { Category, CategoryType } from '@prisma/client'
 import { useUser } from '@state/user'
+import { useQueryClient } from '@tanstack/react-query'
+import type { TRPCClientError, TRPCClientErrorLike } from '@trpc/client'
+import type { UseTRPCQueryResult } from '@trpc/react-query/shared'
+import type { RouterError, RouterInput, RouterOutput } from '@utils/trpc'
 import { trpc } from '@utils/trpc'
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
 import type { z } from 'zod'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
+
+import type { AppRouter } from '../../server/routers/_app'
 
 export const categoryState = atom<CategoryWithItems[]>({
   key: `category`,
@@ -21,6 +27,10 @@ type UseCategoryList = (input: { categoryType: CategoryType }) => {
   data?: { categories: CategoryWithItems[] }
   error: unknown
 }
+
+type ListCategoriesInput = RouterInput[`category`][`list`]
+type ListCategoriesResult = RouterOutput[`category`][`list`]
+
 export const useCategoryListQuery: UseCategoryList = ({ categoryType }) => {
   const user = useUser()
   const setCategories = useSetRecoilState(categoryState)
