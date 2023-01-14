@@ -35,82 +35,78 @@ export const contextMenuState = atom<{
   },
 })
 
-const ItemOptions: FC = () => {
-  const setItemModal = useSetRecoilState(itemModalState)
-  const [contextMenu, setContextMenu] = useRecoilState(contextMenuState)
+const useResetContextMenu = () => {
   const resetAnchorPoint = useResetRecoilState(anchorPointState)
-  const deleteItem = useDeleteItemMutation()
-  const reset = () => {
+  const setContextMenu = useSetRecoilState(contextMenuState)
+  return () => {
     resetAnchorPoint()
     setContextMenu((prev) => ({
       ...prev,
       show: false,
     }))
   }
+}
+
+const ItemOptions: FC = () => {
+  const setItemModal = useSetRecoilState(itemModalState)
+  const contextMenu = useRecoilValue(contextMenuState)
+  const deleteItem = useDeleteItemMutation()
+  const reset = useResetContextMenu()
+  const handleClick = (option: string) => {
+    switch (option) {
+      case `createSubItem`:
+        setItemModal((prev) => ({
+          ...prev,
+          isOpen: true,
+          mode: `createSubItem`,
+        }))
+        break
+      case `edit`:
+        setItemModal((prev) => ({
+          ...prev,
+          isOpen: true,
+          mode: `edit`,
+        }))
+        break
+      case `delete`:
+        deleteItem.mutate({
+          id: contextMenu.item?.id ?? ``,
+          categoryId: contextMenu.item?.categoryId ?? ``,
+        })
+        break
+      default:
+        break
+    }
+    reset()
+  }
   return (
     <>
-      <ListItem
-        onClick={() => (
-          setItemModal((prev) => ({
-            ...prev,
-            isOpen: true,
-            mode: `createSubItem`,
-          })),
-          reset()
-        )}
-      >
+      <ListItem onClick={() => handleClick(`createSubItem`)}>
         Add Subitem
       </ListItem>
-      <ListItem
-        onClick={() => (
-          setItemModal((prev) => ({
-            ...prev,
-            isOpen: true,
-            mode: `edit`,
-          })),
-          reset()
-        )}
-      >
-        Edit
-      </ListItem>
-      <ListItem
-        onClick={() => (
-          deleteItem.mutate({
-            id: contextMenu.item?.id ?? ``,
-            categoryId: contextMenu.item?.categoryId ?? ``,
-          }),
-          reset()
-        )}
-      >
-        Delete
-      </ListItem>
+      <ListItem onClick={() => handleClick(`edit`)}>Edit</ListItem>
+      <ListItem onClick={() => handleClick(`delete`)}>Delete</ListItem>
     </>
   )
 }
 
 const CategoryOptions: FC = () => {
-  const resetAnchorPoint = useResetRecoilState(anchorPointState)
-  const [contextMenu, setContextMenu] = useRecoilState(contextMenuState)
+  const contextMenu = useRecoilValue(contextMenuState)
   const deleteCategory = useDeleteCategoryMutation()
-  const reset = () => {
-    resetAnchorPoint()
-    setContextMenu((prev) => ({
-      ...prev,
-      show: false,
-    }))
-  }
-  return (
-    <ListItem
-      onClick={() => (
+  const reset = useResetContextMenu()
+  const handleClick = (option: string) => {
+    switch (option) {
+      case `delete`:
         deleteCategory.mutate({
           id: contextMenu.category?.id ?? ``,
-        }),
-        reset()
-      )}
-    >
-      Delete
-    </ListItem>
-  )
+        })
+        break
+      default:
+        break
+    }
+    reset()
+  }
+  return <ListItem onClick={() => handleClick(`delete`)}>Delete</ListItem>
 }
 
 export const ContextMenu: FC = () => {
