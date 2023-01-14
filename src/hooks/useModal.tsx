@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import React, { useState } from 'react'
 
 import type { SetState } from '@state/index'
+import { basicTransition } from '@styles/framer'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Portal } from 'react-portal'
 import styled from 'styled-components'
@@ -61,6 +62,10 @@ export const Modal: FC<Modal> = ({ children, isOpen, setIsOpen }) => {
               initial={{ opacity: 1, y: `50vh` }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 1, y: `100vh` }}
+              transition={{
+                ...basicTransition,
+                duration: 0.75,
+              }}
             >
               {children}
             </ModalContainer>

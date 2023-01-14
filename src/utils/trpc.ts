@@ -1,24 +1,18 @@
+import type { TRPCClientErrorLike } from '@trpc/client'
 import { httpBatchLink } from '@trpc/client'
 import { createTRPCNext } from '@trpc/next'
+import type { inferReactQueryProcedureOptions } from '@trpc/react-query'
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 import SuperJSON from 'superjson'
 
+import { getBaseUrl } from './getBaseUrl'
 import type { AppRouter } from '../server/routers/_app'
-function getBaseUrl() {
-  if (typeof window !== `undefined`) {
-    // browser should use relative path
-    return ``
-  }
-  if (process.env.VERCEL_URL) {
-    // reference for vercel.com
-    return `https://${process.env.VERCEL_URL}`
-  }
-  if (process.env.RENDER_INTERNAL_HOSTNAME) {
-    // reference for render.com
-    return `http://${process.env.RENDER_INTERNAL_HOSTNAME}:${process.env.PORT}`
-  }
-  // assume localhost
-  return `http://localhost:${process.env.PORT ?? 3000}`
-}
+
+export type RouterInput = inferRouterInputs<AppRouter>
+export type RouterOutput = inferRouterOutputs<AppRouter>
+export type ReactQueryOptions = inferReactQueryProcedureOptions<AppRouter>
+export type RouterError = TRPCClientErrorLike<AppRouter>
+
 export const trpc = createTRPCNext<AppRouter>({
   config({ ctx }) {
     return {

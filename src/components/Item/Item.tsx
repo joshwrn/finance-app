@@ -15,6 +15,7 @@ import {
   useMoveItemMutation,
   useSwitchItemCategoryMutation,
 } from '@state/entities/item'
+import { basicTransition } from '@styles/framer'
 import { convertDate, filterHost, numberToCurrency } from '@utils/utils'
 import type { Variants } from 'framer-motion'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -161,6 +162,9 @@ const ItemWithState = ({
             initial={{ height: 0, y: 100, opacity: 0 }}
             animate={{ height: `fit-content`, y: 0, opacity: 1 }}
             exit={{ height: 0, y: 100, opacity: 0 }}
+            transition={{
+              ...basicTransition,
+            }}
           >
             {item?.subItems.map((subItem) => (
               <ItemWithState
