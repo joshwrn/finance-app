@@ -1,6 +1,5 @@
 import type { FC } from 'react'
 
-import Category from '@components/Category/Category'
 import { NewCategoryButton } from '@components/Category/NewCategoryButton'
 import Header from '@components/Header'
 import CreateNewItemModal, { itemModalState } from '@components/Item/ItemModal'
@@ -14,6 +13,8 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import styled from 'styled-components'
 
 import type { CategoryWithItems } from '~/prisma/prismaTypes'
+
+import Category from './Category/Category'
 
 const Container = styled(motion.div)`
   display: flex;
@@ -37,6 +38,14 @@ const SectionHeader = styled(Header)`
   z-index: 1000;
   padding: 0 30px;
 `
+
+// [
+//   ([`category`, `list`],
+//   {
+//     input: { categoryType: `WISHLIST`, userId: `clbac35yh000dpp7siw76pj21` },
+//     type: `query`,
+//   })
+// ]
 
 export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
   title,
