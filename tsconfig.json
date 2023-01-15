@@ -15,7 +15,7 @@
       "@styles/*": ["src/styles/*"],
       "@contexts/*": ["src/contexts/*"],
       "@customTypes": ["src/customTypes/*"],
-      "@server": ["src/server/*"],
+      "~server": ["src/server/*"],
       "~/*": ["*"]
     },
     "allowJs": true,

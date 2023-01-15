@@ -1,15 +1,12 @@
-import type {
-  CreateItemInput,
-  CreateSubItemInput,
-  ItemSchema,
-  ItemWithSubItems,
-} from '@lib/zod/item'
+import type { ItemWithSubItems } from '@lib/zod/item'
 import { useUser } from '@state/user'
+import type { RouterInput, RouterOutput } from '@utils/trpc'
 import { trpc } from '@utils/trpc'
-import { useSetRecoilState } from 'recoil'
-import type { z } from 'zod'
 
-import { categoryState } from './category'
+import { useList } from './category'
+
+type CreateItemInput = RouterInput[`item`][`create`]
+type ItemResult = RouterOutput[`item`][`create`]
 
 export const useCreateItemMutation = ({
   categoryId,
@@ -18,22 +15,23 @@ export const useCreateItemMutation = ({
   categoryId: string
   action?: () => void
 }): {
-  mutate: (input: z.infer<typeof CreateItemInput>) => void
+  mutate: (input: CreateItemInput) => void
 } => {
-  const setCategories = useSetRecoilState(categoryState)
-  const create = trpc.item.create.useMutation({
-    onSuccess: (res) => {
-      setCategories((prev) =>
-        prev.map((category) => {
-          return category.id === categoryId
-            ? { ...category, items: [...category.items, res.item] }
-            : category
-        }),
-      )
-      action?.()
-    },
-  })
-  return { mutate: create.mutate }
+  const { update } = useList()
+  const create = trpc.item.create.useMutation()
+  const mutate = async (input: CreateItemInput) => {
+    action?.()
+    const data = await create.mutateAsync(input)
+    update((prev) =>
+      prev.map((category) => {
+        return category.id === categoryId
+          ? { ...category, items: [...category.items, data.item] }
+          : category
+      }),
+    )
+    return data
+  }
+  return { mutate }
 }
 
 export const useEditItemMutation = ({
@@ -43,28 +41,32 @@ export const useEditItemMutation = ({
   categoryId: string
   onSuccess?: () => void
 }): {
-  mutate: (input: z.infer<typeof CreateItemInput> & { id: string }) => void
+  mutate: (input: CreateItemInput & { id: string }) => void
 } => {
-  const setCategories = useSetRecoilState(categoryState)
-  const edit = trpc.item.edit.useMutation({
-    onSuccess: (res) => {
-      setCategories((prev) =>
-        prev.map((category) => {
-          return category.id === categoryId
-            ? {
-                ...category,
-                items: category.items.map((i) =>
-                  i.id === res.item.id ? res.item : i,
-                ),
-              }
-            : category
-        }),
-      )
-      onSuccess?.()
-    },
-  })
-  return { mutate: edit.mutate }
+  const { update } = useList()
+  const edit = trpc.item.edit.useMutation()
+
+  const mutate = async (input: CreateItemInput & { id: string }) => {
+    const data = await edit.mutateAsync(input)
+    onSuccess?.()
+    update((prev) =>
+      prev.map((category) => {
+        return category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.map((i) =>
+                i.id === data.item.id ? data.item : i,
+              ),
+            }
+          : category
+      }),
+    )
+    return data
+  }
+  return { mutate }
 }
+
+type CreateSubItemInput = RouterInput[`item`][`createSubItem`]
 
 export const useCreateSubItemMutation = ({
   parentItem,
@@ -73,20 +75,16 @@ export const useCreateSubItemMutation = ({
   parentItem?: ItemWithSubItems | null
   action?: () => void
 }): {
-  mutate: (
-    input: z.infer<typeof CreateSubItemInput> & { parentId: string },
-  ) => void
+  mutate: (input: CreateSubItemInput & { parentId: string }) => void
 } => {
-  const setCategories = useSetRecoilState(categoryState)
   const create = trpc.item.createSubItem.useMutation()
-  const use = async (
-    input: z.infer<typeof CreateSubItemInput> & { parentId: string },
-  ) => {
+  const { update } = useList()
+  const use = async (input: CreateItemInput & { parentId: string }) => {
     const data = await create.mutateAsync(input)
     if (!parentItem) {
       return
     }
-    setCategories((prev) =>
+    update((prev) =>
       prev.map((category) => {
         return category.id === parentItem.categoryId
           ? {
@@ -109,7 +107,7 @@ export const useDeleteItemMutation = (): {
   mutate: (input: { id: string; categoryId: string }) => void
 } => {
   const user = useUser()
-  const setCategories = useSetRecoilState(categoryState)
+  const { update } = useList()
   const deleteItem = trpc.item.delete.useMutation()
   const mutate = async ({
     categoryId,
@@ -119,7 +117,7 @@ export const useDeleteItemMutation = (): {
     id: string
   }) => {
     deleteItem.mutateAsync({ id, userId: user.id })
-    setCategories((prev) =>
+    update((prev) =>
       prev.map((category) => {
         return category.id === categoryId
           ? {
@@ -136,11 +134,11 @@ export const useDeleteItemMutation = (): {
 export const useMoveItemMutation = (): {
   mutate: (input: { id: string; categoryId: string }) => void
 } => {
-  const setCategories = useSetRecoilState(categoryState)
+  const { update } = useList()
   const moveItem = trpc.item.move.useMutation()
   const mutate = ({ categoryId, id }: { categoryId: string; id: string }) => {
     moveItem.mutate({ id })
-    setCategories((prev) =>
+    update((prev) =>
       prev.map((category) => {
         return category.id === categoryId
           ? {
@@ -156,23 +154,23 @@ export const useMoveItemMutation = (): {
 
 export const useSwitchItemCategoryMutation = (): {
   mutate: (input: {
-    item: z.infer<typeof ItemSchema>
+    item: ItemResult[`item`]
     newCategoryId: string | null
   }) => void
 } => {
-  const setCategories = useSetRecoilState(categoryState)
+  const { update } = useList()
   const moveItem = trpc.item.switchCategory.useMutation()
   const mutate = ({
     newCategoryId,
     item,
   }: {
     newCategoryId: string | null
-    item: z.infer<typeof ItemSchema>
+    item: ItemResult[`item`]
   }) => {
     if (!newCategoryId) return
     const oldItemId = item.categoryId
     moveItem.mutate({ id: item.id, newCategoryId })
-    setCategories((prev) =>
+    update((prev) =>
       prev.map((category) => {
         if (category.id === oldItemId) {
           return {

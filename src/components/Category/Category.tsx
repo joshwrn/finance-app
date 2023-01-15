@@ -13,7 +13,7 @@ import {
   DEFAULT_HOVER_STATE,
   anchorPointState,
 } from '@state/drag'
-import { categoryState } from '@state/entities/category'
+import { useList } from '@state/entities/category'
 import { userState } from '@state/user'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
@@ -127,10 +127,8 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   })
 
   const count = sCount as unknown as number
-
-  const categoryData = useRecoilValue(categoryState).find(
-    (c) => c.id === categoryId,
-  )
+  const { data } = useList()
+  const categoryData = data?.categories.find((c) => c.id === categoryId)
 
   const items = categoryData?.items || []
   const setItemModal = useSetRecoilState(itemModalState)
