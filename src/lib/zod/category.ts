@@ -12,9 +12,3 @@ export const CategorySchema = z.object<Properties<Category>>({
   userId: z.string().nullable(),
   categoryType: z.nativeEnum(CategoryType),
 })
-
-export const CreateCategoryInput = CategorySchema.pick({
-  name: true,
-  userId: true,
-  categoryType: true,
-})
