@@ -13,7 +13,7 @@ import {
   DEFAULT_HOVER_STATE,
   anchorPointState,
 } from '@state/drag'
-import { useList } from '@state/entities/category'
+import { Category } from '@state/entities/category'
 import { userState } from '@state/user'
 import { trpc } from '@utils/trpc'
 import { numberToCurrency } from '@utils/utils'
@@ -115,7 +115,10 @@ const Badge = styled.div`
   }
 `
 
-const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
+const Category: FC<{ categoryId: string; categoryData: Category }> = ({
+  categoryId,
+  categoryData,
+}) => {
   const user = useRecoilValue(userState)
   const {
     isLoading,
@@ -127,8 +130,6 @@ const Category: FC<{ categoryId: string }> = ({ categoryId }) => {
   })
 
   const count = sCount as unknown as number
-  const { data } = useList()
-  const categoryData = data?.categories.find((c) => c.id === categoryId)
 
   const items = categoryData?.items || []
   const setItemModal = useSetRecoilState(itemModalState)

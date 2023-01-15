@@ -1,17 +1,24 @@
 import { useUser } from '@state/user'
-import type { RouterInput, RouterOutput } from '@utils/trpc'
+import type { UseTRPCInfiniteQueryResult } from '@trpc/react-query/shared'
+import type { RouterError, RouterInput, RouterOutput } from '@utils/trpc'
 import { trpc } from '@utils/trpc'
 import { useRouter } from 'next/router'
 
-type ListCategoriesInput = RouterInput[`category`][`list`]
-type ListCategoriesResult = RouterOutput[`category`][`list`]
+export type ListCategoriesInput = RouterInput[`category`][`list`]
+export type ListCategoriesResult = RouterOutput[`category`][`list`]
+export type Category = ListCategoriesResult[`categories`][number]
 
 const useCategoryParams = () => {
   const user = useUser()
   const categoryType = useRouter().pathname.includes(`wishlist`)
     ? `WISHLIST`
     : `EXPENSE`
-  const input = { userId: user.id, categoryType } satisfies ListCategoriesInput
+  const input: ListCategoriesInput = {
+    userId: user.id,
+    categoryType,
+    take: 2,
+    cursor: undefined,
+  }
   return input
 }
 
@@ -20,26 +27,26 @@ type UpdateList = (
 ) => ListCategoriesResult[`categories`]
 
 export const useList = (): {
-  query: ReturnType<typeof trpc.category.list.useQuery>
-  update: (fn: UpdateList) => void
-  data?: ListCategoriesResult
+  query: UseTRPCInfiniteQueryResult<ListCategoriesResult, RouterError>
+  update: (fn: UpdateList, categoryId: string) => void
 } => {
   const input = useCategoryParams()
   const ctx = trpc.useContext()
-  const query = trpc.category.list.useQuery(input, {
+  const query = trpc.category.list.useInfiniteQuery(input, {
     staleTime: 1000 * 60 * 5,
+    getPreviousPageParam: (firstPage) => firstPage?.nextCursor,
   })
 
-  const update = (fn: UpdateList) => {
-    ctx.category.list.setData(
-      input,
-      (prev) => prev && { categories: fn(prev.categories) },
-    )
+  // console.log(`useList`, query.data)
+
+  const update = (fn: UpdateList, categoryId: string) => {
+    ctx.category.list.refetch(input, {
+      exact: false,
+    })
   }
 
   return {
     query,
-    data: query.data,
     update,
   }
 }
@@ -61,13 +68,16 @@ export const useCreateCategoryMutation = ({
   const mutate = async (input: CreateCategoryInput) => {
     const { mutateAsync } = create
     const data = await mutateAsync(input)
-    update((prev) => [
-      ...prev,
-      {
-        ...data.category,
-        items: [],
-      },
-    ])
+    update(
+      (prev) => [
+        ...prev,
+        {
+          ...data.category,
+          items: [],
+        },
+      ],
+      data.category.id,
+    )
   }
   return { mutate }
 }
@@ -77,12 +87,14 @@ export const useDeleteCategoryMutation = (): {
 } => {
   const { update } = useList()
   const deleteItem = trpc.category.delete.useMutation()
-  const mutate = ({ id }: { id: string }) => {
-    deleteItem.mutate({ id })
-    update((prev) =>
-      prev.filter((category) => {
-        return category.id !== id
-      }),
+  const mutate = async ({ id }: { id: string }) => {
+    await deleteItem.mutateAsync({ id })
+    update(
+      (prev) =>
+        prev.filter((category) => {
+          return category.id !== id
+        }),
+      id,
     )
   }
   return { mutate }

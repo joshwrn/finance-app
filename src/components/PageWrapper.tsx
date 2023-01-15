@@ -12,8 +12,6 @@ import { LayoutGroup, motion } from 'framer-motion'
 import { useRecoilState } from 'recoil'
 import styled from 'styled-components'
 
-import type { CategoryWithItems } from '~/prisma/prismaTypes'
-
 import Category from './Category/Category'
 
 const Container = styled(motion.div)`
@@ -43,8 +41,11 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
   title,
 }) => {
   useGetUser()
-  const { data } = useList()
+  const { query } = useList()
   const [itemModal, setItemModal] = useRecoilState(itemModalState)
+
+  const reversedPages = [...(query?.data?.pages ?? [])].reverse()
+  console.log(reversedPages)
 
   return (
     <>
@@ -68,10 +69,17 @@ export const PageWrapper: FC<{ title: string; categoryType: CategoryType }> = ({
           <CreateNewItemModal />
         </Modal>
         <LayoutGroup>
-          {data?.categories.map((category: CategoryWithItems) => (
-            <Category key={category.id + title} categoryId={category.id} />
-          ))}
+          {reversedPages?.map((page) =>
+            page.categories.map((category) => (
+              <Category
+                key={category.id + title}
+                categoryId={category.id}
+                categoryData={category}
+              />
+            )),
+          )}
         </LayoutGroup>
+        <button onClick={() => query.fetchPreviousPage()}>fetch more</button>
       </Container>
     </>
   )

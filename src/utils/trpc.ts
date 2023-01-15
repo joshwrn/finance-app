@@ -11,6 +11,8 @@ import type { AppRouter } from '../server/routers/_app'
 
 export type ReactQueryOptions = inferReactQueryProcedureOptions<AppRouter>
 export type RouterError = TRPCClientErrorLike<AppRouter>
+export type RouterInput = inferRouterInputs<AppRouter>
+export type RouterOutput = inferRouterOutputs<AppRouter>
 
 /**
  * Extend `NextPageContext` with meta data that can be picked up by `responseMeta()` when server-side rendering
@@ -111,6 +113,3 @@ export const trpc = createTRPCNext<AppRouter, SSRContext>({
     return {}
   },
 })
-
-export type RouterInput = inferRouterInputs<AppRouter>
-export type RouterOutput = inferRouterOutputs<AppRouter>

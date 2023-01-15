@@ -22,12 +22,14 @@ export const useCreateItemMutation = ({
   const mutate = async (input: CreateItemInput) => {
     action?.()
     const data = await create.mutateAsync(input)
-    update((prev) =>
-      prev.map((category) => {
-        return category.id === categoryId
-          ? { ...category, items: [...category.items, data.item] }
-          : category
-      }),
+    update(
+      (prev) =>
+        prev.map((category) => {
+          return category.id === categoryId
+            ? { ...category, items: [...category.items, data.item] }
+            : category
+        }),
+      categoryId,
     )
     return data
   }
@@ -49,17 +51,19 @@ export const useEditItemMutation = ({
   const mutate = async (input: CreateItemInput & { id: string }) => {
     const data = await edit.mutateAsync(input)
     onSuccess?.()
-    update((prev) =>
-      prev.map((category) => {
-        return category.id === categoryId
-          ? {
-              ...category,
-              items: category.items.map((i) =>
-                i.id === data.item.id ? data.item : i,
-              ),
-            }
-          : category
-      }),
+    update(
+      (prev) =>
+        prev.map((category) => {
+          return category.id === categoryId
+            ? {
+                ...category,
+                items: category.items.map((i) =>
+                  i.id === data.item.id ? data.item : i,
+                ),
+              }
+            : category
+        }),
+      categoryId,
     )
     return data
   }
@@ -84,19 +88,21 @@ export const useCreateSubItemMutation = ({
     if (!parentItem) {
       return
     }
-    update((prev) =>
-      prev.map((category) => {
-        return category.id === parentItem.categoryId
-          ? {
-              ...category,
-              items: category.items.map((i) =>
-                i.id === parentItem.id
-                  ? { ...i, group: true, subItems: [...i.subItems, data] }
-                  : i,
-              ),
-            }
-          : category
-      }),
+    update(
+      (prev) =>
+        prev.map((category) => {
+          return category.id === parentItem.categoryId
+            ? {
+                ...category,
+                items: category.items.map((i) =>
+                  i.id === parentItem.id
+                    ? { ...i, group: true, subItems: [...i.subItems, data] }
+                    : i,
+                ),
+              }
+            : category
+        }),
+      parentItem.categoryId,
     )
     action?.()
   }
@@ -117,15 +123,17 @@ export const useDeleteItemMutation = (): {
     id: string
   }) => {
     deleteItem.mutateAsync({ id, userId: user.id })
-    update((prev) =>
-      prev.map((category) => {
-        return category.id === categoryId
-          ? {
-              ...category,
-              items: category.items.filter((item) => item.id !== id),
-            }
-          : category
-      }),
+    update(
+      (prev) =>
+        prev.map((category) => {
+          return category.id === categoryId
+            ? {
+                ...category,
+                items: category.items.filter((item) => item.id !== id),
+              }
+            : category
+        }),
+      categoryId,
     )
   }
   return { mutate }
@@ -138,15 +146,17 @@ export const useMoveItemMutation = (): {
   const moveItem = trpc.item.move.useMutation()
   const mutate = ({ categoryId, id }: { categoryId: string; id: string }) => {
     moveItem.mutate({ id })
-    update((prev) =>
-      prev.map((category) => {
-        return category.id === categoryId
-          ? {
-              ...category,
-              items: category.items.filter((item) => item.id !== id),
-            }
-          : category
-      }),
+    update(
+      (prev) =>
+        prev.map((category) => {
+          return category.id === categoryId
+            ? {
+                ...category,
+                items: category.items.filter((item) => item.id !== id),
+              }
+            : category
+        }),
+      categoryId,
     )
   }
   return { mutate }
@@ -170,22 +180,24 @@ export const useSwitchItemCategoryMutation = (): {
     if (!newCategoryId) return
     const oldItemId = item.categoryId
     moveItem.mutate({ id: item.id, newCategoryId })
-    update((prev) =>
-      prev.map((category) => {
-        if (category.id === oldItemId) {
-          return {
-            ...category,
-            items: category.items.filter((i) => i.id !== item.id),
+    update(
+      (prev) =>
+        prev.map((category) => {
+          if (category.id === oldItemId) {
+            return {
+              ...category,
+              items: category.items.filter((i) => i.id !== item.id),
+            }
           }
-        }
-        if (category.id === newCategoryId) {
-          return {
-            ...category,
-            items: [...category.items, { ...item, categoryId: newCategoryId }],
+          if (category.id === newCategoryId) {
+            return {
+              ...category,
+              items: [...category.items, { ...item, categoryId: newCategoryId }],
+            }
           }
-        }
-        return category
-      }),
+          return category
+        }),
+      oldItemId,
     )
   }
   return { mutate }
